@@ -16,6 +16,8 @@ class NewsDetailScreen extends StatefulWidget {
   State<NewsDetailScreen> createState() => _NewsDetailScreenState();
 }
 
+// somehing changed
+
 class _NewsDetailScreenState extends State<NewsDetailScreen> {
   late FlutterTts _flutterTts;
   bool _isPlaying = false;
@@ -34,7 +36,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
 
   void _initTts() {
     _flutterTts = FlutterTts();
-    
+
     _flutterTts.setStartHandler(() {
       if (mounted) setState(() => _isPlaying = true);
     });
@@ -48,7 +50,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     });
 
     _flutterTts.setErrorHandler((msg) {
-       if (mounted) setState(() => _isPlaying = false);
+      if (mounted) setState(() => _isPlaying = false);
     });
   }
 
@@ -56,7 +58,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     if (_isPlaying) {
       await _flutterTts.stop();
     } else {
-      final textToSpeak = "${widget.news.title}. ${widget.news.description ?? ''}";
+      final textToSpeak =
+          "${widget.news.title}. ${widget.news.description ?? ''}";
       if (textToSpeak.trim().isNotEmpty) {
         await _flutterTts.speak(textToSpeak);
       }
@@ -88,7 +91,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   }
 
   Future<void> _shareNews() async {
-    final text = '${widget.news.title}\n\n${widget.news.description ?? ''}\n\n${widget.news.url ?? ''}';
+    final text =
+        '${widget.news.title}\n\n${widget.news.description ?? ''}\n\n${widget.news.url ?? ''}';
     await Share.share(text, subject: widget.news.title);
   }
 
@@ -112,17 +116,15 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  widget.news.urlToImage != null && widget.news.urlToImage!.isNotEmpty
+                  widget.news.urlToImage != null &&
+                          widget.news.urlToImage!.isNotEmpty
                       ? CachedNetworkImage(
                           imageUrl: widget.news.urlToImage!,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: [
-                                  Colors.blue[400]!,
-                                  Colors.blue[300]!,
-                                ],
+                                colors: [Colors.blue[400]!, Colors.blue[300]!],
                               ),
                             ),
                             child: const Center(
@@ -136,10 +138,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                               gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
-                                colors: [
-                                  Colors.blue[400]!,
-                                  Colors.blue[300]!,
-                                ],
+                                colors: [Colors.blue[400]!, Colors.blue[300]!],
                               ),
                             ),
                             child: const Icon(
@@ -154,10 +153,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                             gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
-                              colors: [
-                                Colors.blue[400]!,
-                                Colors.blue[300]!,
-                              ],
+                              colors: [Colors.blue[400]!, Colors.blue[300]!],
                             ),
                           ),
                           child: const Icon(
@@ -235,9 +231,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             child: Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(30),
-                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -257,15 +251,17 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                               gradient: LinearGradient(
                                 colors: [
                                   Theme.of(context).primaryColor,
-                                  Theme.of(context).primaryColor.withValues(alpha: 0.8),
+                                  Theme.of(
+                                    context,
+                                  ).primaryColor.withValues(alpha: 0.8),
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Theme.of(context)
-                                      .primaryColor
-                                      .withValues(alpha: 0.3),
+                                  color: Theme.of(
+                                    context,
+                                  ).primaryColor.withValues(alpha: 0.3),
                                   blurRadius: 8,
                                   offset: const Offset(0, 4),
                                 ),
@@ -330,7 +326,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
@@ -367,13 +365,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                       ),
                     const SizedBox(height: 28),
                     // Divider
-                    Divider(
-                      color: Colors.grey[300],
-                      thickness: 1,
-                    ),
+                    Divider(color: Colors.grey[300], thickness: 1),
                     const SizedBox(height: 28),
                     // Description
-                    if (widget.news.description != null && widget.news.description!.isNotEmpty)
+                    if (widget.news.description != null &&
+                        widget.news.description!.isNotEmpty)
                       Text(
                         widget.news.description!,
                         style: TextStyle(
