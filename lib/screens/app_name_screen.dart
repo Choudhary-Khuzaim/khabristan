@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
-import 'onboarding_screen.dart';
+
 import '../services/preferences_service.dart';
 import 'login_screen.dart';
 
@@ -28,18 +28,12 @@ class _AppNameScreenState extends State<AppNameScreen>
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward();
   }
@@ -80,9 +74,10 @@ class _AppNameScreenState extends State<AppNameScreen>
           const end = Offset.zero;
           const curve = Curves.ease;
 
-          var tween = Tween(begin: begin, end: end).chain(
-            CurveTween(curve: curve),
-          );
+          var tween = Tween(
+            begin: begin,
+            end: end,
+          ).chain(CurveTween(curve: curve));
 
           return SlideTransition(
             position: animation.drive(tween),
@@ -103,7 +98,7 @@ class _AppNameScreenState extends State<AppNameScreen>
             end: Alignment.bottomRight,
             colors: [
               Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor.withOpacity(0.7),
+              Theme.of(context).primaryColor.withValues(alpha: 0.7),
             ],
           ),
         ),
@@ -141,7 +136,7 @@ class _AppNameScreenState extends State<AppNameScreen>
                             'Your trusted news source',
                             style: TextStyle(
                               fontSize: 18,
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               letterSpacing: 1,
                             ),
                             textAlign: TextAlign.center,
@@ -171,9 +166,7 @@ class _AppNameScreenState extends State<AppNameScreen>
                           ? const SizedBox(
                               height: 24,
                               width: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Text(
                               'Get Started',
@@ -194,4 +187,3 @@ class _AppNameScreenState extends State<AppNameScreen>
     );
   }
 }
-
