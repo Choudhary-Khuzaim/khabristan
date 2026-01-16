@@ -43,50 +43,49 @@ class KhabarIsTanApp extends StatelessWidget {
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFF0F172A), // Slate 900
         primary: const Color(0xFF0F172A),
-        secondary: const Color(0xFF334155), // Slate 700
-        tertiary: const Color(0xFF0EA5E9), // Sky 500
-        surface: const Color(0xFFF8FAFC), // Slate 50
-        error: const Color(0xFFEF4444), // Red 500
+        secondary: const Color(0xFFB4941F), // Premium Gold accent
+        tertiary: const Color(0xFF1E293B),
+        surface: const Color(0xFFF8FAFC),
+        onSurface: const Color(0xFF0F172A),
+        error: const Color(0xFFEF4444),
         brightness: Brightness.light,
       ),
-      scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+      scaffoldBackgroundColor: const Color(0xFFF1F5F9),
       appBarTheme: AppBarTheme(
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
         backgroundColor: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
         iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
-        titleTextStyle: GoogleFonts.poppins(
+        titleTextStyle: GoogleFonts.outfit(
           color: const Color(0xFF0F172A),
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
           letterSpacing: -0.5,
         ),
       ),
       cardTheme: CardThemeData(
-        elevation: 0,
+        elevation: 4,
+        shadowColor: Colors.black.withValues(alpha: 0.05),
         color: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white,
-        hintStyle: GoogleFonts.inter(color: Colors.grey[400]),
-        prefixIconColor: const Color(0xFF0F172A),
+        hintStyle: GoogleFonts.inter(color: Colors.grey[400], fontSize: 14),
+        prefixIconColor: const Color(0xFF64748B),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF0F172A), width: 1.5),
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: Color(0xFFB4941F), width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,
@@ -97,46 +96,50 @@ class KhabarIsTanApp extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF0F172A),
           foregroundColor: Colors.white,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          elevation: 2,
+          shadowColor: const Color(0xFF0F172A).withValues(alpha: 0.3),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(18),
           ),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.outfit(
             fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
           ),
         ),
       ),
-      textTheme: GoogleFonts.interTextTheme(base.textTheme).copyWith(
-        headlineLarge: GoogleFonts.poppins(
+      textTheme: GoogleFonts.outfitTextTheme(base.textTheme).copyWith(
+        headlineLarge: GoogleFonts.outfit(
           color: const Color(0xFF0F172A),
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w800,
           letterSpacing: -1,
           height: 1.2,
         ),
-        headlineMedium: GoogleFonts.poppins(
+        headlineMedium: GoogleFonts.outfit(
           color: const Color(0xFF0F172A),
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           letterSpacing: -0.5,
           height: 1.3,
         ),
-        titleLarge: GoogleFonts.poppins(
-          color: const Color(0xFF0F172A),
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.5,
-        ),
-        titleMedium: GoogleFonts.inter(
+        titleLarge: GoogleFonts.outfit(
           color: const Color(0xFF1E293B),
+          fontWeight: FontWeight.w700,
+          fontSize: 20,
+        ),
+        titleMedium: GoogleFonts.outfit(
+          color: const Color(0xFF334155),
           fontWeight: FontWeight.w600,
+          fontSize: 16,
         ),
         bodyLarge: GoogleFonts.inter(
           color: const Color(0xFF334155),
-          height: 1.5,
+          fontSize: 16,
+          height: 1.6,
         ),
         bodyMedium: GoogleFonts.inter(
           color: const Color(0xFF64748B),
+          fontSize: 14,
           height: 1.5,
         ),
       ),
@@ -148,52 +151,53 @@ class KhabarIsTanApp extends StatelessWidget {
     return base.copyWith(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF38BDF8), // Sky 400
-        primary: const Color(0xFF38BDF8),
-        secondary: const Color(0xFF94A3B8), // Slate 400
-        tertiary: const Color(0xFF0EA5E9), // Sky 500
-        surface: const Color(0xFF0F172A), // Slate 900
-        error: const Color(0xFFF87171), // Red 400
+        seedColor: const Color(0xFFB4941F), // Gold seed
+        primary: const Color(0xFFB4941F),
+        secondary: const Color(0xFFF1F5F9),
+        tertiary: const Color(0xFF334155),
+        surface: const Color(0xFF0F172A), // Deep Navy Surface
+        error: const Color(0xFFF87171),
         brightness: Brightness.dark,
       ),
-      scaffoldBackgroundColor: const Color(0xFF020617), // Slate 950
+      scaffoldBackgroundColor: const Color(0xFF020617), // Extreme Dark Navy
       appBarTheme: AppBarTheme(
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
         backgroundColor: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle.light,
-        iconTheme: const IconThemeData(color: Color(0xFF38BDF8)),
-        titleTextStyle: GoogleFonts.poppins(
-          color: const Color(0xFF38BDF8),
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
+        iconTheme: const IconThemeData(color: Colors.white),
+        titleTextStyle: GoogleFonts.outfit(
+          color: Colors.white,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
           letterSpacing: -0.5,
         ),
       ),
       cardTheme: CardThemeData(
-        elevation: 0,
-        color: const Color(0xFF1E293B), // Slate 800
+        elevation: 8,
+        shadowColor: Colors.black.withValues(alpha: 0.2),
+        color: const Color(0xFF1E293B),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24),
           side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(0xFF1E293B),
-        hintStyle: GoogleFonts.inter(color: Colors.grey[600]),
-        prefixIconColor: const Color(0xFF38BDF8),
+        hintStyle: GoogleFonts.inter(color: Colors.grey[500], fontSize: 14),
+        prefixIconColor: const Color(0xFF94A3B8),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF38BDF8), width: 1.5),
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: Color(0xFFB4941F), width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,
@@ -202,48 +206,52 @@ class KhabarIsTanApp extends StatelessWidget {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF38BDF8),
-          foregroundColor: const Color(0xFF0F172A),
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          backgroundColor: const Color(0xFFB4941F),
+          foregroundColor: const Color(0xFF0A1128),
+          elevation: 4,
+          shadowColor: const Color(0xFFB4941F).withValues(alpha: 0.2),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(18),
           ),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.outfit(
             fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
           ),
         ),
       ),
-      textTheme: GoogleFonts.interTextTheme(base.textTheme).copyWith(
-        headlineLarge: GoogleFonts.poppins(
-          color: const Color(0xFFF1F5F9),
-          fontWeight: FontWeight.w700,
+      textTheme: GoogleFonts.outfitTextTheme(base.textTheme).copyWith(
+        headlineLarge: GoogleFonts.outfit(
+          color: Colors.white,
+          fontWeight: FontWeight.w800,
           letterSpacing: -1,
           height: 1.2,
         ),
-        headlineMedium: GoogleFonts.poppins(
-          color: const Color(0xFFF1F5F9),
-          fontWeight: FontWeight.w600,
+        headlineMedium: GoogleFonts.outfit(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
           letterSpacing: -0.5,
           height: 1.3,
         ),
-        titleLarge: GoogleFonts.poppins(
+        titleLarge: GoogleFonts.outfit(
           color: const Color(0xFFF1F5F9),
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.5,
+          fontWeight: FontWeight.w700,
+          fontSize: 20,
         ),
-        titleMedium: GoogleFonts.inter(
-          color: const Color(0xFFE2E8F0),
+        titleMedium: GoogleFonts.outfit(
+          color: const Color(0xFFCBD5E1),
           fontWeight: FontWeight.w600,
+          fontSize: 16,
         ),
         bodyLarge: GoogleFonts.inter(
           color: const Color(0xFFCBD5E1),
-          height: 1.5,
+          fontSize: 16,
+          height: 1.6,
         ),
         bodyMedium: GoogleFonts.inter(
           color: const Color(0xFF94A3B8),
+          fontSize: 14,
           height: 1.5,
         ),
       ),

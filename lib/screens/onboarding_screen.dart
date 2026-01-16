@@ -56,141 +56,151 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Text(
-                'Select your Region',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(40, 60, 40, 20),
+              child: Column(
+                children: [
+                  Text(
+                    'Localized Experience',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
                       color: Theme.of(context).colorScheme.primary,
+                      letterSpacing: 2,
                     ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Get news relevant to your location',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.secondary,
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Select Your Region',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -1,
                     ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'We will tailor your news feed based on the region you select below.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey.shade600,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-              const SizedBox(height: 32),
-              Expanded(
-                child: AnimationLimiter(
-                  child: ListView.builder(
-                    itemCount: _regions.length,
-                    itemBuilder: (context, index) {
-                      final region = _regions[index];
-                      final isSelected = _selectedRegion == region['code'];
+            ),
 
-                      return AnimationConfiguration.staggeredList(
-                        position: index,
-                        duration: const Duration(milliseconds: 375),
-                        child: SlideAnimation(
-                          verticalOffset: 50.0,
-                          child: FadeInAnimation(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedRegion = region['code']!;
-                                  });
-                                },
-                                borderRadius: BorderRadius.circular(16),
-                                child: Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Theme.of(context).cardTheme.color,
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? Colors.transparent
-                                          : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-                                    ),
-                                    boxShadow: isSelected
-                                        ? [
-                                            BoxShadow(
-                                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-                                              blurRadius: 8,
-                                              offset: const Offset(0, 4),
-                                            )
-                                          ]
-                                        : null,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        region['flag']!,
-                                        style: const TextStyle(fontSize: 24),
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Text(
-                                        region['name']!,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: isSelected
-                                              ? Colors.white
-                                              : Theme.of(context).colorScheme.onSurface,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      if (isSelected)
-                                        const Icon(
-                                          Icons.check_circle,
-                                          color: Colors.white,
-                                        ),
-                                    ],
-                                  ),
+            Expanded(
+              child: AnimationLimiter(
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(30),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 1.3,
+                  ),
+                  itemCount: _regions.length,
+                  itemBuilder: (context, index) {
+                    final region = _regions[index];
+                    final isSelected = _selectedRegion == region['code'];
+
+                    return AnimationConfiguration.staggeredGrid(
+                      position: index,
+                      duration: const Duration(milliseconds: 500),
+                      columnCount: 2,
+                      child: ScaleAnimation(
+                        child: FadeInAnimation(
+                          child: InkWell(
+                            onTap: () => setState(
+                              () => _selectedRegion = region['code']!,
+                            ),
+                            borderRadius: BorderRadius.circular(24),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).cardTheme.color,
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? Colors.transparent
+                                      : Colors.grey.withValues(alpha: 0.1),
                                 ),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withValues(alpha: 0.3),
+                                          blurRadius: 15,
+                                          offset: const Offset(0, 8),
+                                        ),
+                                      ]
+                                    : [],
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    region['flag']!,
+                                    style: const TextStyle(fontSize: 32),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    region['name']!,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _completeOnboarding,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 4,
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(30),
+              child: ElevatedButton(
+                onPressed: _completeOnboarding,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 64),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Text(
-                          'Get Started',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                ),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        'Start Reading',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
                         ),
-                ),
+                      ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -32,126 +32,186 @@ class _MyNewsScreenState extends State<MyNewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Published News'),
-        centerTitle: true,
-      ),
-      body: FutureBuilder<List<NewsModel>>(
-        future: _myNewsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error loading news: ${snapshot.error}'),
-            );
-          }
-
-          final newsList = snapshot.data ?? [];
-
-          if (newsList.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.article_outlined,
-                    size: 80,
-                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No published news yet',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context); // Go back to profile, or use home nav mechanism
-                      // Ideally, user would tap the + button
-                    },
-                    child: const Text('Go Publish Something!'),
-                  ),
-                ],
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 120,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                'My Publications',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
               ),
-            );
-          }
+              centerTitle: false,
+              titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
+            ),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          ),
+          FutureBuilder<List<NewsModel>>(
+            future: _myNewsFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
 
-          return AnimationLimiter(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: newsList.length,
-              itemBuilder: (context, index) {
-                return AnimationConfiguration.staggeredList(
-                  position: index,
-                  duration: const Duration(milliseconds: 375),
-                  child: SlideAnimation(
-                    verticalOffset: 50.0,
-                    child: FadeInAnimation(
-                      child: Dismissible(
-                        key: Key(newsList[index].publishedAt ?? newsList[index].hashCode.toString()),
-                        direction: DismissDirection.endToStart,
-                        background: Container(
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 20),
-                          margin: const EdgeInsets.only(bottom: 12),
+              if (snapshot.hasError) {
+                return SliverFillRemaining(
+                  child: Center(
+                    child: Text('Error loading news: ${snapshot.error}'),
+                  ),
+                );
+              }
+
+              final newsList = snapshot.data ?? [];
+
+              if (newsList.isEmpty) {
+                return SliverFillRemaining(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(16),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.05),
+                            shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.delete, color: Colors.white, size: 30),
+                          child: Icon(
+                            Icons.article_rounded,
+                            size: 64,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.3),
+                          ),
                         ),
-                        onDismissed: (direction) async {
-                          final newsToDelete = newsList[index];
-                          
-                          // Remove from UI immediately
-                          setState(() {
-                            // snapshot.data is usually immutable or from Future, so we need a mutable list
-                            // But here we are relying on FutureBuilder re-triggering or optimistic updates.
-                            // Better approach: remove from local list copy if we had one, but we are using FutureBuilder directly.
-                            // Simple fix: Wait for async op and reload.
-                          });
-                          
-                          await _prefs.deleteMyNews(newsToDelete);
-                          
-                          // Refresh the list
-                          setState(() {
-                             _myNewsFuture = _prefs.getMyNews();
-                          });
-
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text('News deleted'),
-                                action: SnackBarAction(
-                                  label: 'Undo',
-                                  onPressed: () async {
-                                    await _prefs.saveMyNews(newsToDelete);
-                                    setState(() {
-                                      _myNewsFuture = _prefs.getMyNews();
-                                    });
-                                  },
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        child: NewsCard(
-                          news: newsList[index],
-                          onTap: () => _navigateToDetail(newsList[index]),
+                        const SizedBox(height: 24),
+                        const Text(
+                          'No Articles Found',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'You haven\'t published any stories yet.',
+                          style: TextStyle(color: Colors.grey.shade500),
+                        ),
+                        const SizedBox(height: 32),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.primary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 16,
+                            ),
+                          ),
+                          child: const Text(
+                            'Start Writing',
+                            style: TextStyle(fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
-              },
-            ),
-          );
-        },
+              }
+
+              return SliverPadding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                sliver: AnimationLimiter(
+                  child: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return AnimationConfiguration.staggeredList(
+                        position: index,
+                        duration: const Duration(milliseconds: 500),
+                        child: SlideAnimation(
+                          verticalOffset: 50.0,
+                          child: FadeInAnimation(
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Dismissible(
+                                key: Key(
+                                  newsList[index].publishedAt ??
+                                      newsList[index].hashCode.toString(),
+                                ),
+                                direction: DismissDirection.endToStart,
+                                background: Container(
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.only(right: 20),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.error,
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                  child: const Icon(
+                                    Icons.delete_sweep_rounded,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
+                                ),
+                                onDismissed: (direction) async {
+                                  final newsToDelete = newsList[index];
+                                  await _prefs.deleteMyNews(newsToDelete);
+                                  setState(() {
+                                    _myNewsFuture = _prefs.getMyNews();
+                                  });
+
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: const Text('Entry removed'),
+                                        behavior: SnackBarBehavior.floating,
+                                        action: SnackBarAction(
+                                          label: 'Undo',
+                                          onPressed: () async {
+                                            await _prefs.saveMyNews(
+                                              newsToDelete,
+                                            );
+                                            setState(() {
+                                              _myNewsFuture = _prefs
+                                                  .getMyNews();
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: NewsCard(
+                                  news: newsList[index],
+                                  onTap: () =>
+                                      _navigateToDetail(newsList[index]),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }, childCount: newsList.length),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

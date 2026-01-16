@@ -64,46 +64,73 @@ class _CategoryNewsScreenState extends State<CategoryNewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.category),
-        centerTitle: true,
-      ),
-      body: _isLoading
-          ? ListView.builder(
-              itemCount: 5,
-              itemBuilder: (context, index) => const NewsCardShimmer(),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 120,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                widget.category,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              centerTitle: false,
+              titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
+            ),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          ),
+          if (_isLoading)
+            SliverFillRemaining(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                itemCount: 6,
+                itemBuilder: (context, index) => const NewsCardShimmer(),
+              ),
             )
-          : _newsList.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.article_outlined,
-                        size: 64,
-                        color: Colors.grey[300],
+          else if (_newsList.isEmpty)
+            SliverFillRemaining(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.article_rounded,
+                      size: 64,
+                      color: Colors.grey.withValues(alpha: 0.3),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No stories found in ${widget.category}',
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontWeight: FontWeight.w500,
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No news found for ${widget.category}',
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  itemCount: _newsList.length,
-                  itemBuilder: (context, index) {
-                    return NewsCard(
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: NewsCard(
                       news: _newsList[index],
                       onTap: () => _navigateToDetail(_newsList[index]),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                }, childCount: _newsList.length),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

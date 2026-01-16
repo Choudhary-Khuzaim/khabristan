@@ -42,50 +42,81 @@ class _SavedNewsScreenState extends State<SavedNewsScreen> {
     final bookmarks = _bookmarksService.bookmarks;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Saved News'),
-        centerTitle: true,
-      ),
-      body: bookmarks.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.bookmark_border_rounded,
-                    size: 80,
-                    color: Colors.grey[300],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No saved news yet',
-                    style: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 120,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                'Bookmarks',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              centerTitle: false,
+              titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
+            ),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          ),
+          if (bookmarks.isEmpty)
+            SliverFillRemaining(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.05),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.bookmark_rounded,
+                        size: 64,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.3),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Tap the bookmark icon to save news',
-                    style: TextStyle(
-                      color: Colors.grey[400],
-                      fontSize: 14,
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Nothing Saved',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Text(
+                      'Your bookmarked stories will appear here.',
+                      style: TextStyle(color: Colors.grey.shade500),
+                    ),
+                  ],
+                ),
               ),
             )
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              itemCount: bookmarks.length,
-              itemBuilder: (context, index) {
-                return NewsCard(
-                  news: bookmarks[index],
-                  onTap: () => _navigateToDetail(bookmarks[index]),
-                );
-              },
+          else
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: NewsCard(
+                      news: bookmarks[index],
+                      onTap: () => _navigateToDetail(bookmarks[index]),
+                    ),
+                  );
+                }, childCount: bookmarks.length),
+              ),
             ),
+        ],
+      ),
     );
   }
 }
