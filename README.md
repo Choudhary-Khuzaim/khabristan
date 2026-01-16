@@ -11,20 +11,20 @@
   <img src="https://img.shields.io/badge/Material--3-7D5260?style=for-the-badge&logo=materialdesign&logoColor=white" alt="Material 3">
 </p>
 
-**KhabarIsTan** (v2.1.0) is an ultra-premium, high-fidelity news ecosystem designed for the modern reader. Built with a "Luxury First" philosophy, it combines professional journalism tools with a sophisticated **Royal Blue & Gold** aesthetic. From AI-powered voice reporting to local-first privacy architecture, KhabarIsTan redefines how you consume and contribute to global narratives.
+## 📝 Overall
+
+**KhabarIsTan** is an ultra-premium, high-fidelity news ecosystem designed for the modern reader. Built with a "Luxury First" philosophy, it combines professional journalism tools with a sophisticated **Royal Blue & Gold** aesthetic. From AI-powered voice reporting to local-first privacy architecture, KhabarIsTan redefines how you consume and contribute to global narratives.
 
 ---
 
 ## ✨ Premium Features (v2.1.0 Update)
 
-- 👑 **Royal Aesthetic**: A complete UI overhaul featuring high-end glassmorphism, sophisticated gradients, and professional typography (Outfit font-family).
-- 🎧 **Immersive Reading**: Redesigned News Detail view with stretchable headers, integrated **AI Text-to-Speech (TTS)**, and metadata badges.
-- ✍️ **Professional Publishing**: A refined "Citizen Journalism" module with instructional headers and modern input configuration for publishing breaking news.
-- 👤 **Luxury Personalization**: Ultra-modern Profile and Personal Details management with dual-tone ring avatars and high-impact action buttons.
-- 🔒 **Local-First Privacy**: Dedicated high-fidelity Privacy Policy and About modules explaining our localized data commitment and project mission.
-- 🔐 **Secure Auth Flow**: Complete premium authentication suite including **Signup**, **Login**, and **Luxury Password Recovery** screens.
-- 🌍 **Regional Intelligence**: Context-aware news filtering using a sophisticated region-matching engine.
-- ⚡ **Performance Optimized**: Smooth 60FPS transitions using `BouncingScrollPhysics` and advanced `Sliver` layouts.
+- 👑 **Royal UI Transformation**: A complete overhaul featuring glassmorphism, sophisticated gradients, and professional Outfit typography.
+- 🔒 **Privacy & Mission Modules**: Added high-fidelity, dedicated screens for Privacy Policy and "About KhabarIsTan" to ensure transparency.
+- 🔐 **Secure Auth Experience**: Fully redesigned professional Authentication suite including Login, Signup, and Secure Logout with confirmation.
+- 🌓 **Adaptive Theming**: Real-time Light/Dark mode switching that respects system preferences and enhances readability.
+- 🎧 **AI News Reporting**: Integrated local Text-to-Speech (TTS) for an hands-free news consumption experience.
+- 👤 **Luxury Profile Management**: Redesigned user account system with premium card-based layouts and dual-tone avatars.
 
 ---
 
@@ -33,6 +33,24 @@
 <p align="center">
   <img src="assets/readme/mockups.png" alt="KhabarIsTan Professional Mockups" width="100%">
 </p>
+
+---
+
+## 🕒 Version Log
+
+### [Version 1.0.0] - Foundation
+- **Core News Feed**: Initial implementation of news categories and browsing.
+- **News Detail View**: Simple article reading and image support.
+- **Social Sharing**: Basic platform-native news distribution.
+- **Search & Filter**: Essential functionality to find relevant news.
+
+### [Version 2.1.0] - The Luxury Update (Current)
+- **UI/UX Revolution**: Implemented the Royal Blue & Gold design system.
+- **Auth 2.0**: Added secure login/signup and premium profile management.
+- **Privacy Core**: Introduced dedicated Privacy Policy and About modules.
+- **Theme Engine**: Dynamic switching between Light and Dark modes.
+- **AI Integration**: Added text-to-speech engine for immersive listening.
+- **Performance**: Optimized scrolling with bouncing physics and sliver layouts.
 
 ---
 
