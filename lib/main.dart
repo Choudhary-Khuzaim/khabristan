@@ -37,9 +37,8 @@ class KhabarIsTanApp extends StatelessWidget {
   }
 
   ThemeData _buildLightTheme() {
-    final base = ThemeData.light();
+    final base = ThemeData(brightness: Brightness.light, useMaterial3: true);
     return base.copyWith(
-      useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFF0F172A), // Slate 900
         primary: const Color(0xFF0F172A),
@@ -147,9 +146,8 @@ class KhabarIsTanApp extends StatelessWidget {
   }
 
   ThemeData _buildDarkTheme() {
-    final base = ThemeData.dark();
+    final base = ThemeData(brightness: Brightness.dark, useMaterial3: true);
     return base.copyWith(
-      useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFFB4941F), // Gold seed
         primary: const Color(0xFFB4941F),

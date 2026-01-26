@@ -16,8 +16,6 @@ class NewsDetailScreen extends StatefulWidget {
   State<NewsDetailScreen> createState() => _NewsDetailScreenState();
 }
 
-// somehing changed
-
 class _NewsDetailScreenState extends State<NewsDetailScreen> {
   late FlutterTts _flutterTts;
   bool _isPlaying = false;

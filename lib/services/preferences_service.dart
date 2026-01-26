@@ -40,6 +40,7 @@ class PreferencesService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_keyTheme);
   }
+
   static const String _keyUsername = 'username';
   static const String _keyBio = 'bio';
   static const String _keyPhone = 'phone';
@@ -102,29 +103,20 @@ class PreferencesService {
   Future<void> saveMyNews(NewsModel news) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> currentList = prefs.getStringList(_keyMyNews) ?? [];
-    
+
     // Convert news object to JSON string
-    final String newsJson = jsonEncode({
-      'title': news.title,
-      'description': news.description,
-      'urlToImage': news.urlToImage,
-      'author': news.author,
-      'publishedAt': news.publishedAt,
-      'source': news.source,
-      'url': news.url,
-      // 'content': news.content, // Content field does not exist in NewsModel
-    });
-    
+    final String newsJson = jsonEncode(news.toJson());
+
     // Add to beginning of list (newest first)
     currentList.insert(0, newsJson);
-    
+
     await prefs.setStringList(_keyMyNews, currentList);
   }
 
   Future<List<NewsModel>> getMyNews() async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> jsonList = prefs.getStringList(_keyMyNews) ?? [];
-    
+
     return jsonList.map((String jsonStr) {
       final Map<String, dynamic> map = jsonDecode(jsonStr);
       return NewsModel.fromJson(map);
@@ -134,27 +126,23 @@ class PreferencesService {
   Future<void> deleteMyNews(NewsModel newsToDelete) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> currentList = prefs.getStringList(_keyMyNews) ?? [];
-    
+
     // Convert the news to delete to JSON for comparison, or filter
     // Here we will decode, filter, and re-encode to be safe
-    List<NewsModel> models = currentList.map((str) => NewsModel.fromJson(jsonDecode(str))).toList();
-    
-    models.removeWhere((item) => 
-      item.title == newsToDelete.title && 
-      item.publishedAt == newsToDelete.publishedAt
+    List<NewsModel> models = currentList
+        .map((str) => NewsModel.fromJson(jsonDecode(str)))
+        .toList();
+
+    models.removeWhere(
+      (item) =>
+          item.title == newsToDelete.title &&
+          item.publishedAt == newsToDelete.publishedAt,
     );
-    
-    final List<String> updatedList = models.map((item) => jsonEncode({
-      'title': item.title,
-      'description': item.description,
-      'urlToImage': item.urlToImage,
-      'author': item.author,
-      'publishedAt': item.publishedAt,
-      'source': item.source,
-      'url': item.url,
-      // 'content': item.content, 
-    })).toList();
-    
+
+    final List<String> updatedList = models
+        .map((item) => jsonEncode(item.toJson()))
+        .toList();
+
     await prefs.setStringList(_keyMyNews, updatedList);
   }
 

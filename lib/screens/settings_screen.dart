@@ -46,7 +46,7 @@ class SettingsScreen extends StatelessWidget {
                       trailing: Switch.adaptive(
                         value: themeService.isDarkMode,
                         onChanged: (v) => themeService.toggleTheme(v),
-                        activeColor: Theme.of(context).colorScheme.primary,
+                        activeThumbColor: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -58,7 +58,7 @@ class SettingsScreen extends StatelessWidget {
                       trailing: Switch.adaptive(
                         value: true,
                         onChanged: (v) {},
-                        activeColor: Theme.of(context).colorScheme.primary,
+                        activeThumbColor: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     _buildSettingItem(

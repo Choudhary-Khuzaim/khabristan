@@ -64,6 +64,8 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
         // Save to local storage
         await PreferencesService().saveMyNews(news);
 
+        if (!mounted) return;
+
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -160,7 +162,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                   vertical: 4,
                 ),
                 child: DropdownButtonFormField<String>(
-                  value: _selectedCategory,
+                  initialValue: _selectedCategory,
                   decoration: const InputDecoration(border: InputBorder.none),
                   icon: Icon(
                     Icons.expand_more_rounded,
