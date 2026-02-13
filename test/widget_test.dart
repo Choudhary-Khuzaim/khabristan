@@ -16,5 +16,8 @@ void main() {
 
     // Verify that the app title is present
     expect(find.text('KhabarIsTan'), findsOneWidget);
+
+    // Pump to resolve pending timers (e.g. navigation delay in WelcomeScreen)
+    await tester.pump(const Duration(seconds: 3));
   });
 }

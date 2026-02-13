@@ -146,15 +146,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   Icons.mail_outline_rounded,
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: theme.inputDecorationTheme.fillColor,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(20),
                                   borderSide: BorderSide.none,
                                 ),
                                 contentPadding: const EdgeInsets.all(20),
                               ),
-                              validator: (v) =>
-                                  v!.isEmpty ? 'Enter email' : null,
+                              validator: (v) {
+                                if (v == null || v.isEmpty)
+                                  return 'Enter email';
+                                final emailRegex = RegExp(
+                                  r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+',
+                                );
+                                if (!emailRegex.hasMatch(v)) {
+                                  return 'Enter valid email';
+                                }
+                                return null;
+                              },
                             ),
 
                             const SizedBox(height: 40),

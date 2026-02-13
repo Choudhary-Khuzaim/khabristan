@@ -141,8 +141,18 @@ class _SignupScreenState extends State<SignupScreen> {
                               hint: 'Email Address',
                               icon: Icons.mail_outline_rounded,
                               keyboardType: TextInputType.emailAddress,
-                              validator: (v) =>
-                                  v!.isEmpty ? 'Enter email' : null,
+                              validator: (v) {
+                                if (v == null || v.isEmpty) {
+                                  return 'Enter email';
+                                }
+                                final emailRegex = RegExp(
+                                  r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+',
+                                );
+                                if (!emailRegex.hasMatch(v)) {
+                                  return 'Enter valid email';
+                                }
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 20),
 
@@ -170,7 +180,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   ),
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: theme.inputDecorationTheme.fillColor,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(20),
                                   borderSide: BorderSide.none,
@@ -263,7 +273,7 @@ class _SignupScreenState extends State<SignupScreen> {
         hintText: hint,
         prefixIcon: Icon(icon),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Theme.of(context).inputDecorationTheme.fillColor,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide.none,

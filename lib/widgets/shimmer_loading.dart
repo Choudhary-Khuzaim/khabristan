@@ -16,8 +16,7 @@ class Shimmer extends StatefulWidget {
   State<Shimmer> createState() => _ShimmerState();
 }
 
-class _ShimmerState extends State<Shimmer>
-    with SingleTickerProviderStateMixin {
+class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -69,11 +68,7 @@ class _ShimmerPainter extends CustomPainter {
     final gradient = LinearGradient(
       begin: Alignment(-1.0 + 2 * progress, 0.0),
       end: Alignment(1.0 + 2 * progress, 0.0),
-      colors: [
-        baseColor,
-        highlightColor,
-        baseColor,
-      ],
+      colors: [baseColor, highlightColor, baseColor],
       stops: const [0.0, 0.5, 1.0],
     );
 
@@ -82,10 +77,7 @@ class _ShimmerPainter extends CustomPainter {
         Rect.fromLTWH(0, 0, size.width, size.height),
       );
 
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      paint,
-    );
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
   }
 
   @override
@@ -102,9 +94,7 @@ class NewsCardShimmer extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -114,11 +104,8 @@ class NewsCardShimmer extends StatelessWidget {
             child: Container(
               height: 220,
               width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
               ),
             ),
           ),
@@ -134,7 +121,6 @@ class NewsCardShimmer extends StatelessWidget {
                     height: 14,
                     width: 100,
                     decoration: BoxDecoration(
-                      color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
@@ -147,7 +133,6 @@ class NewsCardShimmer extends StatelessWidget {
                     height: 20,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.white,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -160,7 +145,6 @@ class NewsCardShimmer extends StatelessWidget {
                     height: 20,
                     width: double.infinity * 0.9,
                     decoration: BoxDecoration(
-                      color: Colors.white,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -173,7 +157,6 @@ class NewsCardShimmer extends StatelessWidget {
                     height: 14,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.white,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -186,7 +169,6 @@ class NewsCardShimmer extends StatelessWidget {
                     height: 14,
                     width: 200,
                     decoration: BoxDecoration(
-                      color: Colors.white,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),

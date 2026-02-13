@@ -159,7 +159,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           hintText: 'Username',
                           prefixIcon: const Icon(Icons.person_outline_rounded),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: Theme.of(
+                            context,
+                          ).inputDecorationTheme.fillColor,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20),
                             borderSide: BorderSide.none,
@@ -197,7 +199,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: Theme.of(
+                            context,
+                          ).inputDecorationTheme.fillColor,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20),
                             borderSide: BorderSide.none,

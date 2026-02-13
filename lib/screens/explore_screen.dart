@@ -1,8 +1,67 @@
 import 'package:flutter/material.dart';
 import 'category_news_screen.dart';
+import '../models/news_model.dart';
+import '../services/news_service.dart';
+import '../widgets/news_card.dart';
+import '../widgets/shimmer_loading.dart';
+import 'news_detail_screen.dart';
 
-class ExploreScreen extends StatelessWidget {
+class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
+
+  @override
+  State<ExploreScreen> createState() => _ExploreScreenState();
+}
+
+class _ExploreScreenState extends State<ExploreScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  final NewsService _newsService = NewsService();
+  List<NewsModel> _discoveryNews = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDiscoveryNews();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadDiscoveryNews() async {
+    try {
+      // Fetch general news for discovery feed
+      final news = await _newsService.getTopHeadlines(category: 'general');
+      if (mounted) {
+        setState(() {
+          _discoveryNews = news;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        // Quietly fail or show a retry button in UI, keeping it simple for now
+        debugPrint('Error loading discovery news: $e');
+      }
+    }
+  }
+
+  void _handleSearch(String query) {
+    if (query.trim().isEmpty) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CategoryNewsScreen(category: query.trim()),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +116,9 @@ class ExploreScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     TextField(
+                      controller: _searchController,
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: _handleSearch,
                       decoration: InputDecoration(
                         hintText: 'Search news or topics',
                         prefixIcon: const Icon(Icons.search_rounded),
@@ -120,73 +182,48 @@ class ExploreScreen extends StatelessWidget {
               ),
             ),
 
-            // Mock Discovery Feed (matches mockup style)
+            // Discovery Feed
             SliverPadding(
               padding: const EdgeInsets.all(20),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardTheme.color,
-                        borderRadius: BorderRadius.circular(20),
+              sliver: _isLoading
+                  ? SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) => const NewsCardShimmer(),
+                        childCount: 3,
                       ),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Container(
-                              width: 100,
-                              height: 100,
-                              color: Theme.of(
+                    )
+                  : _discoveryNews.isEmpty
+                  ? SliverToBoxAdapter(
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 50),
+                          child: Text(
+                            'No news found',
+                            style: TextStyle(color: Colors.grey.shade500),
+                          ),
+                        ),
+                      ),
+                    )
+                  : SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final news = _discoveryNews[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: NewsCard(
+                            news: news,
+                            onTap: () {
+                              Navigator.push(
                                 context,
-                              ).colorScheme.secondary.withValues(alpha: 0.1),
-                              child: const Icon(
-                                Icons.image_rounded,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Breaking: New Policy Reforms Announced for City Development',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.titleSmall
-                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      NewsDetailScreen(news: news),
                                 ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.access_time,
-                                      size: 12,
-                                      color: Colors.grey,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '7 hours ago',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodySmall,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
-                        ],
-                      ),
+                        );
+                      }, childCount: _discoveryNews.length),
                     ),
-                  );
-                }, childCount: 4),
-              ),
             ),
           ],
         ),
