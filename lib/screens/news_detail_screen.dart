@@ -4,6 +4,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 
 import 'package:share_plus/share_plus.dart';
+import '../services/bookmarks_service.dart';
 import '../models/news_model.dart';
 import 'article_view_screen.dart';
 
@@ -67,7 +68,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   String _formatDate(String? dateString) {
     if (dateString == null) return 'Unknown date';
     try {
-      final date = DateTime.parse(dateString);
+      final date = DateTime.parse(dateString).toLocal();
       return DateFormat('MMMM dd, yyyy • hh:mm a').format(date);
     } catch (e) {
       return 'Unknown date';
@@ -135,10 +136,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             ),
             actions: [
               _buildAppBarAction(icon: Icons.share_rounded, onTap: _shareNews),
-              _buildAppBarAction(
-                icon: Icons.bookmark_border_rounded,
-                onTap: () {},
-              ),
+              _buildBookmarkAction(),
               const SizedBox(width: 12),
             ],
             flexibleSpace: FlexibleSpaceBar(
@@ -450,6 +448,22 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           size: 28,
         ),
       ),
+    );
+  }
+
+  Widget _buildBookmarkAction() {
+    final bookmarksService = BookmarksService();
+    return AnimatedBuilder(
+      animation: bookmarksService,
+      builder: (context, child) {
+        final isBookmarked = bookmarksService.isBookmarked(widget.news);
+        return _buildAppBarAction(
+          icon: isBookmarked
+              ? Icons.bookmark_rounded
+              : Icons.bookmark_border_rounded,
+          onTap: () => bookmarksService.toggleBookmark(widget.news),
+        );
+      },
     );
   }
 }

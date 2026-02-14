@@ -154,8 +154,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 contentPadding: const EdgeInsets.all(20),
                               ),
                               validator: (v) {
-                                if (v == null || v.isEmpty)
+                                if (v == null || v.isEmpty) {
                                   return 'Enter email';
+                                }
                                 final emailRegex = RegExp(
                                   r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+',
                                 );

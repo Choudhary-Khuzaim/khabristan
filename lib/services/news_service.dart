@@ -119,8 +119,20 @@ class NewsService {
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = json.decode(response.body);
         final NewsResponse newsResponse = NewsResponse.fromJson(jsonData);
-        final recentNews = _filterRecentNews(newsResponse.articles);
-        return recentNews.isNotEmpty ? recentNews : newsResponse.articles;
+        var articles = newsResponse.articles;
+
+        // If it was a search query (not a standard category), filter results client-side
+        if (category != null && !standardCategories.contains(category)) {
+          final query = category.toLowerCase();
+          articles = articles.where((article) {
+            final title = article.title?.toLowerCase() ?? '';
+            final description = article.description?.toLowerCase() ?? '';
+            return title.contains(query) || description.contains(query);
+          }).toList();
+        }
+
+        final recentNews = _filterRecentNews(articles);
+        return recentNews.isNotEmpty ? recentNews : articles;
       } else {
         throw Exception('Fallback API failed');
       }
