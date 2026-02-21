@@ -150,7 +150,8 @@ class _MyNewsScreenState extends State<MyNewsScreen> {
                               padding: const EdgeInsets.only(bottom: 12),
                               child: Dismissible(
                                 key: Key(
-                                  newsList[index].publishedAt ??
+                                  newsList[index].url ??
+                                      newsList[index].title ??
                                       newsList[index].hashCode.toString(),
                                 ),
                                 direction: DismissDirection.endToStart,

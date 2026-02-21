@@ -142,7 +142,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             flexibleSpace: FlexibleSpaceBar(
               stretchModes: const [StretchMode.zoomBackground],
               background: Hero(
-                tag: 'news_image_${widget.news.title}',
+                tag: widget.news.url ?? widget.news.title ?? 'news_image',
                 child: Stack(
                   fit: StackFit.expand,
                   children: [

@@ -11,11 +11,13 @@
   <img src="https://img.shields.io/badge/Material--3-7D5260?style=for-the-badge&logo=materialdesign&logoColor=white" alt="Material 3">
 </p>
 
-## 📝 Overall
+## 📝 Overview
 
 **KhabarIsTan** is an ultra-premium, high-fidelity news ecosystem designed for the modern reader. Built with a "Luxury First" philosophy, it combines professional journalism tools with a sophisticated **Royal Blue & Gold** aesthetic. From AI-powered voice reporting to local-first privacy architecture, KhabarIsTan redefines how you consume and contribute to global narratives.
 
----
+---\
+\
+
 
 ## ✨ Premium Features (v2.1.0 Update)
 
@@ -23,7 +25,7 @@
 - 🔒 **Privacy & Mission Modules**: Added high-fidelity, dedicated screens for Privacy Policy and "About KhabarIsTan" to ensure transparency.
 - 🔐 **Secure Auth Experience**: Fully redesigned professional Authentication suite including Login, Signup, and Secure Logout with confirmation.
 - 🌓 **Adaptive Theming**: Real-time Light/Dark mode switching that respects system preferences and enhances readability.
-- 🎧 **AI News Reporting**: Integrated local Text-to-Speech (TTS) for an hands-free news consumption experience.
+- 🎧 **AI News Reporting**: Integrated local Text-to-Speech (TTS) for a hands-free news consumption experience.
 - 👤 **Luxury Profile Management**: Redesigned user account system with premium card-based layouts and dual-tone avatars.
 
 ---
