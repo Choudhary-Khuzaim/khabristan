@@ -27,6 +27,9 @@
 - 🌓 **Adaptive Theming**: Real-time Light/Dark mode switching that respects system preferences and enhances readability.
 - 🎧 **AI News Reporting**: Integrated local Text-to-Speech (TTS) for a hands-free news consumption experience.
 - 👤 **Luxury Profile Management**: Redesigned user account system with premium card-based layouts and dual-tone avatars.
+- ✍️ **Citizen Journalism**: Empower users with intuitive screens to write, publish, and manage their own local news articles.
+- 🔖 **Smart Bookmarking**: Save your favorite articles locally and access them offline anytime seamlessly.
+- ✨ **Immersive Journey**: A cinematic onboarding & exploration experience that engages readers from the very first launch.
 
 ---
 
@@ -40,13 +43,13 @@
 
 ## 🕒 Version Log
 
-### [Version 1.0.0] - Foundation
+### Version 1.0.0 - Foundation
 - **Core News Feed**: Initial implementation of news categories and browsing.
 - **News Detail View**: Simple article reading and image support.
 - **Social Sharing**: Basic platform-native news distribution.
 - **Search & Filter**: Essential functionality to find relevant news.
 
-### [Version 2.1.0] - The Luxury Update (Current)
+### Version 2.1.0 - The Luxury Update (Current)
 - **UI/UX Revolution**: Implemented the Royal Blue & Gold design system.
 - **Auth 2.0**: Added secure login/signup and premium profile management.
 - **Privacy Core**: Introduced dedicated Privacy Policy and About modules.
@@ -89,8 +92,8 @@ The project follows a **Modular Clean Architecture**, ensuring high maintainabil
 ### Quick Start
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/YourUsername/khabaristan.git
-   cd khabaristan
+   git clone https://github.com/Choudhary-Khuzaim/khabristan.git
+   cd khabristan
    ```
 2. **Install Premium Dependencies**
    ```bash
