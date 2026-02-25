@@ -15,8 +15,7 @@
 
 **KhabarIsTan** is an ultra-premium, high-fidelity news ecosystem designed for the modern reader. Built with a "Luxury First" philosophy, it combines professional journalism tools with a sophisticated **Royal Blue & Gold** aesthetic. From AI-powered voice reporting to local-first privacy architecture, KhabarIsTan redefines how you consume and contribute to global narratives.
 
----\
-\
+---
 
 
 ## ✨ Premium Features (v2.1.0 Update)
