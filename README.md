@@ -1,4 +1,4 @@
-# 📰 KhabarIsTan - Elevating Your News Experience
+# KhabarIsTan - Elevating Your News Experience
 
 <p align="center">
   <img src="assets/readme/banner.png" alt="KhabarIsTan Banner" width="100%">
@@ -11,28 +11,28 @@
   <img src="https://img.shields.io/badge/Material--3-7D5260?style=for-the-badge&logo=materialdesign&logoColor=white" alt="Material 3">
 </p>
 
-## 📝 Overview
+## Overview
 
 **KhabarIsTan** is an ultra-premium, high-fidelity news ecosystem designed for the modern reader. Built with a "Luxury First" philosophy, it combines professional journalism tools with a sophisticated **Royal Blue & Gold** aesthetic. From AI-powered voice reporting to local-first privacy architecture, KhabarIsTan redefines how you consume and contribute to global narratives.
 
 ---
 
 
-## ✨ Premium Features (v2.1.0 Update)
+## Premium Features (v2.1.0 Update)
 
-- 👑 **Royal UI Transformation**: A complete overhaul featuring glassmorphism, sophisticated gradients, and professional Outfit typography.
-- 🔒 **Privacy & Mission Modules**: Added high-fidelity, dedicated screens for Privacy Policy and "About KhabarIsTan" to ensure transparency.
-- 🔐 **Secure Auth Experience**: Fully redesigned professional Authentication suite including Login, Signup, and Secure Logout with confirmation.
-- 🌓 **Adaptive Theming**: Real-time Light/Dark mode switching that respects system preferences and enhances readability.
-- 🎧 **AI News Reporting**: Integrated local Text-to-Speech (TTS) for a hands-free news consumption experience.
-- 👤 **Luxury Profile Management**: Redesigned user account system with premium card-based layouts and dual-tone avatars.
-- ✍️ **Citizen Journalism**: Empower users with intuitive screens to write, publish, and manage their own local news articles.
-- 🔖 **Smart Bookmarking**: Save your favorite articles locally and access them offline anytime seamlessly.
-- ✨ **Immersive Journey**: A cinematic onboarding & exploration experience that engages readers from the very first launch.
+- **Royal UI Transformation**: A complete overhaul featuring glassmorphism, sophisticated gradients, and professional Outfit typography.
+- **Privacy & Mission Modules**: Added high-fidelity, dedicated screens for Privacy Policy and "About KhabarIsTan" to ensure transparency.
+- **Secure Auth Experience**: Fully redesigned professional Authentication suite including Login, Signup, and Secure Logout with confirmation.
+- **Adaptive Theming**: Real-time Light/Dark mode switching that respects system preferences and enhances readability.
+- **AI News Reporting**: Integrated local Text-to-Speech (TTS) for a hands-free news consumption experience.
+- **Luxury Profile Management**: Redesigned user account system with premium card-based layouts and dual-tone avatars.
+- **Citizen Journalism**: Empower users with intuitive screens to write, publish, and manage their own local news articles.
+- **Smart Bookmarking**: Save your favorite articles locally and access them offline anytime seamlessly.
+- **Immersive Journey**: A cinematic onboarding & exploration experience that engages readers from the very first launch.
 
 ---
 
-## 📸 Immersive Interface
+## Immersive Interface
 
 <p align="center">
   <img src="assets/readme/mockups.png" alt="KhabarIsTan Professional Mockups" width="100%">
@@ -40,7 +40,7 @@
 
 ---
 
-## 🕒 Version Log
+## Version Log
 
 ### Version 1.0.0 - Foundation
 - **Core News Feed**: Initial implementation of news categories and browsing.
@@ -58,7 +58,7 @@
 
 ---
 
-## 🏗️ Architectural Excellence
+## Architectural Excellence
 
 The project follows a **Modular Clean Architecture**, ensuring high maintainability and rapid scalability:
 
@@ -69,7 +69,7 @@ The project follows a **Modular Clean Architecture**, ensuring high maintainabil
 
 ---
 
-## 🛠️ Modern Tech Stack
+## Modern Tech Stack
 
 - **UI Framework**: Flutter (v3.x / Material 3)
 - **Language**: Dart (High-Performance)
@@ -81,7 +81,7 @@ The project follows a **Modular Clean Architecture**, ensuring high maintainabil
 
 ---
 
-## 🚀 Installation & Deployment
+## Installation & Deployment
 
 ### Prerequisites
 - Flutter SDK (Stable Channel)
@@ -105,7 +105,7 @@ The project follows a **Modular Clean Architecture**, ensuring high maintainabil
 
 ---
 
-## 🔥 Strategic Roadmap
+## Strategic Roadmap
 
 - [x] **v2.1.0**: Complete UI Transformation & Auth Suite implementation.
 - [ ] **v2.2.0**: Firebase Cloud Sync & Real-time Database integration.
@@ -114,7 +114,7 @@ The project follows a **Modular Clean Architecture**, ensuring high maintainabil
 
 ---
 
-## 🤝 Collaboration & Support
+## Collaboration & Support
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. 
 
@@ -126,7 +126,7 @@ Contributions are what make the open-source community such an amazing place to l
 
 ---
 
-## 📜 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
