@@ -41,12 +41,16 @@ class BookmarksService extends ChangeNotifier {
   }
 
   bool isBookmarked(NewsModel news) {
-    return _bookmarks.any((item) => item.title == news.title);
+    return _bookmarks.any(
+      (item) => item.title == news.title && item.url == news.url,
+    );
   }
 
   void toggleBookmark(NewsModel news) {
     if (isBookmarked(news)) {
-      _bookmarks.removeWhere((item) => item.title == news.title);
+      _bookmarks.removeWhere(
+        (item) => item.title == news.title && item.url == news.url,
+      );
     } else {
       _bookmarks.add(news);
     }

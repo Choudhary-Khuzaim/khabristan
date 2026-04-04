@@ -161,7 +161,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       fontWeight: FontWeight.w800,
                                       color: isSelected
                                           ? Colors.white
-                                          : Colors.black87,
+                                          : Theme.of(context).colorScheme.onSurface,
                                     ),
                                   ),
                                 ],

@@ -142,7 +142,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             flexibleSpace: FlexibleSpaceBar(
               stretchModes: const [StretchMode.zoomBackground],
               background: Hero(
-                tag: widget.news.url ?? widget.news.title ?? 'news_image',
+                tag: '${widget.news.url}_${widget.news.publishedAt}_card',
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -379,6 +379,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   Widget _buildAppBarAction({
     required IconData icon,
     required VoidCallback onTap,
+    Color color = Colors.black,
   }) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
@@ -399,7 +400,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                 ),
               ],
             ),
-            child: Icon(icon, color: Colors.black, size: 20),
+            child: Icon(icon, color: color, size: 20),
           ),
         ),
       ),
@@ -456,14 +457,19 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     return AnimatedBuilder(
       animation: bookmarksService,
       builder: (context, child) {
-        final isBookmarked = bookmarksService.isBookmarked(widget.news);
-        return _buildAppBarAction(
-          icon: isBookmarked
-              ? Icons.bookmark_rounded
-              : Icons.bookmark_border_rounded,
-          onTap: () => bookmarksService.toggleBookmark(widget.news),
-        );
+        return _buildBookmarkActionWithDynamicColor(bookmarksService);
       },
+    );
+  }
+
+  Widget _buildBookmarkActionWithDynamicColor(BookmarksService bookmarksService) {
+    final isBookmarked = bookmarksService.isBookmarked(widget.news);
+    return _buildAppBarAction(
+      icon: isBookmarked
+          ? Icons.bookmark_rounded
+          : Icons.bookmark_border_rounded,
+      color: isBookmarked ? Colors.amber : Colors.black,
+      onTap: () => bookmarksService.toggleBookmark(widget.news),
     );
   }
 }

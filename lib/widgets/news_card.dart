@@ -67,7 +67,7 @@ class NewsCard extends StatelessWidget {
                   children: [
                     // Image
                     Hero(
-                      tag: news.url ?? news.title ?? 'news_image',
+                      tag: '${news.url}_${news.publishedAt}_card',
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child:
@@ -179,7 +179,7 @@ class NewsCard extends StatelessWidget {
                                 icon: isBookmarked
                                     ? Icons.bookmark_rounded
                                     : Icons.bookmark_border_rounded,
-                                color: isBookmarked ? Colors.amber : null,
+                                color: isBookmarked ? Colors.amber : Theme.of(context).colorScheme.secondary,
                                 onTap: () =>
                                     bookmarksService.toggleBookmark(news),
                               ),

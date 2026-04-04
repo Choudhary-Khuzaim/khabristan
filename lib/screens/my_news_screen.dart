@@ -11,10 +11,10 @@ class MyNewsScreen extends StatefulWidget {
   @override
   State<MyNewsScreen> createState() => _MyNewsScreenState();
 }
-
 class _MyNewsScreenState extends State<MyNewsScreen> {
   final PreferencesService _prefs = PreferencesService();
   late Future<List<NewsModel>> _myNewsFuture;
+  List<NewsModel>? _localNewsList;
 
   @override
   void initState() {
@@ -68,7 +68,10 @@ class _MyNewsScreenState extends State<MyNewsScreen> {
                 );
               }
 
-              final newsList = snapshot.data ?? [];
+              if (_localNewsList == null) {
+                _localNewsList = List.from(snapshot.data ?? []);
+              }
+              final newsList = _localNewsList!;
 
               if (newsList.isEmpty) {
                 return SliverFillRemaining(
@@ -149,10 +152,8 @@ class _MyNewsScreenState extends State<MyNewsScreen> {
                             child: Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: Dismissible(
-                                key: Key(
-                                  newsList[index].url ??
-                                      newsList[index].title ??
-                                      newsList[index].hashCode.toString(),
+                                key: ValueKey(
+                                  '${newsList[index].url}_${newsList[index].title}_$index',
                                 ),
                                 direction: DismissDirection.endToStart,
                                 background: Container(
@@ -170,10 +171,11 @@ class _MyNewsScreenState extends State<MyNewsScreen> {
                                 ),
                                 onDismissed: (direction) async {
                                   final newsToDelete = newsList[index];
-                                  await _prefs.deleteMyNews(newsToDelete);
                                   setState(() {
-                                    _myNewsFuture = _prefs.getMyNews();
+                                    _localNewsList!.removeAt(index);
                                   });
+                                  await _prefs.deleteMyNews(newsToDelete);
+                                  _myNewsFuture = _prefs.getMyNews();
 
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -183,13 +185,16 @@ class _MyNewsScreenState extends State<MyNewsScreen> {
                                         action: SnackBarAction(
                                           label: 'Undo',
                                           onPressed: () async {
-                                            await _prefs.saveMyNews(
-                                              newsToDelete,
-                                            );
-                                            setState(() {
-                                              _myNewsFuture = _prefs
-                                                  .getMyNews();
-                                            });
+                                              await _prefs.saveMyNews(
+                                                newsToDelete,
+                                              );
+                                              final updated =
+                                                  await _prefs.getMyNews();
+                                              setState(() {
+                                                _localNewsList = updated;
+                                                _myNewsFuture =
+                                                    Future.value(updated);
+                                              });
                                           },
                                         ),
                                       ),
