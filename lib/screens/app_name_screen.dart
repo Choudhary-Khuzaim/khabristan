@@ -3,6 +3,7 @@ import 'home_screen.dart';
 
 import '../services/preferences_service.dart';
 import 'login_screen.dart';
+import 'onboarding_screen.dart';
 
 class AppNameScreen extends StatefulWidget {
   const AppNameScreen({super.key});
@@ -47,22 +48,25 @@ class _AppNameScreenState extends State<AppNameScreen>
       _isLoading = true;
     });
 
-    bool isOnboardingComplete = false;
-    try {
-      final prefs = PreferencesService();
-      isOnboardingComplete = await prefs.isOnboardingComplete();
-    } catch (e) {
-      debugPrint('Error checking onboarding status: $e');
-      // Fallback to false (show onboarding)
-    }
+    final prefs = PreferencesService();
+    final bool isOnboardingComplete = await prefs.isOnboardingComplete();
+    final String? username = await prefs.getUsername();
 
     if (!mounted) return;
+
+    Widget nextScreen;
+    if (username == null) {
+      nextScreen = const LoginScreen();
+    } else if (!isOnboardingComplete) {
+      nextScreen = const OnboardingScreen();
+    } else {
+      nextScreen = const HomeScreen();
+    }
 
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            isOnboardingComplete ? const HomeScreen() : const LoginScreen(),
+        pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0);
           const end = Offset.zero;

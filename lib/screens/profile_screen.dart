@@ -149,7 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               builder: (context) => const EditProfileScreen(),
                             ),
                           );
-                          if (result == true) _loadProfileData();
+                          if (result != null) _loadProfileData();
                         },
                       ),
                       _buildMenuItem(
@@ -172,7 +172,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Icons.notifications_none_rounded,
                         'Push Notifications',
                         _notificationsEnabled,
-                        (val) => setState(() => _notificationsEnabled = val),
+                        (val) {
+                          setState(() => _notificationsEnabled = val);
+                          PreferencesService().setNotificationsEnabled(val);
+                        },
                       ),
                       _buildSwitchItem(
                         Icons.dark_mode_outlined,

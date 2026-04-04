@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/preferences_service.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../models/news_model.dart';
 import '../services/news_service.dart';
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _selectedCategory = 'general';
   final ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
+  String _userName = 'Khuzaim';
 
   final List<Map<String, dynamic>> _categories = [
     {'name': 'general', 'icon': Icons.public},
@@ -45,6 +47,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadNews();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final name = await PreferencesService().getUsername();
+    if (name != null && mounted) {
+      setState(() {
+        _userName = name;
+      });
+    }
   }
 
   @override
@@ -155,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                             Text(
-                              'KhabarIsTan', // Or User Name if available
+                              _userName, // Dynamic User Name
                               style: Theme.of(context).textTheme.headlineSmall
                                   ?.copyWith(fontWeight: FontWeight.bold),
                             ),

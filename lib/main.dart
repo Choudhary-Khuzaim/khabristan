@@ -4,13 +4,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'screens/welcome_screen.dart';
 import 'services/theme_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Set preferred orientations
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  await ThemeService().init();
   runApp(const KhabarIsTanApp());
 }
 

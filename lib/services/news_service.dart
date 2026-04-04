@@ -72,6 +72,9 @@ class NewsService {
     final threeDaysAgo = now.subtract(const Duration(days: 3));
 
     return articles.where((article) {
+      if (article.title == '[Removed]' || article.description == '[Removed]') {
+        return false;
+      }
       if (article.publishedAt == null) return false;
       try {
         final publishedDate = DateTime.parse(article.publishedAt!);

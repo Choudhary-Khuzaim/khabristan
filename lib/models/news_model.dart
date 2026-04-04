@@ -58,16 +58,15 @@ class NewsResponse {
   });
 
   factory NewsResponse.fromJson(Map<String, dynamic> json) {
-    var articlesList = json['articles'] as List;
-    List<NewsModel> articles = articlesList
+    var articlesList = json['articles'] as List? ?? [];
+    List<NewsModel> articlesArray = articlesList
         .map((article) => NewsModel.fromJson(article as Map<String, dynamic>))
         .toList();
 
     return NewsResponse(
-      status: json['status'] as String,
-      totalResults: json['totalResults'] as int,
-      articles: articles,
+      status: json['status'] as String? ?? 'error',
+      totalResults: json['totalResults'] as int? ?? 0,
+      articles: articlesArray,
     );
   }
 }
-
