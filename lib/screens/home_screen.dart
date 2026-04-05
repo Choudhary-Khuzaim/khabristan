@@ -142,309 +142,310 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = [
-      // Home Tab Content
-      SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _loadNews,
-          color: Theme.of(context).colorScheme.primary,
-          child: AnimationLimiter(
-            child: CustomScrollView(
-              controller: _scrollController,
-              slivers: [
-                // Premium Top Bar
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
-                  sliver: SliverToBoxAdapter(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          // Home Tab Content
+          SafeArea(
+            child: RefreshIndicator(
+              onRefresh: _loadNews,
+              color: Theme.of(context).colorScheme.primary,
+              child: AnimationLimiter(
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  slivers: [
+                    // Premium Top Bar
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
+                      sliver: SliverToBoxAdapter(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Welcome back,',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                            Text(
-                              _userName, // Dynamic User Name
-                              style: Theme.of(context).textTheme.headlineSmall
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Theme.of(context).colorScheme.secondary,
-                              width: 2,
-                            ),
-                          ),
-                          child: CircleAvatar(
-                            radius: 22,
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.secondary.withValues(alpha: 0.1),
-                            child: const Icon(Icons.person_rounded),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Premium Search Bar
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
-                    child: TextField(
-                      controller: _searchController,
-                      onChanged: _filterNews,
-                      decoration: InputDecoration(
-                        hintText: 'Search for global headlines...',
-                        prefixIcon: const Icon(Icons.search_rounded),
-                        suffixIcon: Container(
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.secondary,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            Icons.tune_rounded,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Featured News Carousel
-                if (!_isSearching && _featuredNewsList.isNotEmpty) ...[
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Top Stories',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AllNewsScreen(
-                                    title: 'Top Stories',
-                                    newsList: _newsList,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              'View All',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: 220,
-                      child: PageView.builder(
-                        controller: PageController(viewportFraction: 0.88),
-                        padEnds: false,
-                        itemCount: _featuredNewsList.length,
-                        itemBuilder: (context, index) {
-                          return FeaturedNewsCard(
-                            news: _featuredNewsList[index],
-                            onTap: () =>
-                                _navigateToDetail(_featuredNewsList[index]),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-
-                // Categories with Icons
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-                    child: Text(
-                      'Categories',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: 100, // Increased height for vertical chip feel
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: _categories.length,
-                      itemBuilder: (context, index) {
-                        final category = _categories[index];
-                        final isSelected =
-                            category['name'] == _selectedCategory;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 16),
-                          child: GestureDetector(
-                            onTap: () => _onCategoryChanged(category['name']),
-                            child: Column(
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 300),
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? Theme.of(
-                                            context,
-                                          ).colorScheme.secondary
-                                        : Theme.of(context).cardTheme.color,
-                                    borderRadius: BorderRadius.circular(16),
-                                    boxShadow: isSelected
-                                        ? [
-                                            BoxShadow(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary
-                                                  .withValues(alpha: 0.3),
-                                              blurRadius: 10,
-                                              offset: const Offset(0, 4),
-                                            ),
-                                          ]
-                                        : [],
-                                  ),
-                                  child: Icon(
-                                    category['icon'],
-                                    color: isSelected
-                                        ? Colors.white
-                                        : Theme.of(context).colorScheme.primary,
-                                    size: 28,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
                                 Text(
-                                  (category['name'] as String).toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.w500,
-                                    color: isSelected
-                                        ? Theme.of(
-                                            context,
-                                          ).colorScheme.secondary
-                                        : Theme.of(
-                                            context,
-                                          ).colorScheme.onSurface,
-                                  ),
+                                  'Welcome back,',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                Text(
+                                  _userName, // Dynamic User Name
+                                  style: Theme.of(context).textTheme.headlineSmall
+                                      ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-
-                // Recent News Header
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                    child: Text(
-                      _isSearching ? 'Search Results' : 'Recent News',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                ),
-
-                // News List
-                if (_isLoading)
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => const NewsCardShimmer(),
-                      childCount: 5,
-                    ),
-                  )
-                else if (_filteredNewsList.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.search_off_rounded,
-                            size: 64,
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No news found',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.outline,
-                              fontSize: 16,
+                            Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.secondary,
+                                  width: 2,
+                                ),
+                              ),
+                              child: CircleAvatar(
+                                radius: 22,
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.secondary.withValues(alpha: 0.1),
+                                child: const Icon(Icons.person_rounded),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  )
-                else
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      return AnimationConfiguration.staggeredList(
-                        position: index,
-                        duration: const Duration(milliseconds: 375),
-                        child: SlideAnimation(
-                          verticalOffset: 50.0,
-                          child: FadeInAnimation(
-                            child: NewsCard(
-                              news: _filteredNewsList[index],
-                              onTap: () =>
-                                  _navigateToDetail(_filteredNewsList[index]),
+
+                    // Premium Search Bar
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
+                        child: TextField(
+                          controller: _searchController,
+                          onChanged: _filterNews,
+                          decoration: InputDecoration(
+                            hintText: 'Search for global headlines...',
+                            prefixIcon: const Icon(Icons.search_rounded),
+                            suffixIcon: Container(
+                              margin: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.secondary,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.tune_rounded,
+                                color: Colors.white,
+                                size: 20,
+                              ),
                             ),
                           ),
                         ),
-                      );
-                    }, childCount: _filteredNewsList.length),
-                  ),
+                      ),
+                    ),
 
-                const SliverToBoxAdapter(child: SizedBox(height: 100)),
-              ],
+                    // Featured News Carousel
+                    if (!_isSearching && _featuredNewsList.isNotEmpty) ...[
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Top Stories',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AllNewsScreen(
+                                        title: 'Top Stories',
+                                        newsList: _newsList,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'View All',
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.secondary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 220,
+                          child: PageView.builder(
+                            controller: PageController(viewportFraction: 0.88),
+                            padEnds: false,
+                            itemCount: _featuredNewsList.length,
+                            itemBuilder: (context, index) {
+                              return FeaturedNewsCard(
+                                news: _featuredNewsList[index],
+                                onTap: () =>
+                                    _navigateToDetail(_featuredNewsList[index]),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    // Categories with Icons
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+                        child: Text(
+                          'Categories',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: 100, // Increased height for vertical chip feel
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: _categories.length,
+                          itemBuilder: (context, index) {
+                            final category = _categories[index];
+                            final isSelected =
+                                category['name'] == _selectedCategory;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 16),
+                              child: GestureDetector(
+                                onTap: () => _onCategoryChanged(category['name']),
+                                child: Column(
+                                  children: [
+                                    AnimatedContainer(
+                                      duration: const Duration(milliseconds: 300),
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.secondary
+                                            : Theme.of(context).cardTheme.color,
+                                        borderRadius: BorderRadius.circular(16),
+                                        boxShadow: isSelected
+                                            ? [
+                                                BoxShadow(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary
+                                                      .withValues(alpha: 0.3),
+                                                  blurRadius: 10,
+                                                  offset: const Offset(0, 4),
+                                                ),
+                                              ]
+                                            : [],
+                                      ),
+                                      child: Icon(
+                                        category['icon'],
+                                        color: isSelected
+                                            ? Colors.white
+                                            : Theme.of(context).colorScheme.primary,
+                                        size: 28,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      (category['name'] as String).toUpperCase(),
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.w500,
+                                        color: isSelected
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.secondary
+                                            : Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+
+                    // Recent News Header
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                        child: Text(
+                          _isSearching ? 'Search Results' : 'Recent News',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ),
+                    ),
+
+                    // News List
+                    if (_isLoading)
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => const NewsCardShimmer(),
+                          childCount: 5,
+                        ),
+                      )
+                    else if (_filteredNewsList.isEmpty)
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.search_off_rounded,
+                                size: 64,
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No news found',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.outline,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          return AnimationConfiguration.staggeredList(
+                            position: index,
+                            duration: const Duration(milliseconds: 375),
+                            child: SlideAnimation(
+                              verticalOffset: 50.0,
+                              child: FadeInAnimation(
+                                child: NewsCard(
+                                  news: _filteredNewsList[index],
+                                  onTap: () =>
+                                      _navigateToDetail(_filteredNewsList[index]),
+                                ),
+                              ),
+                            ),
+                          );
+                        }, childCount: _filteredNewsList.length),
+                      ),
+
+                    const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+
+          // Explore Tab
+          const ExploreScreen(),
+
+          // Saved Tab
+          const SavedNewsScreen(),
+
+          // Profile Tab
+          const ProfileScreen(),
+        ],
       ),
-
-      // Explore Tab
-      const ExploreScreen(),
-
-      // Saved Tab
-      const SavedNewsScreen(),
-
-      // Profile Tab
-      const ProfileScreen(),
-    ];
-
-    return Scaffold(
-      body: screens[_currentIndex],
       floatingActionButton: Container(
         height: 64,
         width: 64,

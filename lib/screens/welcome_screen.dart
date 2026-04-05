@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import '../services/preferences_service.dart';
 import 'app_name_screen.dart';
+import 'home_screen.dart';
+import 'onboarding_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -38,22 +41,38 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
     _controller.forward();
 
-    // Navigate to app name screen after 2 seconds
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const AppNameScreen(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-          ),
-        );
-      }
-    });
+    // Navigate based on setup status after 2.5 seconds (cinematic delay)
+    Future.delayed(const Duration(milliseconds: 2500), () => _checkStatusAndNavigate());
+  }
+
+  Future<void> _checkStatusAndNavigate() async {
+    if (!mounted) return;
+
+    final prefs = PreferencesService();
+    final bool isOnboardingComplete = await prefs.isOnboardingComplete();
+    final String? username = await prefs.getUsername();
+
+    if (!mounted) return;
+
+    Widget nextScreen;
+    if (username == null) {
+      nextScreen = const AppNameScreen();
+    } else if (!isOnboardingComplete) {
+      nextScreen = const OnboardingScreen();
+    } else {
+      nextScreen = const HomeScreen();
+    }
+
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 800),
+      ),
+    );
   }
 
   @override

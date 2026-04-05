@@ -5,8 +5,36 @@ import 'about_screen.dart';
 import '../services/theme_service.dart';
 import '../services/preferences_service.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final PreferencesService _prefs = PreferencesService();
+  String _currentRegion = 'us';
+  bool _notificationsEnabled = true;
+  bool _isInit = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final region = await _prefs.getRegion();
+    final notifications = await _prefs.getNotificationsEnabled();
+    if (mounted) {
+      setState(() {
+        _currentRegion = region;
+        _notificationsEnabled = notifications;
+        _isInit = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,60 +63,68 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               ),
-              SliverPadding(
-                padding: const EdgeInsets.all(20),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    _buildSectionHeader('APPEARANCE'),
-                    _buildSettingItem(
-                      icon: Icons.dark_mode_rounded,
-                      title: 'Dark Mode',
-                      trailing: Switch.adaptive(
-                        value: themeService.isDarkMode,
-                        onChanged: (v) => themeService.toggleTheme(v),
-                        activeThumbColor: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    _buildSectionHeader('PREFERENCES'),
-                    _buildSettingItem(
-                      icon: Icons.notifications_rounded,
-                      title: 'Real-time Notifications',
-                      trailing: Switch.adaptive(
-                        value: true,
-                        onChanged: (v) {},
-                        activeThumbColor: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    _buildSettingItem(
-                      icon: Icons.public_rounded,
-                      title: 'Content Region',
-                      subtitle: 'United States (Default)',
-                      onTap: () => _showRegionPicker(context),
-                    ),
-                    const SizedBox(height: 24),
-
-                    _buildSectionHeader('ABOUT'),
-                    _buildSettingItem(
-                      icon: Icons.info_rounded,
-                      title: 'About KhabarIsTan',
-                      subtitle: 'Our Mission & Version info',
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AboutAppScreen(),
+              if (!_isInit)
+                const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.all(20),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      _buildSectionHeader('APPEARANCE'),
+                      _buildSettingItem(
+                        icon: Icons.dark_mode_rounded,
+                        title: 'Dark Mode',
+                        trailing: Switch.adaptive(
+                          value: themeService.isDarkMode,
+                          onChanged: (v) => themeService.toggleTheme(v),
+                          activeThumbColor: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-                    ),
-                    _buildSettingItem(
-                      icon: Icons.policy_rounded,
-                      title: 'Privacy Policy',
-                      onTap: () => _showPrivacyPolicy(context),
-                    ),
-                  ]),
+                      const SizedBox(height: 24),
+
+                      _buildSectionHeader('PREFERENCES'),
+                      _buildSettingItem(
+                        icon: Icons.notifications_rounded,
+                        title: 'Real-time Notifications',
+                        trailing: Switch.adaptive(
+                          value: _notificationsEnabled,
+                          onChanged: (v) async {
+                            await _prefs.setNotificationsEnabled(v);
+                            setState(() => _notificationsEnabled = v);
+                          },
+                          activeThumbColor: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      _buildSettingItem(
+                        icon: Icons.public_rounded,
+                        title: 'Content Region',
+                        subtitle: _prefs.getRegionName(_currentRegion),
+                        onTap: () => _showRegionPicker(context),
+                      ),
+                      const SizedBox(height: 24),
+
+                      _buildSectionHeader('ABOUT'),
+                      _buildSettingItem(
+                        icon: Icons.info_rounded,
+                        title: 'About KhabarIsTan',
+                        subtitle: 'Our Mission & Version info',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AboutAppScreen(),
+                          ),
+                        ),
+                      ),
+                      _buildSettingItem(
+                        icon: Icons.policy_rounded,
+                        title: 'Privacy Policy',
+                        onTap: () => _showPrivacyPolicy(context),
+                      ),
+                    ]),
+                  ),
                 ),
-              ),
             ],
           ),
         );
@@ -167,11 +203,16 @@ class SettingsScreen extends StatelessWidget {
             Expanded(
               child: ListView(
                 children: [
-                  _buildRegionOption(context, 'United States', 'us'),
-                  _buildRegionOption(context, 'United Kingdom', 'gb'),
-                  _buildRegionOption(context, 'Pakistan', 'pk'),
-                  _buildRegionOption(context, 'India', 'in'),
-                  _buildRegionOption(context, 'Canada', 'ca'),
+                   _buildRegionOption(context, 'United States', 'us'),
+                   _buildRegionOption(context, 'United Kingdom', 'gb'),
+                   _buildRegionOption(context, 'Pakistan', 'pk'),
+                   _buildRegionOption(context, 'India', 'in'),
+                   _buildRegionOption(context, 'Canada', 'ca'),
+                   _buildRegionOption(context, 'Australia', 'au'),
+                   _buildRegionOption(context, 'UAE', 'ae'),
+                   _buildRegionOption(context, 'Saudi Arabia', 'sa'),
+                   _buildRegionOption(context, 'Singapore', 'sg'),
+                   _buildRegionOption(context, 'South Africa', 'za'),
                 ],
               ),
             ),
@@ -182,18 +223,32 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Widget _buildRegionOption(BuildContext context, String name, String code) {
+    final bool isSelected = _currentRegion == code;
     return ListTile(
-      title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
-      trailing: const Icon(Icons.circle_outlined, size: 18),
+      title: Text(
+        name,
+        style: TextStyle(
+          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+          color: isSelected ? Theme.of(context).colorScheme.primary : null,
+        ),
+      ),
+      trailing: Icon(
+        isSelected ? Icons.check_circle_rounded : Icons.circle_outlined,
+        size: 18,
+        color: isSelected ? Theme.of(context).colorScheme.primary : null,
+      ),
       onTap: () async {
         Navigator.pop(context);
-        final prefs = PreferencesService();
-        await prefs.setRegion(code);
+        await _prefs.setRegion(code);
+        setState(() {
+          _currentRegion = code;
+        });
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Region updated to $name'),
               behavior: SnackBarBehavior.floating,
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
         }

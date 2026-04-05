@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'screens/welcome_screen.dart';
 import 'services/theme_service.dart';
+import 'services/preferences_service.dart';
+import 'services/bookmarks_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +14,8 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   await ThemeService().init();
+  await PreferencesService().init();
+  await BookmarksService().init();
   runApp(const KhabarIsTanApp());
 }
 
