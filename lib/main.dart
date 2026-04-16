@@ -68,9 +68,9 @@ class KhabarIsTanApp extends StatelessWidget {
           letterSpacing: -0.5,
         ),
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         elevation: 4,
-        shadowColor: Colors.black.withValues(alpha: 0.05),
+        shadowColor: Colors.black.withOpacity(0.05),
         color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
@@ -101,7 +101,7 @@ class KhabarIsTanApp extends StatelessWidget {
           backgroundColor: const Color(0xFF0F172A),
           foregroundColor: Colors.white,
           elevation: 2,
-          shadowColor: const Color(0xFF0F172A).withValues(alpha: 0.3),
+          shadowColor: const Color(0xFF0F172A).withOpacity(0.3),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
@@ -176,13 +176,13 @@ class KhabarIsTanApp extends StatelessWidget {
           letterSpacing: -0.5,
         ),
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         elevation: 8,
-        shadowColor: Colors.black.withValues(alpha: 0.2),
+        shadowColor: Colors.black.withOpacity(0.2),
         color: const Color(0xFF1E293B),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
+          side: BorderSide(color: Colors.white.withOpacity(0.05)),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -212,7 +212,7 @@ class KhabarIsTanApp extends StatelessWidget {
           backgroundColor: const Color(0xFFB4941F),
           foregroundColor: const Color(0xFF0A1128),
           elevation: 4,
-          shadowColor: const Color(0xFFB4941F).withValues(alpha: 0.2),
+          shadowColor: const Color(0xFFB4941F).withOpacity(0.2),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),

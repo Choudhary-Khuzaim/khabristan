@@ -117,7 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Text(
                                 'Verified Journalist',
                                 style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.9),
+                                  color: Colors.white.withOpacity(0.9),
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: 0.5,
@@ -233,12 +233,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           color: Theme.of(
                             context,
-                          ).colorScheme.error.withValues(alpha: 0.1),
+                          ).colorScheme.error.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: Theme.of(
                               context,
-                            ).colorScheme.error.withValues(alpha: 0.2),
+                            ).colorScheme.error.withOpacity(0.2),
                           ),
                         ),
                         child: Row(
@@ -292,7 +292,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Theme.of(context).cardTheme.color,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
+              color: Theme.of(context).dividerColor.withOpacity(0.05),
             ),
           ),
           child: Column(children: items),
@@ -313,7 +313,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
@@ -345,7 +345,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(

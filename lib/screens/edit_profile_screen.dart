@@ -139,9 +139,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         child: CircleAvatar(
                           radius: 54,
-                          backgroundColor: theme.colorScheme.primary.withValues(
-                            alpha: 0.1,
-                          ),
+                          backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
                           child: Text(
                             _usernameController.text.isNotEmpty
                                 ? _usernameController.text[0].toUpperCase()
@@ -169,9 +167,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: theme.colorScheme.primary.withValues(
-                                alpha: 0.3,
-                              ),
+                              color: theme.colorScheme.primary.withOpacity(0.3),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -244,7 +240,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   backgroundColor: theme.colorScheme.primary,
                   foregroundColor: Colors.white,
                   elevation: 8,
-                  shadowColor: theme.colorScheme.primary.withValues(alpha: 0.3),
+                  shadowColor: theme.colorScheme.primary.withOpacity(0.3),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(24),
                   ),
@@ -285,7 +281,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w900,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
             letterSpacing: 1.5,
           ),
         ),
@@ -326,12 +322,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
-          borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.05)),
+          borderSide: BorderSide(color: Colors.grey.withOpacity(0.05)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
           ),
         ),
         contentPadding: const EdgeInsets.all(22),

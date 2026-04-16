@@ -121,7 +121,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
+                        color: Colors.black.withOpacity(0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -276,7 +276,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                     'KhabarIsTan brings you the most exclusive and real-time coverage. Our reporters are on the ground ensuring that every detail of this story is verified and delivered with the precision you deserve.\n\nPremium news isn\'t just about information; it\'s about context and clarity. Stay tuned as we provide more updates on this developing story throughout the day.',
                     style: theme.textTheme.bodyLarge?.copyWith(
                       height: 1.8,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                      color: theme.colorScheme.onSurface.withOpacity(0.7),
                       fontSize: 16,
                     ),
                   ),
@@ -290,16 +290,14 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                       color: theme.cardTheme.color,
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
-                        color: Colors.grey.withValues(alpha: 0.05),
+                        color: Colors.grey.withOpacity(0.05),
                       ),
                     ),
                     child: Row(
                       children: [
                         CircleAvatar(
                           radius: 24,
-                          backgroundColor: theme.colorScheme.primary.withValues(
-                            alpha: 0.1,
-                          ),
+                          backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
                           child: Icon(
                             Icons.person_rounded,
                             color: theme.colorScheme.primary,
@@ -345,9 +343,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                         backgroundColor: theme.colorScheme.primary,
                         foregroundColor: Colors.white,
                         elevation: 10,
-                        shadowColor: theme.colorScheme.primary.withValues(
-                          alpha: 0.4,
-                        ),
+                        shadowColor: theme.colorScheme.primary.withOpacity(0.4),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24),
                         ),
@@ -394,7 +390,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
+                  color: Colors.black.withOpacity(0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -437,7 +433,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             BoxShadow(
               color: Theme.of(
                 context,
-              ).colorScheme.primary.withValues(alpha: 0.3),
+              ).colorScheme.primary.withOpacity(0.3),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),

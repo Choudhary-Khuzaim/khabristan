@@ -114,7 +114,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.05),
+                    color: theme.colorScheme.primary.withOpacity(0.05),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -154,7 +154,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                   color: theme.cardTheme.color,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: Colors.grey.withValues(alpha: 0.05),
+                    color: Colors.grey.withOpacity(0.05),
                   ),
                 ),
                 padding: const EdgeInsets.symmetric(
@@ -162,7 +162,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                   vertical: 4,
                 ),
                 child: DropdownButtonFormField<String>(
-                  initialValue: _selectedCategory,
+                  value: _selectedCategory,
                   decoration: const InputDecoration(border: InputBorder.none),
                   icon: Icon(
                     Icons.expand_more_rounded,
@@ -216,7 +216,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                   backgroundColor: theme.colorScheme.primary,
                   foregroundColor: Colors.white,
                   elevation: 8,
-                  shadowColor: theme.colorScheme.primary.withValues(alpha: 0.3),
+                  shadowColor: theme.colorScheme.primary.withOpacity(0.3),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(24),
                   ),
@@ -262,7 +262,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w900,
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
           letterSpacing: 1.5,
         ),
       ),
@@ -300,12 +300,12 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
-          borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.05)),
+          borderSide: BorderSide(color: Colors.grey.withOpacity(0.05)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
           ),
         ),
         contentPadding: const EdgeInsets.all(22),

@@ -100,7 +100,7 @@ class _CategoryNewsScreenState extends State<CategoryNewsScreen> {
                     Icon(
                       Icons.article_rounded,
                       size: 64,
-                      color: Colors.grey.withValues(alpha: 0.3),
+                      color: Colors.grey.withOpacity(0.3),
                     ),
                     const SizedBox(height: 16),
                     Text(

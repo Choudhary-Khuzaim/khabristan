@@ -72,9 +72,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
                 colors: [
-                  theme.colorScheme.primary.withValues(alpha: 0.05),
+                  theme.colorScheme.primary.withOpacity(0.05),
                   theme.colorScheme.surface,
-                  theme.colorScheme.secondary.withValues(alpha: 0.1),
+                  theme.colorScheme.secondary.withOpacity(0.1),
                 ],
               ),
             ),
@@ -202,7 +202,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 foregroundColor: Colors.white,
                                 elevation: 8,
                                 shadowColor: theme.colorScheme.primary
-                                    .withValues(alpha: 0.4),
+                                    .withOpacity(0.4),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(24),
                                 ),

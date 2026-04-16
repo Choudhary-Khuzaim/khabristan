@@ -93,14 +93,14 @@ class PrivacyPolicyScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.cardTheme.color,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.05)),
+        border: Border.all(color: Colors.grey.withOpacity(0.05)),
       ),
       child: Text(
         content,
         style: TextStyle(
           fontSize: 15,
           height: 1.8,
-          color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+          color: theme.colorScheme.onSurface.withOpacity(0.8),
           fontWeight: FontWeight.w500,
         ),
       ),

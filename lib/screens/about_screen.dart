@@ -34,7 +34,7 @@ class AboutAppScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: Colors.white.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -56,7 +56,7 @@ class AboutAppScreen extends StatelessWidget {
                       Text(
                         'Version 2.1.0',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.6),
+                          color: Colors.white.withOpacity(0.6),
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
@@ -130,14 +130,14 @@ class AboutAppScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: theme.cardTheme.color,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.grey.withValues(alpha: 0.05)),
+            border: Border.all(color: Colors.grey.withOpacity(0.05)),
           ),
           child: Text(
             content,
             style: TextStyle(
               fontSize: 15,
               height: 1.6,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+              color: theme.colorScheme.onSurface.withOpacity(0.8),
               fontWeight: FontWeight.w500,
             ),
           ),

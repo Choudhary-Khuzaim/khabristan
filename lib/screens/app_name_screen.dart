@@ -99,7 +99,7 @@ class _AppNameScreenState extends State<AppNameScreen>
                 end: Alignment.bottomRight,
                 colors: [
                   Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                  Theme.of(context).colorScheme.primary.withOpacity(0.8),
                   Theme.of(context).colorScheme.secondary,
                 ],
               ),
@@ -111,7 +111,7 @@ class _AppNameScreenState extends State<AppNameScreen>
             right: -100,
             child: CircleAvatar(
               radius: 200,
-              backgroundColor: Colors.white.withValues(alpha: 0.05),
+              backgroundColor: Colors.white.withOpacity(0.05),
             ),
           ),
           SafeArea(
@@ -128,10 +128,10 @@ class _AppNameScreenState extends State<AppNameScreen>
                         Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
+                            color: Colors.white.withOpacity(0.1),
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.2),
+                              color: Colors.white.withOpacity(0.2),
                             ),
                           ),
                           child: const Icon(
@@ -156,7 +156,7 @@ class _AppNameScreenState extends State<AppNameScreen>
                           'Explore the world with\npremium news delivery.',
                           style: TextStyle(
                             fontSize: 18,
-                            color: Colors.white.withValues(alpha: 0.7),
+                            color: Colors.white.withOpacity(0.7),
                             fontWeight: FontWeight.w500,
                             height: 1.5,
                           ),
@@ -197,7 +197,7 @@ class _AppNameScreenState extends State<AppNameScreen>
                         Text(
                           'Join 1M+ active readers',
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.5),
+                            color: Colors.white.withOpacity(0.5),
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),

@@ -189,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 radius: 22,
                                 backgroundColor: Theme.of(
                                   context,
-                                ).colorScheme.secondary.withValues(alpha: 0.1),
+                                ).colorScheme.secondary.withOpacity(0.1),
                                 child: const Icon(Icons.person_rounded),
                               ),
                             ),
@@ -325,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   color: Theme.of(context)
                                                       .colorScheme
                                                       .secondary
-                                                      .withValues(alpha: 0.3),
+                                                      .withOpacity(0.3),
                                                   blurRadius: 10,
                                                   offset: const Offset(0, 4),
                                                 ),
@@ -463,7 +463,7 @@ class _HomeScreenState extends State<HomeScreen> {
             BoxShadow(
               color: Theme.of(
                 context,
-              ).colorScheme.primary.withValues(alpha: 0.3),
+              ).colorScheme.primary.withOpacity(0.3),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
@@ -488,7 +488,7 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: Colors.black.withOpacity(0.1),
               blurRadius: 20,
               offset: const Offset(0, -5),
             ),

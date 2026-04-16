@@ -72,7 +72,7 @@ class _SavedNewsScreenState extends State<SavedNewsScreen> {
                       decoration: BoxDecoration(
                         color: Theme.of(
                           context,
-                        ).colorScheme.primary.withValues(alpha: 0.05),
+                        ).colorScheme.primary.withOpacity(0.05),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -80,7 +80,7 @@ class _SavedNewsScreenState extends State<SavedNewsScreen> {
                         size: 64,
                         color: Theme.of(
                           context,
-                        ).colorScheme.primary.withValues(alpha: 0.3),
+                        ).colorScheme.primary.withOpacity(0.3),
                       ),
                     ),
                     const SizedBox(height: 24),

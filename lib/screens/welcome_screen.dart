@@ -112,10 +112,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
+                            color: Colors.white.withOpacity(0.1),
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.2),
+                              color: Colors.white.withOpacity(0.2),
                               width: 1,
                             ),
                           ),
@@ -140,7 +140,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           'Elevating Your News Experience',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.white.withValues(alpha: 0.7),
+                            color: Colors.white.withOpacity(0.7),
                             fontWeight: FontWeight.bold,
                             letterSpacing: 2,
                           ),

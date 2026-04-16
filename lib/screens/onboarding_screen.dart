@@ -131,7 +131,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 border: Border.all(
                                   color: isSelected
                                       ? Colors.transparent
-                                      : Colors.grey.withValues(alpha: 0.1),
+                                      : Colors.grey.withOpacity(0.1),
                                 ),
                                 boxShadow: isSelected
                                     ? [
@@ -139,7 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .primary
-                                              .withValues(alpha: 0.3),
+                                              .withOpacity(0.3),
                                           blurRadius: 15,
                                           offset: const Offset(0, 8),
                                         ),
