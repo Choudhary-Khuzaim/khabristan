@@ -60,6 +60,7 @@ class NewsResponse {
   factory NewsResponse.fromJson(Map<String, dynamic> json) {
     var articlesList = json['articles'] as List? ?? [];
     List<NewsModel> articlesArray = articlesList
+        .where((article) => article is Map<String, dynamic>)
         .map((article) => NewsModel.fromJson(article as Map<String, dynamic>))
         .toList();
 

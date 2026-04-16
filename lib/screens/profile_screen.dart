@@ -361,7 +361,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       trailing: Switch.adaptive(
         value: value,
         onChanged: onChanged,
-        activeThumbColor: Theme.of(context).colorScheme.primary,
+        activeTrackColor: Theme.of(context).colorScheme.primary,
       ),
     );
   }

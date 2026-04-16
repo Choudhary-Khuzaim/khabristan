@@ -79,11 +79,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         trailing: Switch.adaptive(
                           value: themeService.isDarkMode,
                           onChanged: (v) => themeService.toggleTheme(v),
-                          activeThumbColor: Theme.of(context).colorScheme.primary,
+                          activeTrackColor:
+                              Theme.of(context).colorScheme.primary,
                         ),
                       ),
                       const SizedBox(height: 24),
-
                       _buildSectionHeader('PREFERENCES'),
                       _buildSettingItem(
                         icon: Icons.notifications_rounded,
@@ -94,7 +94,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             await _prefs.setNotificationsEnabled(v);
                             setState(() => _notificationsEnabled = v);
                           },
-                          activeThumbColor: Theme.of(context).colorScheme.primary,
+                          activeTrackColor:
+                              Theme.of(context).colorScheme.primary,
                         ),
                       ),
                       _buildSettingItem(
@@ -104,7 +105,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         onTap: () => _showRegionPicker(context),
                       ),
                       const SizedBox(height: 24),
-
                       _buildSectionHeader('ABOUT'),
                       _buildSettingItem(
                         icon: Icons.info_rounded,
@@ -175,8 +175,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
             )
           : null,
-      trailing:
-          trailing ??
+      trailing: trailing ??
           (onTap != null
               ? const Icon(Icons.chevron_right_rounded, size: 20)
               : null),
@@ -203,16 +202,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Expanded(
               child: ListView(
                 children: [
-                   _buildRegionOption(context, 'United States', 'us'),
-                   _buildRegionOption(context, 'United Kingdom', 'gb'),
-                   _buildRegionOption(context, 'Pakistan', 'pk'),
-                   _buildRegionOption(context, 'India', 'in'),
-                   _buildRegionOption(context, 'Canada', 'ca'),
-                   _buildRegionOption(context, 'Australia', 'au'),
-                   _buildRegionOption(context, 'UAE', 'ae'),
-                   _buildRegionOption(context, 'Saudi Arabia', 'sa'),
-                   _buildRegionOption(context, 'Singapore', 'sg'),
-                   _buildRegionOption(context, 'South Africa', 'za'),
+                  _buildRegionOption(context, 'United States', 'us'),
+                  _buildRegionOption(context, 'United Kingdom', 'gb'),
+                  _buildRegionOption(context, 'Pakistan', 'pk'),
+                  _buildRegionOption(context, 'India', 'in'),
+                  _buildRegionOption(context, 'Canada', 'ca'),
+                  _buildRegionOption(context, 'Australia', 'au'),
+                  _buildRegionOption(context, 'UAE', 'ae'),
+                  _buildRegionOption(context, 'Saudi Arabia', 'sa'),
+                  _buildRegionOption(context, 'Singapore', 'sg'),
+                  _buildRegionOption(context, 'South Africa', 'za'),
                 ],
               ),
             ),
