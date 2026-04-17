@@ -10,8 +10,10 @@ import 'article_view_screen.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final NewsModel news;
+  final String heroTag;
 
-  const NewsDetailScreen({super.key, required this.news});
+  const NewsDetailScreen({super.key, required this.news, required this.heroTag});
+
 
   @override
   State<NewsDetailScreen> createState() => _NewsDetailScreenState();
@@ -142,8 +144,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             flexibleSpace: FlexibleSpaceBar(
               stretchModes: const [StretchMode.zoomBackground],
               background: Hero(
-                tag: '${widget.news.url}_${widget.news.publishedAt}_card',
+                tag: widget.heroTag,
                 child: Stack(
+
                   fit: StackFit.expand,
                   children: [
                     widget.news.urlToImage != null &&

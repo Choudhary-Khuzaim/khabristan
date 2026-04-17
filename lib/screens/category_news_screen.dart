@@ -57,7 +57,12 @@ class _CategoryNewsScreenState extends State<CategoryNewsScreen> {
   void _navigateToDetail(NewsModel news) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NewsDetailScreen(news: news)),
+      MaterialPageRoute(
+        builder: (context) => NewsDetailScreen(
+          news: news,
+          heroTag: '${news.url}_${news.publishedAt}_card',
+        ),
+      ),
     );
   }
 
@@ -84,15 +89,15 @@ class _CategoryNewsScreenState extends State<CategoryNewsScreen> {
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           ),
           if (_isLoading)
-            SliverFillRemaining(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                itemCount: 6,
-                itemBuilder: (context, index) => const NewsCardShimmer(),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => const NewsCardShimmer(),
+                childCount: 6,
               ),
             )
           else if (_newsList.isEmpty)
             SliverFillRemaining(
+              hasScrollBody: false,
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -116,7 +121,7 @@ class _CategoryNewsScreenState extends State<CategoryNewsScreen> {
             )
           else
             SliverPadding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
                   return Padding(
@@ -129,6 +134,7 @@ class _CategoryNewsScreenState extends State<CategoryNewsScreen> {
                 }, childCount: _newsList.length),
               ),
             ),
+
         ],
       ),
     );

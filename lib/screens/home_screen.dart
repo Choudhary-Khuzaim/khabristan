@@ -133,10 +133,10 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _navigateToDetail(NewsModel news) {
+  void _navigateToDetail(NewsModel news, String heroTag) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NewsDetailScreen(news: news)),
+      MaterialPageRoute(builder: (context) => NewsDetailScreen(news: news, heroTag: heroTag)),
     );
   }
 
@@ -274,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               return FeaturedNewsCard(
                                 news: _featuredNewsList[index],
                                 onTap: () =>
-                                    _navigateToDetail(_featuredNewsList[index]),
+                                    _navigateToDetail(_featuredNewsList[index], 'featured_${_featuredNewsList[index].title}'),
                               );
                             },
                           ),
@@ -421,7 +421,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: NewsCard(
                                   news: _filteredNewsList[index],
                                   onTap: () =>
-                                      _navigateToDetail(_filteredNewsList[index]),
+                                      _navigateToDetail(_filteredNewsList[index], '${_filteredNewsList[index].url}_${_filteredNewsList[index].publishedAt}_card'),
                                 ),
                               ),
                             ),

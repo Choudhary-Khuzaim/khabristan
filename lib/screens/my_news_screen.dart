@@ -25,7 +25,12 @@ class _MyNewsScreenState extends State<MyNewsScreen> {
   void _navigateToDetail(NewsModel news) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NewsDetailScreen(news: news)),
+      MaterialPageRoute(
+        builder: (context) => NewsDetailScreen(
+          news: news,
+          heroTag: '${news.url}_${news.publishedAt}_card',
+        ),
+      ),
     );
   }
 

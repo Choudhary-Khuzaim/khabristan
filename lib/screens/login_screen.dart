@@ -32,15 +32,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final username = _usernameController.text.trim();
     final password = _passwordController.text;
 
-    if (username != 'khuzaim' || password != 'khuzaim') {
+    // Since this is a demo, we'll allow any non-empty username/password
+    // but we can also check against a 'default' or keep it open for testing.
+    if (username.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Invalid username or password'),
+          content: const Text('Please enter both username and password'),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
     }
+
 
     setState(() {
       _isLoading = true;

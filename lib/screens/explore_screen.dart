@@ -216,7 +216,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      NewsDetailScreen(news: news),
+                                      NewsDetailScreen(
+                                        news: news,
+                                        heroTag: '${news.url}_${news.publishedAt}_card',
+                                      ),
                                 ),
                               );
                             },
