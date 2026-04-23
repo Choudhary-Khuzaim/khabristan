@@ -15,11 +15,11 @@ class NewsService {
   final PreferencesService _prefs = PreferencesService();
 
   Future<List<NewsModel>> getTopHeadlines({String? category}) async {
-    try {
-      final country = await _prefs.getRegion();
-
-      // 1. Try official NewsAPI first
-      if (apiKey != 'YOUR_API_KEY_HERE') {
+    final country = await _prefs.getRegion();
+    
+    // 1. Try official NewsAPI first
+    if (apiKey != 'YOUR_API_KEY_HERE') {
+      try {
         final queryParams = {
           'country': country,
           'apiKey': apiKey,
@@ -44,24 +44,31 @@ class NewsService {
           }
         }
 
-        final uri = Uri.parse(
-          '$baseUrl/top-headlines',
-        ).replace(queryParameters: queryParams);
+        final uri = Uri.parse('$baseUrl/top-headlines').replace(queryParameters: queryParams);
         final response = await http.get(uri);
 
         if (response.statusCode == 200) {
           final Map<String, dynamic> jsonData = json.decode(response.body);
           final NewsResponse newsResponse = NewsResponse.fromJson(jsonData);
 
-          final recentNews = _filterRecentNews(newsResponse.articles);
-          return recentNews.isNotEmpty ? recentNews : newsResponse.articles;
+          if (newsResponse.articles.isNotEmpty) {
+            final recentNews = _filterRecentNews(newsResponse.articles);
+            return recentNews.isNotEmpty ? recentNews : newsResponse.articles;
+          }
+        } else {
+          debugPrint('NewsAPI Error: ${response.statusCode} - ${response.body}');
         }
+      } catch (e) {
+        debugPrint('Error fetching from official NewsAPI: $e');
       }
+    }
 
-      // 2. Fallback to Saurav.tech
+    // 2. Fallback to Saurav.tech if official fails or returns nothing
+    try {
+      debugPrint('Attempting fallback to Saurav.tech for $category in $country');
       return await _fetchFromFallback(country, category);
     } catch (e) {
-      debugPrint('Error fetching news: $e');
+      debugPrint('All API attempts failed: $e');
       return _getSampleNews();
     }
   }

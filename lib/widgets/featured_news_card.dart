@@ -36,7 +36,7 @@ class FeaturedNewsCard extends StatelessWidget {
               // Background Image
               Positioned.fill(
                 child: Hero(
-                  tag: 'featured_${news.title}',
+                  tag: 'featured_${news.url ?? news.title}',
                   child: news.urlToImage != null && news.urlToImage!.isNotEmpty
                       ? CachedNetworkImage(
                           imageUrl: news.urlToImage!,

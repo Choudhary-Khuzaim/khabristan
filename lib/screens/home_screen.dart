@@ -133,6 +133,18 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _handleGlobalSearch(String query) {
+    if (query.trim().isEmpty) return;
+    
+    // If local search has results, we stay here. 
+    // But if the user wants a deeper search, we can trigger _loadNews with the query.
+    setState(() {
+      _selectedCategory = query.trim();
+      _isSearching = true;
+    });
+    _loadNews();
+  }
+
   void _navigateToDetail(NewsModel news, String heroTag) {
     Navigator.push(
       context,
@@ -205,19 +217,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: TextField(
                           controller: _searchController,
                           onChanged: _filterNews,
+                          onSubmitted: _handleGlobalSearch,
+                          textInputAction: TextInputAction.search,
                           decoration: InputDecoration(
                             hintText: 'Search for global headlines...',
                             prefixIcon: const Icon(Icons.search_rounded),
-                            suffixIcon: Container(
-                              margin: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.secondary,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(
-                                Icons.tune_rounded,
-                                color: Colors.white,
-                                size: 20,
+                            suffixIcon: GestureDetector(
+                              onTap: () => _handleGlobalSearch(_searchController.text),
+                              child: Container(
+                                margin: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.secondary,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.search_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
                               ),
                             ),
                           ),
@@ -274,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               return FeaturedNewsCard(
                                 news: _featuredNewsList[index],
                                 onTap: () =>
-                                    _navigateToDetail(_featuredNewsList[index], 'featured_${_featuredNewsList[index].title}'),
+                                    _navigateToDetail(_featuredNewsList[index], 'featured_${_featuredNewsList[index].url ?? _featuredNewsList[index].title}'),
                               );
                             },
                           ),
@@ -421,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: NewsCard(
                                   news: _filteredNewsList[index],
                                   onTap: () =>
-                                      _navigateToDetail(_filteredNewsList[index], '${_filteredNewsList[index].url}_${_filteredNewsList[index].publishedAt}_card'),
+                                      _navigateToDetail(_filteredNewsList[index], 'news_card_${_filteredNewsList[index].url ?? _filteredNewsList[index].title}_${_filteredNewsList[index].publishedAt ?? 'now'}'),
                                 ),
                               ),
                             ),
@@ -547,6 +564,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: () {
           setState(() {
             _currentIndex = index;
+            if (index == 0) _loadUserName();
           });
         },
         borderRadius: BorderRadius.circular(16),

@@ -67,7 +67,7 @@ class NewsCard extends StatelessWidget {
                   children: [
                     // Image
                     Hero(
-                      tag: '${news.url}_${news.publishedAt}_card',
+                      tag: 'news_card_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child:

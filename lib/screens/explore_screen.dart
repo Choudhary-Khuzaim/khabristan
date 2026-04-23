@@ -218,7 +218,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                   builder: (context) =>
                                       NewsDetailScreen(
                                         news: news,
-                                        heroTag: '${news.url}_${news.publishedAt}_card',
+                                        heroTag: 'news_card_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
                                       ),
                                 ),
                               );
