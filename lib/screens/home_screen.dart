@@ -221,20 +221,34 @@ class _HomeScreenState extends State<HomeScreen> {
                           textInputAction: TextInputAction.search,
                           decoration: InputDecoration(
                             hintText: 'Search for global headlines...',
-                            prefixIcon: const Icon(Icons.search_rounded),
-                            suffixIcon: GestureDetector(
-                              onTap: () => _handleGlobalSearch(_searchController.text),
-                              child: Container(
-                                margin: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.secondary,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Icon(
-                                  Icons.search_rounded,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
+                            prefixIcon: Icon(
+                              Icons.search_rounded,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            suffixIcon: _searchController.text.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear_rounded),
+                                    onPressed: () {
+                                      _searchController.clear();
+                                      _filterNews('');
+                                    },
+                                  )
+                                : null,
+                            filled: true,
+                            fillColor: Theme.of(context).cardTheme.color,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                width: 2,
                               ),
                             ),
                           ),

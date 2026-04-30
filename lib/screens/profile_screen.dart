@@ -217,44 +217,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Log Out Card
                     InkWell(
                       onTap: () async {
-                        await PreferencesService().clearSession();
-                        if (context.mounted) {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
-                            ),
-                            (route) => false,
-                          );
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Confirm Logout'),
+                            content: const Text('Are you sure you want to exit the premium session?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: Text(
+                                  'Logout',
+                                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirm == true) {
+                          await PreferencesService().clearSession();
+                          if (context.mounted) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginScreen(),
+                              ),
+                              (route) => false,
+                            );
+                          }
                         }
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.error.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
+                          color: Theme.of(context).cardTheme.color,
+                          borderRadius: BorderRadius.circular(24),
                           border: Border.all(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.error.withOpacity(0.2),
+                            color: Theme.of(context).colorScheme.error.withOpacity(0.2),
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context).colorScheme.error.withOpacity(0.05),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.logout_rounded,
-                              color: Theme.of(context).colorScheme.error,
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.error.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.logout_rounded,
+                                color: Theme.of(context).colorScheme.error,
+                                size: 20,
+                              ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 16),
                             Text(
                               'Logout Instance',
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.error,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w900,
                                 fontSize: 16,
+                                letterSpacing: 0.5,
                               ),
                             ),
                           ],

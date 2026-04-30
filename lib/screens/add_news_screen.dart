@@ -149,44 +149,14 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
               const SizedBox(height: 24),
 
               _buildFieldLabel('Category'),
-              Container(
-                decoration: BoxDecoration(
-                  color: theme.cardTheme.color,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: Colors.grey.withOpacity(0.05),
-                  ),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 4,
-                ),
-                child: DropdownButtonFormField<String>(
-                  value: _selectedCategory,
-                  decoration: const InputDecoration(border: InputBorder.none),
-                  icon: Icon(
-                    Icons.expand_more_rounded,
-                    color: theme.colorScheme.primary,
-                  ),
-                  dropdownColor: theme.colorScheme.surface,
-                  items: _categories.map((String category) {
-                    return DropdownMenuItem<String>(
-                      value: category,
-                      child: Text(
-                        category,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedCategory = newValue!;
-                    });
-                  },
-                ),
+              _buildModernDropdownField(
+                value: _selectedCategory,
+                items: _categories,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedCategory = newValue!;
+                  });
+                },
               ),
               const SizedBox(height: 24),
 
@@ -310,6 +280,49 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
         ),
         contentPadding: const EdgeInsets.all(22),
         alignLabelWithHint: true,
+      ),
+    );
+  }
+
+  Widget _buildModernDropdownField({
+    required String value,
+    required List<String> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.cardTheme.color,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.grey.withOpacity(0.05)),
+      ),
+      child: DropdownButtonFormField<String>(
+        value: value,
+        items: items.map((String item) {
+          return DropdownMenuItem<String>(
+            value: item,
+            child: Text(
+              item,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            ),
+          );
+        }).toList(),
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          prefixIcon: Icon(
+            Icons.category_rounded,
+            color: theme.colorScheme.primary,
+            size: 22,
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 16),
+        ),
+        icon: Icon(
+          Icons.expand_more_rounded,
+          color: theme.colorScheme.primary,
+        ),
+        dropdownColor: theme.colorScheme.surface,
       ),
     );
   }

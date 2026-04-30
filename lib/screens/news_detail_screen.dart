@@ -154,6 +154,20 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                         ? CachedNetworkImage(
                             imageUrl: widget.news.urlToImage!,
                             fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              child: const Center(
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              child: Icon(
+                                Icons.image_not_supported_outlined,
+                                color: theme.colorScheme.onSurfaceVariant,
+                                size: 40,
+                              ),
+                            ),
                           )
                         : Container(color: theme.colorScheme.primary),
                     // Luxury Gradient Overlay
@@ -378,8 +392,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   Widget _buildAppBarAction({
     required IconData icon,
     required VoidCallback onTap,
-    Color color = Colors.black,
+    Color? color,
   }) {
+    final theme = Theme.of(context);
+    final iconColor = color ?? theme.colorScheme.onSurface;
+    
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: UnconstrainedBox(
@@ -389,7 +406,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             height: 44,
             width: 44,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.cardTheme.color,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
@@ -399,12 +416,13 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                 ),
               ],
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: iconColor, size: 20),
           ),
         ),
       ),
     );
   }
+
 
   Widget _buildMetaItem(IconData icon, String text) {
     return Row(
