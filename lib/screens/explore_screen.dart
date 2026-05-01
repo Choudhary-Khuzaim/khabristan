@@ -100,135 +100,139 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // discovery Header
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Explore',
-                      style: Theme.of(context).textTheme.headlineMedium
-                          ?.copyWith(fontWeight: FontWeight.w800),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _searchController,
-                      textInputAction: TextInputAction.search,
-                      onSubmitted: _handleSearch,
-                      decoration: InputDecoration(
-                        hintText: 'Search news or topics',
-                        prefixIcon: const Icon(Icons.search_rounded),
-                        filled: true,
-                        fillColor: Theme.of(context).cardTheme.color,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide.none,
+        child: RefreshIndicator(
+          onRefresh: _loadDiscoveryNews,
+          color: Theme.of(context).colorScheme.primary,
+          child: CustomScrollView(
+            slivers: [
+              // discovery Header
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Explore',
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(fontWeight: FontWeight.w800),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _searchController,
+                        textInputAction: TextInputAction.search,
+                        onSubmitted: _handleSearch,
+                        decoration: InputDecoration(
+                          hintText: 'Search news or topics',
+                          prefixIcon: const Icon(Icons.search_rounded),
+                          filled: true,
+                          fillColor: Theme.of(context).cardTheme.color,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-
-            // Horizontal Category Chips
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 60,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final cat = categories[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ActionChip(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  CategoryNewsScreen(category: cat['name']),
+  
+              // Horizontal Category Chips
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 60,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final cat = categories[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ActionChip(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    CategoryNewsScreen(category: cat['name']),
+                              ),
+                            );
+                          },
+                          label: Text(cat['name']),
+                          avatar: Icon(
+                            cat['icon'],
+                            size: 16,
+                            color: Colors.white,
+                          ),
+                          backgroundColor: cat['color'],
+                          labelStyle: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+  
+              // Discovery Feed
+              SliverPadding(
+                padding: const EdgeInsets.all(20),
+                sliver: _isLoading
+                    ? SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => const NewsCardShimmer(),
+                          childCount: 3,
+                        ),
+                      )
+                    : _discoveryNews.isEmpty
+                    ? SliverToBoxAdapter(
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 50),
+                            child: Text(
+                              'No news found',
+                              style: TextStyle(color: Colors.grey.shade500),
+                            ),
+                          ),
+                        ),
+                      )
+                    : SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final news = _discoveryNews[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: NewsCard(
+                              news: news,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        NewsDetailScreen(
+                                          news: news,
+                                          heroTag: 'news_card_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
+                                        ),
+                                  ),
+                                );
+                              },
                             ),
                           );
-                        },
-                        label: Text(cat['name']),
-                        avatar: Icon(
-                          cat['icon'],
-                          size: 16,
-                          color: Colors.white,
-                        ),
-                        backgroundColor: cat['color'],
-                        labelStyle: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
+                        }, childCount: _discoveryNews.length),
                       ),
-                    );
-                  },
-                ),
               ),
-            ),
-
-            // Discovery Feed
-            SliverPadding(
-              padding: const EdgeInsets.all(20),
-              sliver: _isLoading
-                  ? SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) => const NewsCardShimmer(),
-                        childCount: 3,
-                      ),
-                    )
-                  : _discoveryNews.isEmpty
-                  ? SliverToBoxAdapter(
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 50),
-                          child: Text(
-                            'No news found',
-                            style: TextStyle(color: Colors.grey.shade500),
-                          ),
-                        ),
-                      ),
-                    )
-                  : SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final news = _discoveryNews[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: NewsCard(
-                            news: news,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      NewsDetailScreen(
-                                        news: news,
-                                        heroTag: 'news_card_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
-                                      ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      }, childCount: _discoveryNews.length),
-                    ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

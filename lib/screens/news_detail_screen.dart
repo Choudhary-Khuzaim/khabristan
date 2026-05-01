@@ -481,11 +481,12 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
 
   Widget _buildBookmarkActionWithDynamicColor(BookmarksService bookmarksService) {
     final isBookmarked = bookmarksService.isBookmarked(widget.news);
+    final theme = Theme.of(context);
     return _buildAppBarAction(
       icon: isBookmarked
           ? Icons.bookmark_rounded
           : Icons.bookmark_border_rounded,
-      color: isBookmarked ? Colors.amber : Colors.black,
+      color: isBookmarked ? Colors.amber : theme.colorScheme.onSurface,
       onTap: () => bookmarksService.toggleBookmark(widget.news),
     );
   }

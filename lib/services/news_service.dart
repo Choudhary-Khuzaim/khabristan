@@ -45,7 +45,7 @@ class NewsService {
         }
 
         final uri = Uri.parse('$baseUrl/top-headlines').replace(queryParameters: queryParams);
-        final response = await http.get(uri);
+        final response = await http.get(uri).timeout(const Duration(seconds: 10));
 
         if (response.statusCode == 200) {
           final Map<String, dynamic> jsonData = json.decode(response.body);
@@ -78,7 +78,7 @@ class NewsService {
     // Relaxed to 3 days to ensure we have content
     final threeDaysAgo = now.subtract(const Duration(days: 3));
 
-    return articles.where((article) {
+    final filtered = articles.where((article) {
       if (article.title == '[Removed]' || article.description == '[Removed]') {
         return false;
       }
@@ -90,6 +90,14 @@ class NewsService {
         return false;
       }
     }).toList();
+
+    // If filtering left us with nothing, return original (excluding [Removed])
+    if (filtered.isEmpty) {
+      return articles.where((article) => 
+        article.title != '[Removed]' && article.description != '[Removed]'
+      ).toList();
+    }
+    return filtered;
   }
 
   Future<List<NewsModel>> _fetchFromFallback(
@@ -124,7 +132,7 @@ class NewsService {
         url = '$fallbackUrl/top-headlines/category/general/$targetCountry.json';
       }
 
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = json.decode(response.body);
