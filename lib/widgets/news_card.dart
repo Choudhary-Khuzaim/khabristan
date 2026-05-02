@@ -4,12 +4,17 @@ import '../models/news_model.dart';
 
 import '../services/bookmarks_service.dart';
 import 'package:share_plus/share_plus.dart';
-
 class NewsCard extends StatelessWidget {
   final NewsModel news;
   final VoidCallback onTap;
+  final String? heroPrefix;
 
-  const NewsCard({super.key, required this.news, required this.onTap});
+  const NewsCard({
+    super.key,
+    required this.news,
+    required this.onTap,
+    this.heroPrefix,
+  });
 
   String _formatDate(String? dateString) {
     if (dateString == null) return 'Unknown date';
@@ -67,7 +72,7 @@ class NewsCard extends StatelessWidget {
                   children: [
                     // Image
                     Hero(
-                      tag: 'news_card_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
+                      tag: '${heroPrefix ?? 'news_card'}_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child:

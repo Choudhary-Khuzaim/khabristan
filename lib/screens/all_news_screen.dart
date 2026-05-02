@@ -20,7 +20,7 @@ class AllNewsScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => NewsDetailScreen(
           news: news,
-          heroTag: 'news_card_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
+          heroTag: 'all_news_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
         ),
       ),
     );
@@ -83,6 +83,7 @@ class AllNewsScreen extends StatelessWidget {
                       child: FadeInAnimation(
                         child: NewsCard(
                           news: newsList[index],
+                          heroPrefix: 'all_news',
                           onTap: () => _navigateToDetail(context, newsList[index]),
                         ),
                       ),

@@ -60,7 +60,7 @@ class _CategoryNewsScreenState extends State<CategoryNewsScreen> {
       MaterialPageRoute(
         builder: (context) => NewsDetailScreen(
           news: news,
-          heroTag: 'news_card_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
+          heroTag: 'category_${widget.category}_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
         ),
       ),
     );
@@ -69,74 +69,76 @@ class _CategoryNewsScreenState extends State<CategoryNewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            pinned: true,
-            expandedHeight: 120,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                widget.category,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.5,
+      body: RefreshIndicator(
+        onRefresh: _loadNews,
+        color: Theme.of(context).colorScheme.primary,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              expandedHeight: 120,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  widget.category,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.5,
+                  ),
                 ),
+                centerTitle: false,
+                titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
               ),
-              centerTitle: false,
-              titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             ),
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          ),
-          if (_isLoading)
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => const NewsCardShimmer(),
-                childCount: 6,
-              ),
-            )
-          else if (_newsList.isEmpty)
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.article_rounded,
-                      size: 64,
-                      color: Colors.grey.withOpacity(0.3),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No stories found in ${widget.category}',
-                      style: TextStyle(
-                        color: Colors.grey.shade500,
-                        fontWeight: FontWeight.w500,
+            if (_isLoading)
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => const NewsCardShimmer(),
+                  childCount: 6,
+                ),
+              )
+            else if (_newsList.isEmpty)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.article_rounded,
+                        size: 64,
+                        color: Colors.grey.withOpacity(0.3),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      Text(
+                        'No stories found in ${widget.category}',
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: NewsCard(
+                        news: _newsList[index],
+                        heroPrefix: 'category_${widget.category}',
+                        onTap: () => _navigateToDetail(_newsList[index]),
+                      ),
+                    );
+                  }, childCount: _newsList.length),
                 ),
               ),
-            )
-          else
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: NewsCard(
-                      news: _newsList[index],
-                      onTap: () => _navigateToDetail(_newsList[index]),
-                    ),
-                  );
-                }, childCount: _newsList.length),
-              ),
-            ),
-
-        ],
+          ],
+        ),
       ),
-    );
   }
-}
