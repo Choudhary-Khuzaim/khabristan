@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import '../models/news_model.dart';
 
 class NewsService {
-  static const String _apiKey = 'YOUR_NEWS_API_KEY'; // User needs to provide this
+  // IMPORTANT: Get your free API key at https://newsapi.org/
+  static const String _apiKey = '7011d13788754be985396556f8490a2a'; // Replace with your actual API key
   static const String _baseUrl = 'https://newsapi.org/v2';
 
   Future<List<NewsModel>> getTopHeadlines({String category = 'general', String? query}) async {

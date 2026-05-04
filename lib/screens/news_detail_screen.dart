@@ -119,7 +119,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                   height: 44,
                   width: 44,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardTheme.color,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -129,9 +129,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.chevron_left_rounded,
-                    color: Colors.black,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -146,7 +146,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
               background: Hero(
                 tag: widget.heroTag,
                 child: Stack(
-
                   fit: StackFit.expand,
                   children: [
                     widget.news.urlToImage != null &&
@@ -169,7 +168,14 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                               ),
                             ),
                           )
-                        : Container(color: theme.colorScheme.primary),
+                        : Container(
+                            color: theme.colorScheme.primary,
+                            child: const Icon(
+                              Icons.newspaper_rounded,
+                              color: Colors.white,
+                              size: 64,
+                            ),
+                          ),
                     // Luxury Gradient Overlay
                     const DecoratedBox(
                       decoration: BoxDecoration(

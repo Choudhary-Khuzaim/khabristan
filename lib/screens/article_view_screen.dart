@@ -20,6 +20,8 @@ class _ArticleViewScreenState extends State<ArticleViewScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
 
+  double _progress = 0;
+
   @override
   void initState() {
     super.initState();
@@ -29,13 +31,24 @@ class _ArticleViewScreenState extends State<ArticleViewScreen> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
-            // Update loading bar.
+            if (mounted) {
+              setState(() {
+                _progress = progress / 100.0;
+              });
+            }
           },
-          onPageStarted: (String url) {},
+          onPageStarted: (String url) {
+            if (mounted) {
+              setState(() {
+                _isLoading = true;
+              });
+            }
+          },
           onPageFinished: (String url) {
             if (mounted) {
               setState(() {
                 _isLoading = false;
+                _progress = 1.0;
               });
             }
           },
@@ -57,7 +70,7 @@ class _ArticleViewScreenState extends State<ArticleViewScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.share),
+            icon: const Icon(Icons.share_rounded),
             onPressed: () {
               Share.share('${widget.title}\n\nRead more at: ${widget.articleUrl}');
             },
@@ -68,8 +81,16 @@ class _ArticleViewScreenState extends State<ArticleViewScreen> {
         children: [
           WebViewWidget(controller: _controller),
           if (_isLoading)
-            const Center(
-              child: CircularProgressIndicator(),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: LinearProgressIndicator(
+                value: _progress,
+                backgroundColor: Colors.transparent,
+                color: Theme.of(context).colorScheme.secondary,
+                minHeight: 3,
+              ),
             ),
         ],
       ),
