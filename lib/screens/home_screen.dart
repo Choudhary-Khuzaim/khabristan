@@ -72,18 +72,22 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     try {
-      final news = await _newsService.getTopHeadlines(
-        category: _selectedCategory,
-      );
+      // Fetch category news and featured news in parallel
+      final results = await Future.wait([
+        _newsService.getTopHeadlines(category: _selectedCategory),
+        if (_selectedCategory == 'general')
+          _newsService.getFeaturedNews(limit: 5)
+        else
+          Future.value(<NewsModel>[]),
+      ]);
+
+      final news = results[0];
+      final featured = results.length > 1 ? results[1] : <NewsModel>[];
+
       setState(() {
         _newsList = news;
         _filteredNewsList = news;
-        // Take top 5 for featured, rest for list if general category
-        if (_selectedCategory == 'general' && news.isNotEmpty) {
-          _featuredNewsList = news.take(5).toList();
-        } else {
-          _featuredNewsList = [];
-        }
+        _featuredNewsList = featured;
         _isLoading = false;
       });
     } catch (e) {
@@ -133,14 +137,35 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _handleGlobalSearch(String query) {
+  void _handleGlobalSearch(String query) async {
     if (query.trim().isEmpty) return;
     
     setState(() {
-      _selectedCategory = query.trim();
+      _isLoading = true;
       _isSearching = true;
     });
-    _loadNews();
+
+    try {
+      final results = await _newsService.searchNews(query: query.trim());
+      setState(() {
+        _filteredNewsList = results;
+        _featuredNewsList = [];
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Search error: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   void _navigateToDetail(NewsModel news, String heroTag) {

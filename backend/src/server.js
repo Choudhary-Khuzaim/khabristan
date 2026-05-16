@@ -3,9 +3,10 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const connectDB = require('./config/db');
+const { initScheduler } = require('./services/scheduler.service');
 
 // Route imports
 const authRoutes = require('./routes/auth.routes');
@@ -18,9 +19,6 @@ const externalNewsRoutes = require('./routes/externalNews.routes');
 // Error handler middleware
 const { errorHandler, notFound } = require('./middleware/error.middleware');
 
-// Connect to MongoDB
-connectDB();
-
 const app = express();
 
 // ============================================
@@ -30,9 +28,9 @@ const app = express();
 // Security headers
 app.use(helmet());
 
-// CORS configuration
+// CORS configuration — allow Flutter apps from any origin
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
@@ -56,7 +54,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.get('/api/v1', (req, res) => {
   res.json({
     success: true,
-    message: '🏛️ KhabarIsTan API v1 — Premium News Backend',
+    message: '🏛️ KhabarIsTan API v2.1 — Premium News Backend',
     version: '2.1.0',
     endpoints: {
       auth: '/api/v1/auth',
@@ -65,6 +63,12 @@ app.get('/api/v1', (req, res) => {
       bookmarks: '/api/v1/bookmarks',
       categories: '/api/v1/categories',
       externalNews: '/api/v1/external-news',
+    },
+    dailyNewsEndpoints: {
+      daily: '/api/v1/external-news/daily?category=general&page=1&limit=20',
+      featured: '/api/v1/external-news/featured?limit=5',
+      search: '/api/v1/external-news/search?q=your_query',
+      stats: '/api/v1/external-news/stats',
     },
   });
 });
@@ -87,9 +91,28 @@ app.use(errorHandler);
 // ============================================
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`\n🚀 KhabarIsTan Backend running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-  console.log(`📡 API Base: http://localhost:${PORT}/api/v1\n`);
-});
+const startServer = async () => {
+  try {
+    // Connect to MongoDB first
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`\n🚀 ═══════════════════════════════════════════`);
+      console.log(`   KhabarIsTan Backend v2.1.0`);
+      console.log(`   Mode: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`   Port: ${PORT}`);
+      console.log(`   API:  http://localhost:${PORT}/api/v1`);
+      console.log(`   ═══════════════════════════════════════════\n`);
+
+      // Start the news scheduler AFTER server is up
+      initScheduler();
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 module.exports = app;
