@@ -9,7 +9,12 @@ const BASE_URL = 'https://newsapi.org/v2';
 function fetchUrl(url) {
   return new Promise((resolve, reject) => {
     const client = url.startsWith('https') ? https : http;
-    client.get(url, (resp) => {
+    const options = {
+      headers: {
+        'User-Agent': 'KhabarIsTan-App/1.0'
+      }
+    };
+    client.get(url, options, (resp) => {
       let data = '';
       resp.on('data', (chunk) => { data += chunk; });
       resp.on('end', () => {

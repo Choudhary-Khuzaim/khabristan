@@ -5,12 +5,14 @@ import '../models/news_model.dart';
 class NewsService {
   // ============================================
   // Backend API Base URL
-  // Change this to your deployed backend URL in production
-  // For Android emulator use: http://10.0.2.2:5000
-  // For iOS simulator use: http://localhost:5000
-  // For real device use your PC's local IP: http://192.168.x.x:5000
   // ============================================
-  static const String _backendUrl = 'http://localhost:5000/api/v1';
+  // IMPORTANT:
+  // - If using ANDROID EMULATOR, use: 'http://10.0.2.2:5000/api/v1'
+  // - If using iOS SIMULATOR or WEB, use: 'http://localhost:5000/api/v1'
+  // - If using a REAL DEVICE, use your PC's IP: 'http://192.168.x.x:5000/api/v1'
+  
+  // Currently set for ANDROID EMULATOR. Change if using iOS.
+  static const String _backendUrl = 'http://10.0.2.2:5000/api/v1';
 
   // ============================================
   // Get daily news from backend (cached, fast)
