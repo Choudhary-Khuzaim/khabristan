@@ -5,15 +5,14 @@ const morgan = require('morgan');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-const connectDB = require('./config/db');
-const { initScheduler } = require('./services/scheduler.service');
+
 
 // Route imports
-const authRoutes = require('./routes/auth.routes');
-const userRoutes = require('./routes/user.routes');
-const newsRoutes = require('./routes/news.routes');
-const bookmarkRoutes = require('./routes/bookmark.routes');
-const categoryRoutes = require('./routes/category.routes');
+// const authRoutes = require('./routes/auth.routes');
+// const userRoutes = require('./routes/user.routes');
+// const newsRoutes = require('./routes/news.routes');
+// const bookmarkRoutes = require('./routes/bookmark.routes');
+// const categoryRoutes = require('./routes/category.routes');
 const externalNewsRoutes = require('./routes/externalNews.routes');
 
 // Error handler middleware
@@ -73,11 +72,11 @@ app.get('/api/v1', (req, res) => {
   });
 });
 
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/users', userRoutes);
-app.use('/api/v1/news', newsRoutes);
-app.use('/api/v1/bookmarks', bookmarkRoutes);
-app.use('/api/v1/categories', categoryRoutes);
+// app.use('/api/v1/auth', authRoutes);
+// app.use('/api/v1/users', userRoutes);
+// app.use('/api/v1/news', newsRoutes);
+// app.use('/api/v1/bookmarks', bookmarkRoutes);
+// app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/external-news', externalNewsRoutes);
 
 // ============================================
@@ -93,8 +92,6 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    // Connect to MongoDB first
-    await connectDB();
 
     app.listen(PORT, () => {
       console.log(`\n🚀 ═══════════════════════════════════════════`);
@@ -104,8 +101,6 @@ const startServer = async () => {
       console.log(`   API:  http://localhost:${PORT}/api/v1`);
       console.log(`   ═══════════════════════════════════════════\n`);
 
-      // Start the news scheduler AFTER server is up
-      initScheduler();
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
