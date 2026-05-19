@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/preferences_service.dart';
 import 'app_name_screen.dart';
-import 'home_screen.dart';
-import 'onboarding_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -48,25 +45,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   Future<void> _checkStatusAndNavigate() async {
     if (!mounted) return;
 
-    final prefs = PreferencesService();
-    final bool isOnboardingComplete = await prefs.isOnboardingComplete();
-    final String? username = await prefs.getUsername();
-
-    if (!mounted) return;
-
-    Widget nextScreen;
-    if (username == null) {
-      nextScreen = const AppNameScreen();
-    } else if (!isOnboardingComplete) {
-      nextScreen = const OnboardingScreen();
-    } else {
-      nextScreen = const HomeScreen();
-    }
-
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
+        pageBuilder: (context, animation, secondaryAnimation) => const AppNameScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },

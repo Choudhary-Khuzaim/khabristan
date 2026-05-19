@@ -3,7 +3,7 @@ import 'edit_profile_screen.dart';
 import 'my_news_screen.dart';
 import '../services/preferences_service.dart';
 import '../services/theme_service.dart';
-import 'login_screen.dart';
+import 'welcome_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'about_screen.dart';
 
@@ -244,7 +244,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const LoginScreen(),
+                                builder: (context) => const WelcomeScreen(),
                               ),
                               (route) => false,
                             );

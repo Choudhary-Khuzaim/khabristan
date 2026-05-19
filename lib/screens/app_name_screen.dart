@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 
-import '../services/preferences_service.dart';
-import 'login_screen.dart';
-import 'onboarding_screen.dart';
-
 class AppNameScreen extends StatefulWidget {
   const AppNameScreen({super.key});
 
@@ -48,25 +44,12 @@ class _AppNameScreenState extends State<AppNameScreen>
       _isLoading = true;
     });
 
-    final prefs = PreferencesService();
-    final bool isOnboardingComplete = await prefs.isOnboardingComplete();
-    final String? username = await prefs.getUsername();
-
     if (!mounted) return;
-
-    Widget nextScreen;
-    if (username == null) {
-      nextScreen = const LoginScreen();
-    } else if (!isOnboardingComplete) {
-      nextScreen = const OnboardingScreen();
-    } else {
-      nextScreen = const HomeScreen();
-    }
 
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
+        pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0);
           const end = Offset.zero;
