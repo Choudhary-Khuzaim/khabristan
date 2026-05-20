@@ -1,7 +1,22 @@
 const https = require('https');
 const http = require('http');
+const News = require('../models/News.model');
+const { fetchAllDailyNews, cleanupOldNews } = require('../services/newsFetcher.service');
+
 const NEWS_API_KEY = process.env.NEWS_API_KEY || '7011d13788754be985396556f8490a2a';
 const BASE_URL = 'https://newsapi.org/v2';
+
+// Format helper
+function _fmt(n) {
+  return {
+    _id: n._id, title: n.title, description: n.description,
+    url: n.url || `/news/${n.slug}`, urlToImage: n.urlToImage,
+    publishedAt: n.publishedAt ? new Date(n.publishedAt).toISOString() : new Date(n.createdAt).toISOString(),
+    author: n.authorName || (n.author && n.author.name) || 'Anonymous',
+    source: n.source, category: n.category, slug: n.slug,
+    views: n.views, likes: n.likes, isFeatured: n.isFeatured, status: n.status,
+  };
+}
 
 function fetchUrl(url) {
   return new Promise((resolve, reject) => {
@@ -38,7 +53,7 @@ const getTopHeadlines = async (req, res) => {
       success: true,
       status: data.status,
       totalResults: data.totalResults || 0,
-      articles: (data.articles || []).map(_formatArticle),
+      articles: (data.articles || []).map(_formatProxyArticle),
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error fetching headlines', error: error.message });
@@ -61,7 +76,7 @@ const getEverything = async (req, res) => {
       success: true,
       status: data.status,
       totalResults: data.totalResults || 0,
-      articles: (data.articles || []).map(_formatArticle),
+      articles: (data.articles || []).map(_formatProxyArticle),
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error searching news', error: error.message });
@@ -69,27 +84,35 @@ const getEverything = async (req, res) => {
 };
 
 // ============================================
-// @desc    Get daily news (Proxied from NewsAPI)
+// @desc    Get daily news (Cached in MongoDB)
 // @route   GET /api/v1/external-news/daily
 // @access  Public
 // ============================================
 const getDailyNews = async (req, res) => {
   try {
     let { category = 'all', page = 1, limit = 20 } = req.query;
-    if (category === 'all') category = 'general';
+    const query = { status: 'published' };
     
-    let url = `${BASE_URL}/top-headlines?apiKey=${NEWS_API_KEY}&country=us&category=${category}&page=${page}&pageSize=${limit}`;
-    const data = await fetchUrl(url);
+    if (category !== 'all') {
+      query.category = category.toLowerCase();
+    }
+
+    const total = await News.countDocuments(query);
+    const news = await News.find(query)
+      .sort('-publishedAt')
+      .skip((parseInt(page) - 1) * parseInt(limit))
+      .limit(parseInt(limit));
+
     res.json({
       success: true,
       status: 'ok',
-      totalResults: data.totalResults || 0,
-      articles: (data.articles || []).map(_formatArticle),
+      totalResults: total,
+      articles: news.map(_fmt),
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
-        totalPages: Math.ceil((data.totalResults || 0) / parseInt(limit)),
-        total: data.totalResults || 0,
+        totalPages: Math.ceil(total / parseInt(limit)),
+        total,
       },
     });
   } catch (error) {
@@ -98,20 +121,28 @@ const getDailyNews = async (req, res) => {
 };
 
 // ============================================
-// @desc    Get featured/breaking news (Proxied from NewsAPI)
+// @desc    Get featured/breaking news (Cached in MongoDB)
 // @route   GET /api/v1/external-news/featured
 // @access  Public
 // ============================================
 const getFeaturedDailyNews = async (req, res) => {
   try {
     const { limit = 5 } = req.query;
-    let url = `${BASE_URL}/top-headlines?apiKey=${NEWS_API_KEY}&country=us&pageSize=${limit}`;
-    const data = await fetchUrl(url);
+    let news = await News.find({ status: 'published', isFeatured: true })
+      .sort('-publishedAt')
+      .limit(parseInt(limit));
+      
+    if (news.length === 0) {
+      news = await News.find({ status: 'published' })
+        .sort('-views -publishedAt')
+        .limit(parseInt(limit));
+    }
+    
     res.json({
       success: true,
       status: 'ok',
-      totalResults: data.totalResults || 0,
-      articles: (data.articles || []).map(_formatArticle),
+      totalResults: news.length,
+      articles: news.map(_fmt),
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error fetching featured news', error: error.message });
@@ -119,7 +150,7 @@ const getFeaturedDailyNews = async (req, res) => {
 };
 
 // ============================================
-// @desc    Search news (Proxied from NewsAPI)
+// @desc    Search news (Cached in MongoDB)
 // @route   GET /api/v1/external-news/search
 // @access  Public
 // ============================================
@@ -128,19 +159,31 @@ const searchDailyNews = async (req, res) => {
     const { q, page = 1, limit = 20 } = req.query;
     if (!q) return res.status(400).json({ success: false, message: 'Query parameter "q" is required' });
 
-    const url = `${BASE_URL}/everything?q=${encodeURIComponent(q)}&apiKey=${NEWS_API_KEY}&page=${page}&pageSize=${limit}&sortBy=publishedAt`;
-    const data = await fetchUrl(url);
+    // Use regex search
+    const query = {
+      status: 'published',
+      $or: [
+        { title: { $regex: q, $options: 'i' } },
+        { description: { $regex: q, $options: 'i' } },
+      ],
+    };
+
+    const total = await News.countDocuments(query);
+    const news = await News.find(query)
+      .sort('-publishedAt')
+      .skip((parseInt(page) - 1) * parseInt(limit))
+      .limit(parseInt(limit));
 
     res.json({
       success: true,
       status: 'ok',
-      totalResults: data.totalResults || 0,
-      articles: (data.articles || []).map(_formatArticle),
+      totalResults: total,
+      articles: news.map(_fmt),
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
-        totalPages: Math.ceil((data.totalResults || 0) / parseInt(limit)),
-        total: data.totalResults || 0,
+        totalPages: Math.ceil(total / parseInt(limit)),
+        total,
       },
     });
   } catch (error) {
@@ -154,7 +197,12 @@ const searchDailyNews = async (req, res) => {
 // @access  Private/Admin
 // ============================================
 const triggerFetchNow = async (req, res) => {
-  res.json({ success: true, message: 'Manual fetch complete (Database disabled).', articlesAdded: 0 });
+  try {
+    const count = await fetchAllDailyNews();
+    res.json({ success: true, message: 'Manual fetch complete.', articlesAdded: count });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error fetching news', error: error.message });
+  }
 };
 
 // ============================================
@@ -163,7 +211,12 @@ const triggerFetchNow = async (req, res) => {
 // @access  Private/Admin
 // ============================================
 const triggerCleanup = async (req, res) => {
-  res.json({ success: true, message: 'Cleanup complete (Database disabled).', articlesRemoved: 0 });
+  try {
+    const count = await cleanupOldNews();
+    res.json({ success: true, message: 'Cleanup complete.', articlesRemoved: count });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error cleaning up', error: error.message });
+  }
 };
 
 // ============================================
@@ -172,22 +225,30 @@ const triggerCleanup = async (req, res) => {
 // @access  Public
 // ============================================
 const getNewsStats = async (req, res) => {
-  res.json({
-    success: true,
-    data: {
-      totalArticles: 0,
-      todayArticles: 0,
-      categoryCounts: {},
-      lastUpdated: new Date().toISOString(),
-    },
-  });
+  try {
+    const totalArticles = await News.countDocuments({ status: 'published' });
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayArticles = await News.countDocuments({ status: 'published', createdAt: { $gte: today } });
+
+    res.json({
+      success: true,
+      data: {
+        totalArticles,
+        todayArticles,
+        lastUpdated: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error getting stats', error: error.message });
+  }
 };
 
 // ============================================
-// Format helpers
+// Format proxy article helper
 // ============================================
-function _formatArticle(article) {
-  // Return the format the flutter app expects
+function _formatProxyArticle(article) {
   return {
     _id: Math.random().toString(36).substring(7),
     title: article.title || 'No Title',

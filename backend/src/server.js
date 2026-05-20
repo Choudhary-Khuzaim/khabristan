@@ -4,8 +4,8 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
-
-
+const connectDB = require('./config/db');
+const { initScheduler } = require('./services/scheduler.service');
 
 // Route imports
 // const authRoutes = require('./routes/auth.routes');
@@ -92,6 +92,7 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
+    await connectDB();
 
     app.listen(PORT, () => {
       console.log(`\n🚀 ═══════════════════════════════════════════`);
@@ -100,7 +101,8 @@ const startServer = async () => {
       console.log(`   Port: ${PORT}`);
       console.log(`   API:  http://localhost:${PORT}/api/v1`);
       console.log(`   ═══════════════════════════════════════════\n`);
-
+      
+      initScheduler();
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
