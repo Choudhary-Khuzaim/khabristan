@@ -8,11 +8,11 @@ const connectDB = require('./config/db');
 const { initScheduler } = require('./services/scheduler.service');
 
 // Route imports
-// const authRoutes = require('./routes/auth.routes');
-// const userRoutes = require('./routes/user.routes');
-// const newsRoutes = require('./routes/news.routes');
-// const bookmarkRoutes = require('./routes/bookmark.routes');
-// const categoryRoutes = require('./routes/category.routes');
+const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
+const newsRoutes = require('./routes/news.routes');
+const bookmarkRoutes = require('./routes/bookmark.routes');
+const categoryRoutes = require('./routes/category.routes');
 const externalNewsRoutes = require('./routes/externalNews.routes');
 
 // Error handler middleware
@@ -72,11 +72,11 @@ app.get('/api/v1', (req, res) => {
   });
 });
 
-// app.use('/api/v1/auth', authRoutes);
-// app.use('/api/v1/users', userRoutes);
-// app.use('/api/v1/news', newsRoutes);
-// app.use('/api/v1/bookmarks', bookmarkRoutes);
-// app.use('/api/v1/categories', categoryRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/news', newsRoutes);
+app.use('/api/v1/bookmarks', bookmarkRoutes);
+app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/external-news', externalNewsRoutes);
 
 // ============================================
