@@ -11,13 +11,16 @@ const signup = async (req, res) => {
   try {
     const { name, email, username, password } = req.body;
 
+    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedUsername = username.toLowerCase().trim();
+
     // Check if user already exists
     const existingUser = await User.findOne({
-      $or: [{ email }, { username }],
+      $or: [{ email: normalizedEmail }, { username: normalizedUsername }],
     });
 
     if (existingUser) {
-      const field = existingUser.email === email ? 'email' : 'username';
+      const field = existingUser.email === normalizedEmail ? 'email' : 'username';
       return res.status(400).json({
         success: false,
         message: `This ${field} is already registered`,
@@ -27,8 +30,8 @@ const signup = async (req, res) => {
     // Create user
     const user = await User.create({
       name,
-      email,
-      username,
+      email: normalizedEmail,
+      username: normalizedUsername,
       password,
     });
 
@@ -69,10 +72,11 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
+    const normalizedUsername = username.toLowerCase().trim();
 
     // Find user by username or email (allow both)
     const user = await User.findOne({
-      $or: [{ username }, { email: username }],
+      $or: [{ username: normalizedUsername }, { email: normalizedUsername }],
     }).select('+password');
 
     if (!user) {
@@ -169,7 +173,8 @@ const getMe = async (req, res) => {
 // ============================================
 const forgotPassword = async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const normalizedEmail = req.body.email.toLowerCase().trim();
+    const user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
       return res.status(404).json({

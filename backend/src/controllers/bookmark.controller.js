@@ -10,7 +10,8 @@ const getBookmarks = async (req, res) => {
       .sort('-createdAt');
 
     const articles = bookmarks.map((b) => {
-      if (b.type === 'internal' && b.news) {
+      if (b.type === 'internal') {
+        if (!b.news) return null;
         return {
           _id: b._id,
           type: 'internal',
@@ -25,9 +26,9 @@ const getBookmarks = async (req, res) => {
       return {
         _id: b._id,
         type: 'external',
-        ...b.externalArticle.toObject(),
+        ...(b.externalArticle ? b.externalArticle.toObject() : {}),
       };
-    });
+    }).filter(Boolean);
 
     res.json({ success: true, totalResults: articles.length, articles });
   } catch (error) {

@@ -127,8 +127,11 @@ async function fetchAllDailyNews() {
   // Mark top articles as featured (most recent 5 with images)
   const recentWithImages = await News.find({
     status: 'published',
-    urlToImage: { $ne: 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800' },
-    urlToImage: { $exists: true, $ne: '' },
+    urlToImage: {
+      $exists: true,
+      $ne: '',
+      $nin: ['https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800']
+    },
   })
     .sort('-publishedAt')
     .limit(10);

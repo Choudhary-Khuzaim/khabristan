@@ -134,7 +134,7 @@ const toggleLike = async (req, res) => {
     const news = await News.findById(req.params.id);
     if (!news) return res.status(404).json({ success: false, message: 'News not found' });
     const userId = req.user.id;
-    const isLiked = news.likedBy.includes(userId);
+    const isLiked = news.likedBy.some((id) => id.toString() === userId);
     if (isLiked) { news.likedBy.pull(userId); news.likes = Math.max(0, news.likes - 1); }
     else { news.likedBy.push(userId); news.likes += 1; }
     await news.save();

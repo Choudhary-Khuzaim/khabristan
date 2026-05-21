@@ -84,7 +84,6 @@ const newsSchema = new mongoose.Schema(
 // Indexes for performance
 newsSchema.index({ category: 1, publishedAt: -1 });
 newsSchema.index({ author: 1, createdAt: -1 });
-newsSchema.index({ slug: 1 });
 newsSchema.index({ title: 'text', description: 'text' });
 
 // Generate slug before save

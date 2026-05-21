@@ -9,7 +9,7 @@ const {
   triggerCleanup,
   getNewsStats,
 } = require('../controllers/externalNews.controller');
-// const { protect, authorize } = require('../middleware/auth.middleware');
+const { protect, authorize } = require('../middleware/auth.middleware');
 const { apiLimiter } = require('../middleware/rateLimiter.middleware');
 
 // ============================================
@@ -29,7 +29,7 @@ router.get('/everything', apiLimiter, getEverything);
 // ============================================
 // Admin routes (manual triggers)
 // ============================================
-router.post('/fetch-now', triggerFetchNow);
-router.post('/cleanup', triggerCleanup);
+router.post('/fetch-now', protect, authorize('admin'), triggerFetchNow);
+router.post('/cleanup', protect, authorize('admin'), triggerCleanup);
 
 module.exports = router;
