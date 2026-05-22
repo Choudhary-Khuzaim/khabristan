@@ -73,9 +73,7 @@ class _MyNewsScreenState extends State<MyNewsScreen> {
                 );
               }
 
-              if (_localNewsList == null) {
-                _localNewsList = List.from(snapshot.data ?? []);
-              }
+              _localNewsList ??= List.from(snapshot.data ?? []);
               final newsList = _localNewsList!;
 
               if (newsList.isEmpty) {

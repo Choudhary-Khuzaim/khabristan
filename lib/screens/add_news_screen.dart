@@ -68,9 +68,9 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
 
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Row(
-              children: const [
+              children: [
                 Icon(Icons.check_circle_rounded, color: Colors.white),
                 SizedBox(width: 8),
                 Text('News published successfully!'),

@@ -121,7 +121,7 @@ class NewsService {
   // ============================================
   Future<Map<String, dynamic>> getNewsStats() async {
     try {
-      final url = '$_backendUrl/external-news/stats';
+      const url = '$_backendUrl/external-news/stats';
       final response = await http
           .get(Uri.parse(url))
           .timeout(const Duration(seconds: 10));
