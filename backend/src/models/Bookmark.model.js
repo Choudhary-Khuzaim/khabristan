@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('../config/mongoose.mock');
 
 const bookmarkSchema = new mongoose.Schema(
   {

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('../config/mongoose.mock');
 require('dotenv').config({ path: require('path').join(__dirname, '../../.env') });
 
 const User = require('../models/User.model');
@@ -56,6 +56,8 @@ const seedDB = async () => {
       // Create sample news articles
       const sampleNews = [
         { title: 'KhabarIsTan Launches Premium News Platform', description: 'KhabarIsTan, a revolutionary news platform, has officially launched with premium features including AI-powered voice reporting, citizen journalism tools, and a luxury Royal Blue & Gold interface.', category: 'technology', isFeatured: true },
+        { title: 'Pakistan Celebrates Cultural Heritage Week', description: 'Festivities and cultural events are taking place across Pakistan to mark the annual Cultural Heritage Week, showcasing art, music, and traditional crafts.', category: 'general', isFeatured: true },
+        { title: 'Major Development Projects Approved', description: 'The local government has approved several infrastructure projects aimed at improving public transport and green spaces in city centers.', category: 'general' },
         { title: 'Global Markets Show Strong Recovery', description: 'Stock markets worldwide are showing positive trends as investors respond to encouraging economic data and corporate earnings reports.', category: 'business', isFeatured: true },
         { title: 'New Breakthrough in Renewable Energy', description: 'Scientists have achieved a major breakthrough in solar cell efficiency, potentially revolutionizing the renewable energy sector.', category: 'science' },
         { title: 'Premier League Season Kicks Off', description: 'The new Premier League season starts this weekend with exciting matchups and new signings promising an action-packed campaign.', category: 'sports' },

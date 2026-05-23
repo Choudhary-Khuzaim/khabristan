@@ -39,7 +39,7 @@ const COUNTRIES = ['us', 'gb'];
 // ============================================
 async function fetchAndStoreCategory(category, country = 'us', systemUser) {
   try {
-    const url = `${BASE_URL}/top-headlines?apiKey=${NEWS_API_KEY}&country=${country}&category=${category}&pageSize=20`;
+    const url = `https://saurav.tech/NewsAPI/top-headlines/category/${category}/${country}.json`;
     const data = await fetchUrl(url);
 
     if (data.status !== 'ok' || !data.articles || data.articles.length === 0) {

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('../config/mongoose.mock');
 const slugify = require('slugify');
 
 const newsSchema = new mongoose.Schema(

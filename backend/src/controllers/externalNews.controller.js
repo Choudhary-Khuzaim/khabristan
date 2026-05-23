@@ -44,10 +44,8 @@ function fetchUrl(url) {
 // ============================================
 const getTopHeadlines = async (req, res) => {
   try {
-    const { category = 'general', country = 'us', q, page = 1, pageSize = 20 } = req.query;
-    let url = `${BASE_URL}/top-headlines?apiKey=${NEWS_API_KEY}&country=${country}&category=${category}&page=${page}&pageSize=${pageSize}`;
-    if (q) url += `&q=${encodeURIComponent(q)}`;
-
+    const { category = 'general', country = 'us', page = 1, pageSize = 20 } = req.query;
+    const url = `https://saurav.tech/NewsAPI/top-headlines/category/${category}/${country}.json`;
     const data = await fetchUrl(url);
     res.json({
       success: true,
