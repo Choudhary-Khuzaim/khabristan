@@ -5,7 +5,7 @@ function _fmt(n) {
   return {
     _id: n._id, title: n.title, description: n.description,
     url: n.url || `/news/${n.slug}`, urlToImage: n.urlToImage,
-    publishedAt: n.publishedAt ? n.publishedAt.toISOString() : n.createdAt.toISOString(),
+    publishedAt: n.publishedAt ? new Date(n.publishedAt).toISOString() : new Date(n.createdAt).toISOString(),
     author: n.authorName || (n.author && n.author.name) || 'Anonymous',
     source: n.source, category: n.category, slug: n.slug,
     views: n.views, likes: n.likes, isFeatured: n.isFeatured, status: n.status,
