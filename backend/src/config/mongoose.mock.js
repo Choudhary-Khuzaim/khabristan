@@ -42,8 +42,29 @@ function matchQuery(doc, query) {
       continue;
     }
 
+    if (key === '$text') {
+      if (val && typeof val === 'object' && val.$search) {
+        const searchStr = val.$search.toLowerCase();
+        const docText = `${doc.title || ''} ${doc.description || ''} ${doc.content || ''}`.toLowerCase();
+        if (!docText.includes(searchStr)) return false;
+      }
+      continue;
+    }
+
     const docVal = doc[key];
     if (val && typeof val === 'object' && !Array.isArray(val)) {
+      if (val instanceof RegExp) {
+        if (!val.test(docVal ? docVal.toString() : '')) return false;
+        continue;
+      }
+      if ('$regex' in val) {
+        const regexStr = val.$regex;
+        const options = val.$options || '';
+        const regex = new RegExp(regexStr, options);
+        if (!regex.test(docVal ? docVal.toString() : '')) return false;
+        continue;
+      }
+
       for (const op in val) {
         const opVal = val[op];
         if (op === '$gt') {
@@ -58,17 +79,25 @@ function matchQuery(doc, query) {
           if (docVal == opVal) return false;
         } else if (op === '$in') {
           if (!Array.isArray(opVal) || !opVal.includes(docVal)) return false;
+        } else if (op === '$nin') {
+          if (Array.isArray(opVal) && opVal.includes(docVal)) return false;
+        } else if (op === '$exists') {
+          const exists = (docVal !== undefined && docVal !== null);
+          if (opVal !== exists) return false;
         }
       }
     } else {
-      const strDocVal = docVal ? docVal.toString() : '';
-      const strVal = val ? val.toString() : '';
-      if (strDocVal !== strVal) return false;
+      if (docVal !== val) {
+        const strDocVal = (docVal !== undefined && docVal !== null) ? docVal.toString() : '';
+        const strVal = (val !== undefined && val !== null) ? val.toString() : '';
+        if (strDocVal !== strVal) return false;
+      }
     }
   }
 
   return true;
 }
+
 
 const modelRegistry = {};
 
