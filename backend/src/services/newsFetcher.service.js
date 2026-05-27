@@ -39,44 +39,60 @@ const COUNTRIES = ['us', 'gb'];
 // ============================================
 async function fetchAndStoreCategory(category, country = 'us', systemUser) {
   try {
-    const url = `https://saurav.tech/NewsAPI/top-headlines/category/${category}/${country}.json`;
+    let rssUrl = 'https://news.google.com/rss';
+    if (category !== 'general') {
+      rssUrl = `https://news.google.com/rss/headlines/section/topic/${category.toUpperCase()}`;
+    }
+    rssUrl += `?hl=en-${country.toUpperCase()}&gl=${country.toUpperCase()}&ceid=${country.toUpperCase()}:en`;
+
+    const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
     const data = await fetchUrl(url);
 
-    if (data.status !== 'ok' || !data.articles || data.articles.length === 0) {
+    if (data.status !== 'ok' || !data.items || data.items.length === 0) {
       console.log(`   ⚠️  No articles for ${category}/${country}`);
       return 0;
     }
 
     let savedCount = 0;
 
-    for (const article of data.articles) {
+    for (const item of data.items) {
       // Skip articles with [Removed] title or no title
-      if (!article.title || article.title === '[Removed]') continue;
-      if (!article.description || article.description === '[Removed]') continue;
+      if (!item.title || item.title === '[Removed]') continue;
 
       // Check if this article already exists (by title match to avoid duplicates)
       const exists = await News.findOne({
         $or: [
-          { title: article.title },
-          { url: article.url },
+          { title: item.title },
+          { url: item.link },
         ],
       });
 
       if (exists) continue;
 
+      // Clean up description (rss feeds often contain html)
+      let desc = item.description || item.content || 'No description available.';
+      desc = desc.replace(/<[^>]+>/g, '').trim(); // Remove HTML tags
+      
+      // Extract img from description if it exists
+      let imageUrl = item.thumbnail || (item.enclosure && item.enclosure.link);
+      if (!imageUrl && item.description && item.description.includes('<img')) {
+        const imgMatch = item.description.match(/<img[^>]+src="([^">]+)"/);
+        if (imgMatch) imageUrl = imgMatch[1];
+      }
+
       // Create the news article in our database
       await News.create({
-        title: article.title,
-        description: article.description || 'No description available.',
-        url: article.url || '',
-        urlToImage: article.urlToImage || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800',
+        title: item.title,
+        description: desc,
+        url: item.link || '',
+        urlToImage: imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800',
         category: category,
-        source: article.source?.name || 'NewsAPI',
+        source: data.feed?.title || 'Google News',
         author: systemUser._id,
-        authorName: article.author || article.source?.name || 'NewsAPI',
+        authorName: item.author || 'Google News',
         status: 'published',
         isFeatured: false,
-        publishedAt: article.publishedAt ? new Date(article.publishedAt) : new Date(),
+        publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
         tags: [category, country],
       });
 

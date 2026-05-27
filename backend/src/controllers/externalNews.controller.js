@@ -45,13 +45,20 @@ function fetchUrl(url) {
 const getTopHeadlines = async (req, res) => {
   try {
     const { category = 'general', country = 'us', page = 1, pageSize = 20 } = req.query;
-    const url = `https://saurav.tech/NewsAPI/top-headlines/category/${category}/${country}.json`;
+    let rssUrl = 'https://news.google.com/rss';
+    if (category !== 'general') {
+      rssUrl = `https://news.google.com/rss/headlines/section/topic/${category.toUpperCase()}`;
+    }
+    rssUrl += `?hl=en-${country.toUpperCase()}&gl=${country.toUpperCase()}&ceid=${country.toUpperCase()}:en`;
+
+    const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
     const data = await fetchUrl(url);
+
     res.json({
       success: true,
       status: data.status,
-      totalResults: data.totalResults || 0,
-      articles: (data.articles || []).map(_formatProxyArticle),
+      totalResults: data.items ? data.items.length : 0,
+      articles: (data.items || []).map(_formatProxyArticle),
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error fetching headlines', error: error.message });
@@ -68,13 +75,15 @@ const getEverything = async (req, res) => {
     const { q, page = 1, pageSize = 20, sortBy = 'publishedAt' } = req.query;
     if (!q) return res.status(400).json({ success: false, message: 'Query parameter "q" is required' });
 
-    const url = `${BASE_URL}/everything?q=${encodeURIComponent(q)}&apiKey=${NEWS_API_KEY}&page=${page}&pageSize=${pageSize}&sortBy=${sortBy}`;
+    const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-US&gl=US&ceid=US:en`;
+    const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
     const data = await fetchUrl(url);
+
     res.json({
       success: true,
       status: data.status,
-      totalResults: data.totalResults || 0,
-      articles: (data.articles || []).map(_formatProxyArticle),
+      totalResults: data.items ? data.items.length : 0,
+      articles: (data.items || []).map(_formatProxyArticle),
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error searching news', error: error.message });
@@ -247,15 +256,24 @@ const getNewsStats = async (req, res) => {
 // Format proxy article helper
 // ============================================
 function _formatProxyArticle(article) {
+  let desc = article.description || article.content || 'No Description';
+  desc = desc.replace(/<[^>]+>/g, '').trim(); // Strip HTML
+  
+  let imageUrl = article.thumbnail || (article.enclosure && article.enclosure.link);
+  if (!imageUrl && article.description && article.description.includes('<img')) {
+    const imgMatch = article.description.match(/<img[^>]+src="([^">]+)"/);
+    if (imgMatch) imageUrl = imgMatch[1];
+  }
+
   return {
     _id: Math.random().toString(36).substring(7),
     title: article.title || 'No Title',
-    description: article.description || 'No Description',
-    url: article.url || '',
-    urlToImage: article.urlToImage,
-    publishedAt: article.publishedAt ? new Date(article.publishedAt).toISOString() : new Date().toISOString(),
-    author: article.author || 'NewsAPI',
-    source: article.source ? article.source.name : 'NewsAPI',
+    description: desc,
+    url: article.link || article.url || '',
+    urlToImage: imageUrl || article.urlToImage || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800',
+    publishedAt: article.pubDate || article.publishedAt ? new Date(article.pubDate || article.publishedAt).toISOString() : new Date().toISOString(),
+    author: article.author || 'Google News',
+    source: article.source ? (article.source.name || article.source) : 'Google News',
     category: 'general',
     views: 0,
     likes: 0,
