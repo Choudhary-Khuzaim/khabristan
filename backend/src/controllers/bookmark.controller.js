@@ -26,7 +26,9 @@ const getBookmarks = async (req, res) => {
       return {
         _id: b._id,
         type: 'external',
-        ...(b.externalArticle ? b.externalArticle.toObject() : {}),
+        ...(b.externalArticle && typeof b.externalArticle.toObject === 'function'
+          ? b.externalArticle.toObject()
+          : (b.externalArticle || {})),
       };
     }).filter(Boolean);
 

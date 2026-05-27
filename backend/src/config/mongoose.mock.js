@@ -199,7 +199,12 @@ class MockQuery {
             if (pathInfo) {
               const refId = doc[popField];
               if (refId) {
-                const refDoc = await RefModel.findById(refId);
+                let refDoc;
+                if (pop.select) {
+                  refDoc = await RefModel.findById(refId).select(pop.select);
+                } else {
+                  refDoc = await RefModel.findById(refId);
+                }
                 doc[popField] = refDoc;
               }
             } else {
@@ -211,7 +216,12 @@ class MockQuery {
                 if (localVal) {
                   const queryObj = {};
                   queryObj[foreignField] = localVal;
-                  const refDocs = await RefModel.find(queryObj);
+                  let refDocs;
+                  if (pop.select) {
+                    refDocs = await RefModel.find(queryObj).select(pop.select);
+                  } else {
+                    refDocs = await RefModel.find(queryObj);
+                  }
                   if (virtualInfo.count) {
                     doc[popField] = refDocs.length;
                   } else {
@@ -220,6 +230,79 @@ class MockQuery {
                 }
               }
             }
+          }
+        }
+      }
+    }
+
+    // Apply select projection rules to returned docs
+    const schema = ModelClass.schema;
+    if (schema) {
+      // Find all fields marked with select: false in the schema definition
+      const defaultExcludedFields = [];
+      for (const key in schema.paths) {
+        if (schema.paths[key] && schema.paths[key].select === false) {
+          defaultExcludedFields.push(key);
+        }
+      }
+
+      // Parse this._selectFields
+      let selectFields = null;
+      let excludeFields = null;
+      let forceIncludeFields = [];
+
+      if (typeof this._selectFields === 'string') {
+        const parts = this._selectFields.trim().split(/\s+/);
+        for (const part of parts) {
+          if (part.startsWith('-')) {
+            if (!excludeFields) excludeFields = [];
+            excludeFields.push(part.substring(1));
+          } else if (part.startsWith('+')) {
+            forceIncludeFields.push(part.substring(1));
+          } else {
+            if (!selectFields) selectFields = [];
+            selectFields.push(part);
+          }
+        }
+      } else if (this._selectFields && typeof this._selectFields === 'object') {
+        for (const key in this._selectFields) {
+          const val = this._selectFields[key];
+          if (val === 0 || val === false) {
+            if (!excludeFields) excludeFields = [];
+            excludeFields.push(key);
+          } else if (val === 1 || val === true) {
+            if (!selectFields) selectFields = [];
+            selectFields.push(key);
+          }
+        }
+      }
+
+      // Filter properties of each doc
+      for (const doc of docs) {
+        if (selectFields) {
+          // Inclusion projection
+          const keysToKeep = new Set([
+            '_id', 'id', 'createdAt', 'updatedAt',
+            ...selectFields,
+            ...forceIncludeFields,
+            ...Object.keys(schema.virtuals || {}),
+            ...this._populateFields.map(p => typeof p === 'string' ? p : p.field)
+          ]);
+          for (const key in doc) {
+            if (typeof doc[key] !== 'function' && !key.startsWith('_') && !keysToKeep.has(key)) {
+              delete doc[key];
+            }
+          }
+        } else {
+          // Exclusion projection (defaultExcludedFields + explicit exclusions)
+          const keysToRemove = new Set(excludeFields || []);
+          for (const field of defaultExcludedFields) {
+            if (!forceIncludeFields.includes(field)) {
+              keysToRemove.add(field);
+            }
+          }
+          for (const key of keysToRemove) {
+            delete doc[key];
           }
         }
       }
@@ -275,8 +358,18 @@ function createModelClass(modelName, schema) {
 
   class MockDocument {
     constructor(data, isNew = true) {
+      const proxy = new Proxy(this, {
+        set(target, prop, value) {
+          if (schema.paths[prop] || prop === 'password') {
+            target._modifiedPaths.add(prop);
+          }
+          target[prop] = value;
+          return true;
+        }
+      });
+
       for (const methodName in schema.methods) {
-        this[methodName] = schema.methods[methodName].bind(this);
+        this[methodName] = schema.methods[methodName].bind(proxy);
       }
 
       this._id = data._id || data.id || crypto.randomUUID();
@@ -321,6 +414,8 @@ function createModelClass(modelName, schema) {
           }
         }
       }
+
+      return proxy;
     }
 
     isModified(path) {
@@ -349,7 +444,11 @@ function createModelClass(modelName, schema) {
 
       const plainObj = { ...this };
       for (const key in plainObj) {
-        if (typeof plainObj[key] === 'function' || (key.startsWith('_') && key !== '_id')) {
+        if (
+          typeof plainObj[key] === 'function' || 
+          (key.startsWith('_') && key !== '_id') || 
+          plainObj[key] === undefined
+        ) {
           delete plainObj[key];
         }
       }
@@ -366,7 +465,7 @@ function createModelClass(modelName, schema) {
       plainObj.updatedAt = this.updatedAt;
 
       if (existingIndex !== -1) {
-        items[existingIndex] = plainObj;
+        items[existingIndex] = { ...items[existingIndex], ...plainObj };
       } else {
         items.push(plainObj);
       }
