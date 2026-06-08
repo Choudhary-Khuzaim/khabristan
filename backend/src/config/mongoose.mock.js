@@ -4,6 +4,40 @@ const crypto = require('crypto');
 
 const DB_PATH = path.join(__dirname, 'db.json');
 
+// Helper to resolve nested dotted paths (e.g. "externalArticle.url")
+function getNestedValue(obj, path) {
+  if (!obj) return undefined;
+  if (!path.includes('.')) return obj[path];
+  
+  const parts = path.split('.');
+  let current = obj;
+  for (const part of parts) {
+    if (current === null || current === undefined) return undefined;
+    current = current[part];
+  }
+  return current;
+}
+
+// Helper to add mongoose array methods like pull
+function makeMongooseArray(arr) {
+  if (!arr) arr = [];
+  if (typeof arr.pull !== 'function') {
+    Object.defineProperty(arr, 'pull', {
+      value: function(val) {
+        const index = this.findIndex(item => item && val && item.toString() === val.toString());
+        if (index !== -1) {
+          this.splice(index, 1);
+        }
+        return this;
+      },
+      writable: true,
+      configurable: true,
+      enumerable: false
+    });
+  }
+  return arr;
+}
+
 // Helper to load db
 function loadDB() {
   if (!fs.existsSync(DB_PATH)) {
@@ -51,7 +85,7 @@ function matchQuery(doc, query) {
       continue;
     }
 
-    const docVal = doc[key];
+    const docVal = getNestedValue(doc, key);
     if (val && typeof val === 'object' && !Array.isArray(val)) {
       if (val instanceof RegExp) {
         if (!val.test(docVal ? docVal.toString() : '')) return false;
@@ -148,6 +182,41 @@ class MockQuery {
     
     let results = items.filter(doc => matchQuery(doc, this.filter));
 
+    if (this._updateVal && results.length > 0) {
+      const ModelClass = modelRegistry[this.collectionName];
+      if (ModelClass) {
+        const updates = this._updateVal;
+        const doc = new ModelClass(results[0], false);
+
+        const setUpdates = updates.$set || updates;
+        for (const key in setUpdates) {
+          if (!key.startsWith('$')) {
+            doc.set(key, setUpdates[key]);
+          }
+        }
+
+        if (updates.$addToSet) {
+          for (const key in updates.$addToSet) {
+            const val = updates.$addToSet[key];
+            if (!Array.isArray(doc[key])) doc[key] = [];
+            if (!doc[key].includes(val)) doc[key].push(val);
+          }
+        }
+
+        if (updates.$pull) {
+          for (const key in updates.$pull) {
+            const val = updates.$pull[key];
+            if (Array.isArray(doc[key])) {
+              doc[key] = doc[key].filter(item => item.toString() !== val.toString());
+            }
+          }
+        }
+
+        await doc.save();
+        results[0] = doc;
+      }
+    }
+
     if (this._sortField) {
       let isDesc = false;
       let field = this._sortField;
@@ -177,7 +246,10 @@ class MockQuery {
       return this.isFindOne ? results[0] || null : results;
     }
 
-    let docs = results.map(data => new ModelClass(data, false));
+    let docs = results.map(data => {
+      if (data instanceof ModelClass) return data;
+      return new ModelClass(data, false);
+    });
 
     for (const pop of this._populateFields) {
       const popField = typeof pop === 'string' ? pop : pop.field;
@@ -363,6 +435,9 @@ function createModelClass(modelName, schema) {
           if (schema.paths[prop] || prop === 'password') {
             target._modifiedPaths.add(prop);
           }
+          if (Array.isArray(value)) {
+            value = makeMongooseArray(value);
+          }
           target[prop] = value;
           return true;
         }
@@ -373,6 +448,11 @@ function createModelClass(modelName, schema) {
       }
 
       this._id = data._id || data.id || crypto.randomUUID();
+      Object.defineProperty(this, 'id', {
+        get() { return this._id; },
+        configurable: true,
+        enumerable: true
+      });
       this.createdAt = data.createdAt || new Date().toISOString();
       this.updatedAt = data.updatedAt || new Date().toISOString();
 
@@ -388,7 +468,11 @@ function createModelClass(modelName, schema) {
 
       for (const key in data) {
         if (key !== 'id') {
-          this[key] = data[key];
+          let val = data[key];
+          if (Array.isArray(val) || (schema.paths[key] && Array.isArray(schema.paths[key]))) {
+            val = makeMongooseArray(val);
+          }
+          this[key] = val;
         }
       }
 
@@ -411,6 +495,8 @@ function createModelClass(modelName, schema) {
             if (isNew) {
               this._modifiedPaths.add(pathKey);
             }
+          } else if (Array.isArray(pathDef)) {
+            this[pathKey] = makeMongooseArray([]);
           }
         }
       }
@@ -426,6 +512,62 @@ function createModelClass(modelName, schema) {
     set(path, value) {
       this[path] = value;
       this._modifiedPaths.add(path);
+    }
+
+    async populate(field, select) {
+      const popField = typeof field === 'object' ? field.field : field;
+      const popSelect = typeof field === 'object' ? field.select : select;
+      
+      const schema = MockDocument.schema;
+      const pathInfo = schema.paths[popField];
+      let refModelName = pathInfo ? pathInfo.ref : null;
+      if (!refModelName) {
+        const virtualInfo = schema.virtuals[popField];
+        if (virtualInfo && virtualInfo.ref) {
+          refModelName = virtualInfo.ref;
+        }
+      }
+
+      if (refModelName) {
+        const RefModel = modelRegistry[refModelName + 's'];
+        if (RefModel) {
+          if (pathInfo) {
+            const refId = this[popField];
+            if (refId) {
+              let refDoc;
+              if (popSelect) {
+                refDoc = await RefModel.findById(refId).select(popSelect);
+              } else {
+                refDoc = await RefModel.findById(refId);
+              }
+              this[popField] = refDoc;
+            }
+          } else {
+            const virtualInfo = schema.virtuals[popField];
+            if (virtualInfo) {
+              const foreignField = virtualInfo.foreignField;
+              const localField = virtualInfo.localField;
+              const localVal = this[localField];
+              if (localVal) {
+                const queryObj = {};
+                queryObj[foreignField] = localVal;
+                let refDocs;
+                if (popSelect) {
+                  refDocs = await RefModel.find(queryObj).select(popSelect);
+                } else {
+                  refDocs = await RefModel.find(queryObj);
+                }
+                if (virtualInfo.count) {
+                  this[popField] = refDocs.length;
+                } else {
+                  this[popField] = refDocs;
+                }
+              }
+            }
+          }
+        }
+      }
+      return this;
     }
 
     async save() {
@@ -514,42 +656,10 @@ function createModelClass(modelName, schema) {
     return doc;
   };
 
-  MockDocument.findByIdAndUpdate = async function(id, updates, options) {
-    const doc = await MockDocument.findById(id);
-    if (!doc) return null;
-
-    const setUpdates = updates.$set || updates;
-    for (const key in setUpdates) {
-      if (!key.startsWith('$')) {
-        doc.set(key, setUpdates[key]);
-      }
-    }
-
-    if (updates.$addToSet) {
-      for (const key in updates.$addToSet) {
-        const val = updates.$addToSet[key];
-        if (!Array.isArray(doc[key])) {
-          doc[key] = [];
-        }
-        if (!doc[key].includes(val)) {
-          doc[key].push(val);
-        }
-        doc._modifiedPaths.add(key);
-      }
-    }
-
-    if (updates.$pull) {
-      for (const key in updates.$pull) {
-        const val = updates.$pull[key];
-        if (Array.isArray(doc[key])) {
-          doc[key] = doc[key].filter(item => item.toString() !== val.toString());
-        }
-        doc._modifiedPaths.add(key);
-      }
-    }
-
-    await doc.save();
-    return doc;
+  MockDocument.findByIdAndUpdate = function(id, updates, options) {
+    const query = new MockQuery(collectionName, { _id: id }, true);
+    query._updateVal = updates;
+    return query;
   };
 
   MockDocument.updateMany = async function(query, updates) {
