@@ -12,7 +12,7 @@ class NewsService {
   // - If using a REAL DEVICE, use your PC's IP: 'http://192.168.x.x:5000/api/v1'
   
   // Update: Set to Mac's local network IP for real device testing
-  static const String _backendUrl = 'http://192.168.1.4:5000/api/v1';
+  static const String _backendUrl = 'http://192.168.1.3:5000/api/v1';
 
   // ============================================
   // Get daily news from backend (cached, fast)

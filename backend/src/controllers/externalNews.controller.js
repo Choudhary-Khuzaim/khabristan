@@ -18,23 +18,72 @@ function _fmt(n) {
   };
 }
 
-function fetchUrl(url) {
+function fetchXml(url) {
   return new Promise((resolve, reject) => {
     const client = url.startsWith('https') ? https : http;
     const options = {
       headers: {
-        'User-Agent': 'KhabarIsTan-App/1.0'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       }
     };
     client.get(url, options, (resp) => {
-      let data = '';
-      resp.on('data', (chunk) => { data += chunk; });
-      resp.on('end', () => {
-        try { resolve(JSON.parse(data)); }
-        catch (e) { reject(new Error('Failed to parse response')); }
-      });
+      if (resp.statusCode >= 300 && resp.statusCode < 400 && resp.headers.location) {
+        let redirectUrl = resp.headers.location;
+        if (!redirectUrl.startsWith('http')) {
+          const origin = new URL(url).origin;
+          redirectUrl = origin + redirectUrl;
+        }
+        resolve(fetchXml(redirectUrl));
+      } else {
+        let data = '';
+        resp.on('data', (chunk) => { data += chunk; });
+        resp.on('end', () => {
+          resolve(data);
+        });
+      }
     }).on('error', reject);
   });
+}
+
+function decodeXmlEntities(str) {
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
+}
+
+function parseRssXml(xmlString) {
+  const items = [];
+  const itemRegExp = /<item>([\s\S]*?)<\/item>/g;
+  let match;
+  while ((match = itemRegExp.exec(xmlString)) !== null) {
+    const itemContent = match[1];
+    
+    const titleMatch = itemContent.match(/<title>([\s\S]*?)<\/title>/);
+    const linkMatch = itemContent.match(/<link>([\s\S]*?)<\/link>/);
+    const pubDateMatch = itemContent.match(/<pubDate>([\s\S]*?)<\/pubDate>/);
+    const descMatch = itemContent.match(/<description>([\s\S]*?)<\/description>/);
+    const sourceMatch = itemContent.match(/<source[^>]*>([\s\S]*?)<\/source>/);
+    
+    let title = titleMatch ? titleMatch[1] : '';
+    let link = linkMatch ? linkMatch[1] : '';
+    let pubDate = pubDateMatch ? pubDateMatch[1] : '';
+    let description = descMatch ? descMatch[1] : '';
+    let source = sourceMatch ? sourceMatch[1] : 'Google News';
+    
+    items.push({
+      title: decodeXmlEntities(title).trim(),
+      link: decodeXmlEntities(link).trim(),
+      pubDate: decodeXmlEntities(pubDate).trim(),
+      description: decodeXmlEntities(description).trim(),
+      source: decodeXmlEntities(source).trim(),
+      author: decodeXmlEntities(source).trim()
+    });
+  }
+  return items;
 }
 
 // ============================================
@@ -51,14 +100,14 @@ const getTopHeadlines = async (req, res) => {
     }
     rssUrl += `?hl=en-${country.toUpperCase()}&gl=${country.toUpperCase()}&ceid=${country.toUpperCase()}:en`;
 
-    const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-    const data = await fetchUrl(url);
+    const xmlData = await fetchXml(rssUrl);
+    const items = parseRssXml(xmlData);
 
     res.json({
       success: true,
-      status: data.status,
-      totalResults: data.items ? data.items.length : 0,
-      articles: (data.items || []).map(_formatProxyArticle),
+      status: 'ok',
+      totalResults: items.length,
+      articles: items.map(_formatProxyArticle),
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error fetching headlines', error: error.message });
@@ -76,14 +125,14 @@ const getEverything = async (req, res) => {
     if (!q) return res.status(400).json({ success: false, message: 'Query parameter "q" is required' });
 
     const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-US&gl=US&ceid=US:en`;
-    const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-    const data = await fetchUrl(url);
+    const xmlData = await fetchXml(rssUrl);
+    const items = parseRssXml(xmlData);
 
     res.json({
       success: true,
-      status: data.status,
-      totalResults: data.items ? data.items.length : 0,
-      articles: (data.items || []).map(_formatProxyArticle),
+      status: 'ok',
+      totalResults: items.length,
+      articles: items.map(_formatProxyArticle),
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error searching news', error: error.message });

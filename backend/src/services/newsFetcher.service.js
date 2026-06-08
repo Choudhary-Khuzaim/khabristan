@@ -7,25 +7,74 @@ const NEWS_API_KEY = process.env.NEWS_API_KEY || '7011d13788754be985396556f8490a
 const BASE_URL = 'https://newsapi.org/v2';
 
 // ============================================
-// HTTP Fetch Utility (no axios needed)
+// HTTP Fetch & XML Parsing Utilities (no axios needed, no rss2json rate limits)
 // ============================================
-function fetchUrl(url) {
+function fetchXml(url) {
   return new Promise((resolve, reject) => {
     const client = url.startsWith('https') ? https : http;
     const options = {
       headers: {
-        'User-Agent': 'KhabarIsTan-App/1.0'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       }
     };
     client.get(url, options, (resp) => {
-      let data = '';
-      resp.on('data', (chunk) => { data += chunk; });
-      resp.on('end', () => {
-        try { resolve(JSON.parse(data)); }
-        catch (e) { reject(new Error('Failed to parse NewsAPI response')); }
-      });
+      if (resp.statusCode >= 300 && resp.statusCode < 400 && resp.headers.location) {
+        let redirectUrl = resp.headers.location;
+        if (!redirectUrl.startsWith('http')) {
+          const origin = new URL(url).origin;
+          redirectUrl = origin + redirectUrl;
+        }
+        resolve(fetchXml(redirectUrl));
+      } else {
+        let data = '';
+        resp.on('data', (chunk) => { data += chunk; });
+        resp.on('end', () => {
+          resolve(data);
+        });
+      }
     }).on('error', (err) => reject(err));
   });
+}
+
+function decodeXmlEntities(str) {
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
+}
+
+function parseRssXml(xmlString) {
+  const items = [];
+  const itemRegExp = /<item>([\s\S]*?)<\/item>/g;
+  let match;
+  while ((match = itemRegExp.exec(xmlString)) !== null) {
+    const itemContent = match[1];
+    
+    const titleMatch = itemContent.match(/<title>([\s\S]*?)<\/title>/);
+    const linkMatch = itemContent.match(/<link>([\s\S]*?)<\/link>/);
+    const pubDateMatch = itemContent.match(/<pubDate>([\s\S]*?)<\/pubDate>/);
+    const descMatch = itemContent.match(/<description>([\s\S]*?)<\/description>/);
+    const sourceMatch = itemContent.match(/<source[^>]*>([\s\S]*?)<\/source>/);
+    
+    let title = titleMatch ? titleMatch[1] : '';
+    let link = linkMatch ? linkMatch[1] : '';
+    let pubDate = pubDateMatch ? pubDateMatch[1] : '';
+    let description = descMatch ? descMatch[1] : '';
+    let source = sourceMatch ? sourceMatch[1] : 'Google News';
+    
+    items.push({
+      title: decodeXmlEntities(title).trim(),
+      link: decodeXmlEntities(link).trim(),
+      pubDate: decodeXmlEntities(pubDate).trim(),
+      description: decodeXmlEntities(description).trim(),
+      source: decodeXmlEntities(source).trim(),
+      author: decodeXmlEntities(source).trim()
+    });
+  }
+  return items;
 }
 
 // ============================================
@@ -45,17 +94,17 @@ async function fetchAndStoreCategory(category, country = 'us', systemUser) {
     }
     rssUrl += `?hl=en-${country.toUpperCase()}&gl=${country.toUpperCase()}&ceid=${country.toUpperCase()}:en`;
 
-    const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-    const data = await fetchUrl(url);
+    const xmlData = await fetchXml(rssUrl);
+    const items = parseRssXml(xmlData);
 
-    if (data.status !== 'ok' || !data.items || data.items.length === 0) {
+    if (items.length === 0) {
       console.log(`   ⚠️  No articles for ${category}/${country}`);
       return 0;
     }
 
     let savedCount = 0;
 
-    for (const item of data.items) {
+    for (const item of items) {
       // Skip articles with [Removed] title or no title
       if (!item.title || item.title === '[Removed]') continue;
 
@@ -70,12 +119,12 @@ async function fetchAndStoreCategory(category, country = 'us', systemUser) {
       if (exists) continue;
 
       // Clean up description (rss feeds often contain html)
-      let desc = item.description || item.content || 'No description available.';
+      let desc = item.description || 'No description available.';
       desc = desc.replace(/<[^>]+>/g, '').trim(); // Remove HTML tags
       
       // Extract img from description if it exists
-      let imageUrl = item.thumbnail || (item.enclosure && item.enclosure.link);
-      if (!imageUrl && item.description && item.description.includes('<img')) {
+      let imageUrl = null;
+      if (item.description && item.description.includes('<img')) {
         const imgMatch = item.description.match(/<img[^>]+src="([^">]+)"/);
         if (imgMatch) imageUrl = imgMatch[1];
       }
@@ -87,7 +136,7 @@ async function fetchAndStoreCategory(category, country = 'us', systemUser) {
         url: item.link || '',
         urlToImage: imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800',
         category: category,
-        source: data.feed?.title || 'Google News',
+        source: item.source || 'Google News',
         author: systemUser._id,
         authorName: item.author || 'Google News',
         status: 'published',
