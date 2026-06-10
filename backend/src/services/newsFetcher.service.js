@@ -81,7 +81,9 @@ function parseRssXml(xmlString) {
 // Categories to fetch from NewsAPI
 // ============================================
 const CATEGORIES = ['general', 'business', 'entertainment', 'health', 'science', 'sports', 'technology'];
-const COUNTRIES = ['us', 'gb'];
+const COUNTRIES = ['us', 'gb', 'pk'];
+
+let isFetching = false;
 
 // ============================================
 // Fetch & store top headlines for a category
@@ -159,61 +161,74 @@ async function fetchAndStoreCategory(category, country = 'us', systemUser) {
 // Main: Fetch all categories for all countries
 // ============================================
 async function fetchAllDailyNews() {
-  console.log('\n📡 ═══════════════════════════════════════');
-  console.log('   KhabarIsTan — Daily News Fetch Started');
-  console.log('   ═══════════════════════════════════════\n');
-
-  // Ensure we have a system user for attributing external news
-  let systemUser = await User.findOne({ username: 'newsbot' });
-  if (!systemUser) {
-    systemUser = await User.create({
-      name: 'KhabarIsTan NewsBot',
-      email: 'newsbot@khabaristan.com',
-      username: 'newsbot',
-      password: 'newsbot_system_2024_secure',
-      role: 'admin',
-      isVerified: true,
-      bio: 'Automated news aggregation bot',
-    });
-    console.log('🤖 System NewsBot user created\n');
+  if (isFetching) {
+    console.log('⚠️  News fetch is already in progress, skipping...');
+    return 0;
   }
+  isFetching = true;
 
-  let totalSaved = 0;
+  try {
+    console.log('\n📡 ═══════════════════════════════════════');
+    console.log('   KhabarIsTan — Daily News Fetch Started');
+    console.log('   ═══════════════════════════════════════\n');
 
-  for (const country of COUNTRIES) {
-    console.log(`\n🌍 Fetching news for country: ${country.toUpperCase()}`);
-    for (const category of CATEGORIES) {
-      const count = await fetchAndStoreCategory(category, country, systemUser);
-      totalSaved += count;
-      console.log(`   📰 ${category.padEnd(15)} → ${count} new articles`);
+    // Ensure we have a system user for attributing external news
+    let systemUser = await User.findOne({ username: 'newsbot' });
+    if (!systemUser) {
+      systemUser = await User.create({
+        name: 'KhabarIsTan NewsBot',
+        email: 'newsbot@khabaristan.com',
+        username: 'newsbot',
+        password: 'newsbot_system_2024_secure',
+        role: 'admin',
+        isVerified: true,
+        bio: 'Automated news aggregation bot',
+      });
+      console.log('🤖 System NewsBot user created\n');
     }
+
+    let totalSaved = 0;
+
+    for (const country of COUNTRIES) {
+      console.log(`\n🌍 Fetching news for country: ${country.toUpperCase()}`);
+      for (const category of CATEGORIES) {
+        const count = await fetchAndStoreCategory(category, country, systemUser);
+        totalSaved += count;
+        console.log(`   📰 ${category.padEnd(15)} → ${count} new articles`);
+      }
+    }
+
+    // Mark top articles as featured (most recent 5 with images)
+    const recentWithImages = await News.find({
+      status: 'published',
+      urlToImage: {
+        $exists: true,
+        $ne: '',
+        $nin: ['https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800']
+      },
+    })
+      .sort('-publishedAt')
+      .limit(10);
+
+    // Reset all featured flags first
+    await News.updateMany({}, { isFeatured: false });
+
+    // Set top 5 as featured
+    for (const article of recentWithImages.slice(0, 5)) {
+      article.isFeatured = true;
+      await article.save();
+    }
+
+    console.log(`\n✅ Daily fetch complete: ${totalSaved} new articles saved`);
+    console.log(`⭐ ${Math.min(5, recentWithImages.length)} articles marked as featured\n`);
+
+    return totalSaved;
+  } catch (err) {
+    console.error(`❌ News fetch error: ${err.message}`);
+    return 0;
+  } finally {
+    isFetching = false;
   }
-
-  // Mark top articles as featured (most recent 5 with images)
-  const recentWithImages = await News.find({
-    status: 'published',
-    urlToImage: {
-      $exists: true,
-      $ne: '',
-      $nin: ['https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800']
-    },
-  })
-    .sort('-publishedAt')
-    .limit(10);
-
-  // Reset all featured flags first
-  await News.updateMany({}, { isFeatured: false });
-
-  // Set top 5 as featured
-  for (const article of recentWithImages.slice(0, 5)) {
-    article.isFeatured = true;
-    await article.save();
-  }
-
-  console.log(`\n✅ Daily fetch complete: ${totalSaved} new articles saved`);
-  console.log(`⭐ ${Math.min(5, recentWithImages.length)} articles marked as featured\n`);
-
-  return totalSaved;
 }
 
 // ============================================

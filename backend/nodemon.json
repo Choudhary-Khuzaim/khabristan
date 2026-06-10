@@ -1,0 +1,6 @@
+{
+  "ignore": [
+    "src/config/db.json",
+    "uploads/*"
+  ]
+}

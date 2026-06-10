@@ -159,6 +159,14 @@ const getDailyNews = async (req, res) => {
       .skip((parseInt(page) - 1) * parseInt(limit))
       .limit(parseInt(limit));
 
+    // Auto-fetch in background if DB has no articles or if the latest article is older than 30 minutes
+    const latestNews = await News.findOne({ status: 'published' }).sort('-createdAt');
+    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+    if (!latestNews || new Date(latestNews.createdAt) < thirtyMinutesAgo) {
+      console.log('🔄 News database is empty or outdated. Triggering auto-fetch in background...');
+      fetchAllDailyNews().catch(err => console.error('Auto-fetch failed:', err.message));
+    }
+
     res.json({
       success: true,
       status: 'ok',
