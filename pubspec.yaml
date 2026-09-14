@@ -45,6 +45,7 @@ dependencies:
   webview_flutter: ^4.7.0
   flutter_tts: ^4.2.3
   animations: ^2.0.1
+  xml: ^6.5.0
 
 dev_dependencies:
   flutter_test:
