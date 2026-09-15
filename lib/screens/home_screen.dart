@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/preferences_service.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -20,18 +21,25 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final NewsService _newsService = NewsService();
   final TextEditingController _searchController = TextEditingController();
   List<NewsModel> _newsList = [];
   List<NewsModel> _featuredNewsList = [];
   List<NewsModel> _filteredNewsList = [];
   bool _isLoading = true;
+  bool _isRefreshing = false;
   bool _isSearching = false;
   String _selectedCategory = 'general';
   final ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
   String _userName = 'Khuzaim';
+  DateTime? _lastUpdated;
+  Timer? _autoRefreshTimer;
+
+  // Live pulse animation
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
 
   final List<Map<String, dynamic>> _categories = [
     {'name': 'general', 'icon': Icons.public},
@@ -46,8 +54,66 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Setup pulse animation for LIVE indicator
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+
+    _pulseAnimation = Tween<double>(begin: 0.4, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+
     _loadNews();
     _loadUserName();
+    _startAutoRefresh();
+  }
+
+  void _startAutoRefresh() {
+    // Auto-refresh every 5 minutes for real-time news
+    _autoRefreshTimer = Timer.periodic(const Duration(minutes: 5), (_) {
+      if (_currentIndex == 0 && !_isSearching) {
+        _silentRefresh();
+      }
+    });
+  }
+
+  Future<void> _silentRefresh() async {
+    if (_isRefreshing || _isSearching) return;
+
+    setState(() {
+      _isRefreshing = true;
+    });
+
+    try {
+      final results = await Future.wait([
+        _newsService.getTopHeadlines(category: _selectedCategory),
+        if (_selectedCategory == 'general')
+          _newsService.getFeaturedNews(limit: 5)
+        else
+          Future.value(<NewsModel>[]),
+      ]);
+
+      final news = results[0];
+      final featured = results.length > 1 ? results[1] : <NewsModel>[];
+
+      if (mounted) {
+        setState(() {
+          _newsList = news;
+          _filteredNewsList = news;
+          _featuredNewsList = featured;
+          _lastUpdated = DateTime.now();
+          _isRefreshing = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isRefreshing = false;
+        });
+      }
+    }
   }
 
   Future<void> _loadUserName() async {
@@ -63,6 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _searchController.dispose();
     _scrollController.dispose();
+    _autoRefreshTimer?.cancel();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -88,6 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _newsList = news;
         _filteredNewsList = news;
         _featuredNewsList = featured;
+        _lastUpdated = DateTime.now();
         _isLoading = false;
       });
     } catch (e) {
@@ -175,6 +244,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  String _getTimeAgo(DateTime? dateTime) {
+    if (dateTime == null) return '';
+    final now = DateTime.now();
+    final diff = now.difference(dateTime);
+
+    if (diff.inSeconds < 60) return 'Just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    return '${diff.inDays}d ago';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -228,6 +308,111 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: const Icon(Icons.person_rounded),
                               ),
                             ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // LIVE Real-Time Badge + Last Updated
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            // LIVE badge
+                            AnimatedBuilder(
+                              animation: _pulseAnimation,
+                              builder: (context, child) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.red.withOpacity(0.3),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.red.withOpacity(
+                                            _pulseAnimation.value,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.red.withOpacity(
+                                                _pulseAnimation.value * 0.5,
+                                              ),
+                                              blurRadius: 6,
+                                              spreadRadius: 1,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      const Text(
+                                        'LIVE',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: 1.5,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(width: 10),
+                            // Last updated text
+                            if (_lastUpdated != null)
+                              Text(
+                                'Updated ${_getTimeAgo(_lastUpdated)}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.5),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            const Spacer(),
+                            // Manual refresh button
+                            if (_isRefreshing)
+                              const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            else
+                              InkWell(
+                                onTap: _silentRefresh,
+                                borderRadius: BorderRadius.circular(20),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: Icon(
+                                    Icons.refresh_rounded,
+                                    size: 20,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.5),
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -290,9 +475,38 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                'Top Stories',
-                                style: Theme.of(context).textTheme.titleLarge,
+                              Row(
+                                children: [
+                                  Text(
+                                    'Top Stories',
+                                    style: Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary
+                                          .withOpacity(0.15),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      'BREAKING',
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: 1,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                               TextButton(
                                 onPressed: () {
@@ -425,9 +639,36 @@ class _HomeScreenState extends State<HomeScreen> {
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                        child: Text(
-                          _isSearching ? 'Search Results' : 'Recent News',
-                          style: Theme.of(context).textTheme.titleLarge,
+                        child: Row(
+                          children: [
+                            Text(
+                              _isSearching ? 'Search Results' : 'Recent News',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(width: 8),
+                            if (!_isSearching && _filteredNewsList.isNotEmpty)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  '${_filteredNewsList.length}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ),

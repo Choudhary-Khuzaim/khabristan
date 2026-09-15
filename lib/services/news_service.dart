@@ -30,6 +30,12 @@ class NewsService {
   };
 
   // ============================================
+  // Track last update time for UI display
+  // ============================================
+  DateTime? _lastFetchTime;
+  DateTime? get lastFetchTime => _lastFetchTime;
+
+  // ============================================
   // PRIMARY: Get top headlines directly from Google News RSS
   // ============================================
   Future<List<NewsModel>> getTopHeadlines({
@@ -45,6 +51,7 @@ class NewsService {
 
     try {
       final articles = await _fetchFromGoogleRss(category: category);
+      _lastFetchTime = DateTime.now();
 
       // Apply pagination
       final startIndex = (page - 1) * limit;
@@ -55,7 +62,9 @@ class NewsService {
     } catch (e) {
       // Fallback to backend if Google News RSS fails
       try {
-        return await _fallbackToBackend(category: category, page: page, limit: limit);
+        final result = await _fallbackToBackend(category: category, page: page, limit: limit);
+        _lastFetchTime = DateTime.now();
+        return result;
       } catch (_) {
         throw Exception('Error fetching news: $e');
       }
@@ -91,6 +100,29 @@ class NewsService {
   }
 
   // ============================================
+  // Get trending/breaking news — real-time latest
+  // ============================================
+  Future<List<NewsModel>> getTrendingNews({int limit = 10}) async {
+    try {
+      // Fetch from multiple categories for a trending mix
+      final generalArticles = await _fetchFromGoogleRss(category: 'general');
+      _lastFetchTime = DateTime.now();
+
+      // Return the most recent articles sorted by date
+      final sorted = List<NewsModel>.from(generalArticles);
+      sorted.sort((a, b) {
+        final dateA = DateTime.tryParse(a.publishedAt ?? '') ?? DateTime(2000);
+        final dateB = DateTime.tryParse(b.publishedAt ?? '') ?? DateTime(2000);
+        return dateB.compareTo(dateA);
+      });
+
+      return sorted.take(limit).toList();
+    } catch (e) {
+      throw Exception('Error fetching trending news: $e');
+    }
+  }
+
+  // ============================================
   // Search news from Google News RSS
   // ============================================
   Future<List<NewsModel>> searchNews({
@@ -103,6 +135,7 @@ class NewsService {
           '$_googleNewsBase/search?q=${Uri.encodeComponent(query)}&hl=en-US&gl=US&ceid=US:en';
 
       final articles = await _parseRssFeed(rssUrl);
+      _lastFetchTime = DateTime.now();
 
       // Apply pagination
       final startIndex = (page - 1) * limit;
@@ -122,6 +155,7 @@ class NewsService {
         if (response.statusCode == 200) {
           final Map<String, dynamic> data = json.decode(response.body);
           if (data['success'] == true) {
+            _lastFetchTime = DateTime.now();
             return NewsResponse.fromJson(data).articles;
           }
         }
@@ -209,6 +243,7 @@ class NewsService {
           headers: {
             'User-Agent':
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'application/rss+xml, application/xml, text/xml, */*',
           },
         )
         .timeout(const Duration(seconds: 15));
