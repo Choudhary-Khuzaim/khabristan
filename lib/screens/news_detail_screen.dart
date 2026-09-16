@@ -148,34 +148,24 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    widget.news.urlToImage != null &&
-                            widget.news.urlToImage!.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: widget.news.urlToImage!,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              child: const Center(
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              child: Icon(
-                                Icons.image_not_supported_outlined,
-                                color: theme.colorScheme.onSurfaceVariant,
-                                size: 40,
-                              ),
-                            ),
-                          )
-                        : Container(
-                            color: theme.colorScheme.primary,
-                            child: const Icon(
-                              Icons.newspaper_rounded,
-                              color: Colors.white,
-                              size: 64,
-                            ),
-                          ),
+                    CachedNetworkImage(
+                      imageUrl: widget.news.displayImageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: Icon(
+                          Icons.newspaper_rounded,
+                          color: theme.colorScheme.primary,
+                          size: 40,
+                        ),
+                      ),
+                    ),
                     // Luxury Gradient Overlay
                     const DecoratedBox(
                       decoration: BoxDecoration(

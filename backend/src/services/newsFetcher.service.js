@@ -131,12 +131,23 @@ async function fetchAndStoreCategory(category, country = 'us', systemUser) {
         if (imgMatch) imageUrl = imgMatch[1];
       }
 
+      const categoryImages = {
+        business: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800',
+        entertainment: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800',
+        health: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=800',
+        science: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800',
+        sports: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800',
+        technology: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800',
+        general: 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800',
+      };
+      const fallbackImage = categoryImages[category] || categoryImages.general;
+
       // Create the news article in our database
       await News.create({
         title: item.title,
         description: desc,
         url: item.link || '',
-        urlToImage: imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800',
+        urlToImage: imageUrl || fallbackImage,
         category: category,
         source: item.source || 'Google News',
         author: systemUser._id,

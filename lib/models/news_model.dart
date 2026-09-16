@@ -1,3 +1,5 @@
+import '../utils/news_image_helper.dart';
+
 class NewsModel {
   final String? title;
   final String? description;
@@ -7,6 +9,7 @@ class NewsModel {
   final String? publishedAt;
   final String? author;
   final String? source;
+  final String? category;
 
   NewsModel({
     this.title,
@@ -17,16 +20,34 @@ class NewsModel {
     this.publishedAt,
     this.author,
     this.source,
+    this.category,
   });
+
+  /// Guaranteed non-null image URL for UI rendering
+  String get displayImageUrl {
+    return NewsImageHelper.getImageUrl(
+      existingUrl: urlToImage,
+      title: title,
+      category: category ?? 'general',
+    );
+  }
 
   /// Parse from backend JSON response (existing format)
   factory NewsModel.fromJson(Map<String, dynamic> json) {
+    final title = json['title'] as String?;
+    final rawUrlToImage = json['urlToImage'] as String?;
+    final category = json['category'] as String?;
+
     return NewsModel(
-      title: json['title'] as String?,
+      title: title,
       description: json['description'] as String?,
       content: json['content'] as String?,
       url: json['url'] as String?,
-      urlToImage: json['urlToImage'] as String?,
+      urlToImage: NewsImageHelper.getImageUrl(
+        existingUrl: rawUrlToImage,
+        title: title,
+        category: category ?? 'general',
+      ),
       publishedAt: json['publishedAt'] as String?,
       author: json['author'] as String?,
       source: json['source'] != null
@@ -34,21 +55,24 @@ class NewsModel {
               ? json['source']['name'] as String?
               : json['source'] as String?)
           : null,
+      category: category,
     );
   }
 
   /// Parse from Google News RSS item data
-  factory NewsModel.fromRss(Map<String, String> rssItem) {
-    // Extract image from description HTML if present
-    String? imageUrl;
-    final description = rssItem['description'] ?? '';
-    final imgMatch = RegExp(r'<img[^>]+src="([^">]+)"').firstMatch(description);
-    if (imgMatch != null) {
-      imageUrl = imgMatch.group(1);
+  factory NewsModel.fromRss(Map<String, String> rssItem, {String category = 'general'}) {
+    // Extract image from description HTML if present or media tags
+    String? imageUrl = rssItem['imageUrl'];
+    if (imageUrl == null || imageUrl.isEmpty) {
+      final description = rssItem['description'] ?? '';
+      final imgMatch = RegExp(r'<img[^>]+src="([^">]+)"', caseSensitive: false).firstMatch(description);
+      if (imgMatch != null) {
+        imageUrl = imgMatch.group(1);
+      }
     }
 
     // Clean HTML tags from description
-    final cleanDescription = description
+    final cleanDescription = (rssItem['description'] ?? '')
         .replaceAll(RegExp(r'<[^>]+>'), '')
         .trim();
 
@@ -65,17 +89,25 @@ class NewsModel {
       }
     }
 
+    final title = rssItem['title']?.trim();
+    final finalImageUrl = NewsImageHelper.getImageUrl(
+      existingUrl: imageUrl,
+      title: title,
+      category: category,
+    );
+
     return NewsModel(
-      title: rssItem['title']?.trim(),
+      title: title,
       description: cleanDescription.isNotEmpty
           ? cleanDescription
           : 'Tap to read full article',
       content: cleanDescription,
       url: rssItem['link']?.trim(),
-      urlToImage: imageUrl,
+      urlToImage: finalImageUrl,
       publishedAt: publishedAt ?? DateTime.now().toIso8601String(),
       author: rssItem['source']?.trim() ?? 'Google News',
       source: rssItem['source']?.trim() ?? 'Google News',
+      category: category,
     );
   }
 
@@ -108,10 +140,11 @@ class NewsModel {
       'description': description,
       'content': content,
       'url': url,
-      'urlToImage': urlToImage,
+      'urlToImage': urlToImage ?? displayImageUrl,
       'publishedAt': publishedAt,
       'author': author,
       'source': source,
+      'category': category,
     };
   }
 }

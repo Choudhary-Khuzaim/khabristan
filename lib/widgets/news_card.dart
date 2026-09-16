@@ -75,49 +75,35 @@ class NewsCard extends StatelessWidget {
                       tag: '${heroPrefix ?? 'news_card'}_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child:
-                            news.urlToImage != null &&
-                                news.urlToImage!.isNotEmpty
-                            ? CachedNetworkImage(
-                                imageUrl: news.urlToImage!,
-                                height: 110,
-                                width: 110,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Container(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.surfaceContainerHighest,
-                                  child: const Center(
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  ),
-                                ),
-                                errorWidget: (context, url, error) => Container(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.surfaceContainerHighest,
-                                  child: Icon(
-                                    Icons.image_not_supported_outlined,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                height: 110,
-                                width: 110,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.surfaceContainerHighest,
-                                child: Icon(
-                                  Icons.article_outlined,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
+                        child: CachedNetworkImage(
+                          imageUrl: news.displayImageUrl,
+                          height: 110,
+                          width: 110,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
                               ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            height: 110,
+                            width: 110,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
+                            child: Icon(
+                              Icons.newspaper_rounded,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),

@@ -230,13 +230,13 @@ class NewsService {
       rssUrl = '$_googleNewsBase/headlines/section/topic/$topic?hl=en-${country.toUpperCase()}&gl=${country.toUpperCase()}&ceid=${country.toUpperCase()}:en';
     }
 
-    return await _parseRssFeed(rssUrl);
+    return await _parseRssFeed(rssUrl, category: category);
   }
 
   // ============================================
   // PRIVATE: Parse RSS XML feed into NewsModel list
   // ============================================
-  Future<List<NewsModel>> _parseRssFeed(String rssUrl) async {
+  Future<List<NewsModel>> _parseRssFeed(String rssUrl, {String category = 'general'}) async {
     final response = await http
         .get(
           Uri.parse(rssUrl),
@@ -281,11 +281,39 @@ class NewsService {
       final sourceElement = item.findElements('source').firstOrNull;
       rssData['source'] = sourceElement?.innerText ?? 'Google News';
 
+      // Extract media image if present in XML tags
+      for (final mediaElement in item.findElements('media:content')) {
+        final url = mediaElement.getAttribute('url');
+        if (url != null && url.isNotEmpty) {
+          rssData['imageUrl'] = url;
+          break;
+        }
+      }
+      if (rssData['imageUrl'] == null) {
+        for (final mediaElement in item.findElements('media:thumbnail')) {
+          final url = mediaElement.getAttribute('url');
+          if (url != null && url.isNotEmpty) {
+            rssData['imageUrl'] = url;
+            break;
+          }
+        }
+      }
+      if (rssData['imageUrl'] == null) {
+        for (final mediaElement in item.findElements('enclosure')) {
+          final url = mediaElement.getAttribute('url');
+          final type = mediaElement.getAttribute('type') ?? '';
+          if (url != null && (type.contains('image') || url.contains('.jpg') || url.contains('.png'))) {
+            rssData['imageUrl'] = url;
+            break;
+          }
+        }
+      }
+
       // Skip items without title
       final title = rssData['title'] ?? '';
       if (title.isEmpty || title == '[Removed]') continue;
 
-      articles.add(NewsModel.fromRss(rssData));
+      articles.add(NewsModel.fromRss(rssData, category: category));
     }
 
     return articles;
