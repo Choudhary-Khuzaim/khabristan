@@ -133,6 +133,43 @@ class NewsService {
     ],
   };
 
+  // ============================================
+  // Get all unique sources across all categories
+  // ============================================
+  List<Map<String, String>> getAllSources() {
+    final Map<String, Map<String, String>> uniqueSources = {};
+    for (final category in _categoryFeeds.values) {
+      for (final source in category) {
+        if (!uniqueSources.containsKey(source['name'])) {
+          uniqueSources[source['name']!] = source;
+        }
+      }
+    }
+    final sortedSources = uniqueSources.values.toList();
+    sortedSources.sort((a, b) => (a['name'] ?? '').compareTo(b['name'] ?? ''));
+    return sortedSources;
+  }
+
+  // ============================================
+  // Get news for a specific source
+  // ============================================
+  Future<List<NewsModel>> getNewsBySource(String sourceUrl, String sourceName) async {
+    try {
+      final articles = await _parseRssFeed(sourceUrl, sourceName: sourceName);
+      
+      // Sort by date (newest first)
+      articles.sort((a, b) {
+        final dateA = DateTime.tryParse(a.publishedAt ?? '') ?? DateTime(2000);
+        final dateB = DateTime.tryParse(b.publishedAt ?? '') ?? DateTime(2000);
+        return dateB.compareTo(dateA);
+      });
+      
+      return articles;
+    } catch (e) {
+      throw Exception('Error fetching news for $sourceName: $e');
+    }
+  }
+
   // Backend URL — automatically detected based on platform
   static String get _backendUrl {
     if (kIsWeb) {
