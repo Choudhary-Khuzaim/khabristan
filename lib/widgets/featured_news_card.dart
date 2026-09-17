@@ -80,6 +80,8 @@ class FeaturedNewsCard extends StatelessWidget {
                           ),
                           child: Text(
                             news.source!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 10,

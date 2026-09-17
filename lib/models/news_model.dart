@@ -59,7 +59,7 @@ class NewsModel {
     );
   }
 
-  /// Parse from Google News RSS item data
+  /// Parse from RSS feed item data
   factory NewsModel.fromRss(Map<String, String> rssItem, {String category = 'general'}) {
     // Extract image from description HTML if present or media tags
     String? imageUrl = rssItem['imageUrl'];
@@ -105,8 +105,8 @@ class NewsModel {
       url: rssItem['link']?.trim(),
       urlToImage: finalImageUrl,
       publishedAt: publishedAt ?? DateTime.now().toIso8601String(),
-      author: rssItem['source']?.trim() ?? 'Google News',
-      source: rssItem['source']?.trim() ?? 'Google News',
+      author: rssItem['source']?.trim() ?? 'News',
+      source: rssItem['source']?.trim() ?? 'News',
       category: category,
     );
   }
