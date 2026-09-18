@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../models/news_model.dart';
 import '../services/news_service.dart';
+import '../widgets/glass_background.dart';
 import '../widgets/news_card.dart';
 import '../widgets/shimmer_loading.dart';
 import 'news_detail_screen.dart';
@@ -71,11 +73,56 @@ class _SourceNewsScreenState extends State<SourceNewsScreen> {
     );
   }
 
+  String _getDomain(String url) {
+    try {
+      return Uri.parse(url).host;
+    } catch (_) {
+      return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.sourceName),
+    final domain = _getDomain(widget.sourceUrl);
+    final logoUrl = domain.isNotEmpty
+        ? 'https://www.google.com/s2/favicons?domain=$domain&sz=128'
+        : '';
+
+    return GlassBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (logoUrl.isNotEmpty) ...[
+              Container(
+                height: 28,
+                width: 28,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                    )
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: CachedNetworkImage(
+                    imageUrl: logoUrl,
+                    fit: BoxFit.contain,
+                    errorWidget: (context, url, error) => const SizedBox.shrink(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
+            Text(widget.sourceName),
+          ],
+        ),
         centerTitle: true,
       ),
       body: RefreshIndicator(
@@ -134,6 +181,7 @@ class _SourceNewsScreenState extends State<SourceNewsScreen> {
                       },
                     ),
                   ),
+        ),
       ),
     );
   }

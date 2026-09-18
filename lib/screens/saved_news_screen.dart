@@ -1,18 +1,51 @@
 import 'package:flutter/material.dart';
 import '../services/bookmarks_service.dart';
+import '../widgets/glass_background.dart';
 import '../widgets/news_card.dart';
 import 'news_detail_screen.dart';
 
-class SavedNewsScreen extends StatelessWidget {
+class SavedNewsScreen extends StatefulWidget {
   const SavedNewsScreen({super.key});
+
+  @override
+  State<SavedNewsScreen> createState() => _SavedNewsScreenState();
+}
+
+class _SavedNewsScreenState extends State<SavedNewsScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _bounceController;
+  late Animation<double> _bounceAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _bounceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+
+    _bounceAnimation = Tween<double>(begin: 0.0, end: -15.0).animate(
+      CurvedAnimation(
+        parent: _bounceController,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _bounceController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final bookmarksService = BookmarksService();
     
-    return Scaffold(
-      body: SafeArea(
-        child: AnimatedBuilder(
+    return GlassBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: AnimatedBuilder(
           animation: bookmarksService,
           builder: (context, _) {
             final bookmarks = bookmarksService.bookmarks;
@@ -48,17 +81,34 @@ class SavedNewsScreen extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.bookmark_border_rounded,
-                            size: 64,
-                            color: Colors.grey.withOpacity(0.3),
+                          AnimatedBuilder(
+                            animation: _bounceAnimation,
+                            builder: (context, child) {
+                              return Transform.translate(
+                                offset: Offset(0, _bounceAnimation.value),
+                                child: child,
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.bookmark_border_rounded,
+                                size: 64,
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                              ),
+                            ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 24),
                           Text(
                             'No saved stories yet',
                             style: TextStyle(
-                              color: Colors.grey.shade500,
-                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
                             ),
                           ),
                         ],
@@ -101,6 +151,7 @@ class SavedNewsScreen extends StatelessWidget {
           },
         ),
       ),
+    ),
     );
   }
 }

@@ -69,13 +69,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
                 colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.secondary,
+                  Color(0xFF1A1A2E), // Midnight
+                  Color(0xFFE94560), // Coral-red
+                  Color(0xFF16213E), // Navy
                 ],
               ),
             ),
@@ -94,12 +95,19 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withOpacity(0.15),
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
-                              width: 1,
+                              color: Colors.white.withOpacity(0.3),
+                              width: 1.5,
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFE94560).withOpacity(0.4),
+                                blurRadius: 30,
+                                spreadRadius: 5,
+                              ),
+                            ],
                           ),
                           child: const Icon(
                             Icons.newspaper_rounded,

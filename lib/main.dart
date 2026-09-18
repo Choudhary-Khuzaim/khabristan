@@ -45,22 +45,22 @@ class KhabarIsTanApp extends StatelessWidget {
     final base = ThemeData(brightness: Brightness.light, useMaterial3: true);
     return base.copyWith(
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF0F172A), // Slate 900
-        primary: const Color(0xFF0F172A),
-        secondary: const Color(0xFFB4941F), // Premium Gold accent
-        tertiary: const Color(0xFF1E293B),
-        surface: const Color(0xFFF8FAFC),
-        onSurface: const Color(0xFF0F172A),
+        seedColor: const Color(0xFF1A1A2E), // Midnight
+        primary: const Color(0xFF1A1A2E),
+        secondary: const Color(0xFFE94560), // Vibrant coral-red
+        tertiary: const Color(0xFF16213E),
+        surface: const Color(0xFFFFFFFF),
+        onSurface: const Color(0xFF1A1A2E),
         error: const Color(0xFFEF4444),
         brightness: Brightness.light,
       ),
-      scaffoldBackgroundColor: const Color(0xFFF1F5F9),
+      scaffoldBackgroundColor: Colors.transparent, // Required for GlassBackground
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
         backgroundColor: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
-        iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
+        iconTheme: const IconThemeData(color: Color(0xFF1A1A2E)),
         titleTextStyle: GoogleFonts.outfit(
           color: const Color(0xFF0F172A),
           fontSize: 22,
@@ -98,10 +98,10 @@ class KhabarIsTanApp extends StatelessWidget {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0F172A),
+          backgroundColor: const Color(0xFF1A1A2E),
           foregroundColor: Colors.white,
           elevation: 2,
-          shadowColor: const Color(0xFF0F172A).withOpacity(0.3),
+          shadowColor: const Color(0xFF1A1A2E).withOpacity(0.3),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
@@ -115,19 +115,19 @@ class KhabarIsTanApp extends StatelessWidget {
       ),
       textTheme: GoogleFonts.outfitTextTheme(base.textTheme).copyWith(
         headlineLarge: GoogleFonts.outfit(
-          color: const Color(0xFF0F172A),
+          color: const Color(0xFF1A1A2E),
           fontWeight: FontWeight.w800,
           letterSpacing: -1,
           height: 1.2,
         ),
         headlineMedium: GoogleFonts.outfit(
-          color: const Color(0xFF0F172A),
+          color: const Color(0xFF1A1A2E),
           fontWeight: FontWeight.w700,
           letterSpacing: -0.5,
           height: 1.3,
         ),
         titleLarge: GoogleFonts.outfit(
-          color: const Color(0xFF1E293B),
+          color: const Color(0xFF16213E),
           fontWeight: FontWeight.w700,
           fontSize: 20,
         ),
@@ -154,15 +154,16 @@ class KhabarIsTanApp extends StatelessWidget {
     final base = ThemeData(brightness: Brightness.dark, useMaterial3: true);
     return base.copyWith(
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFFB4941F), // Gold seed
-        primary: const Color(0xFFB4941F),
-        secondary: const Color(0xFFF1F5F9),
-        tertiary: const Color(0xFF334155),
-        surface: const Color(0xFF0F172A), // Deep Navy Surface
+        seedColor: const Color(0xFFE94560), // Coral-red
+        primary: const Color(0xFFE94560),
+        secondary: const Color(0xFFFAFAFA),
+        tertiary: const Color(0xFF16213E),
+        surface: const Color(0xFF16213E), // Deep Navy Surface
+        onSurface: Colors.white, // FIX: Ensure text on surface is white in dark mode
         error: const Color(0xFFF87171),
         brightness: Brightness.dark,
       ),
-      scaffoldBackgroundColor: const Color(0xFF020617), // Extreme Dark Navy
+      scaffoldBackgroundColor: Colors.transparent, // Required for GlassBackground
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -178,8 +179,8 @@ class KhabarIsTanApp extends StatelessWidget {
       ),
       cardTheme: CardTheme(
         elevation: 8,
-        shadowColor: Colors.black.withOpacity(0.2),
-        color: const Color(0xFF1E293B),
+        shadowColor: Colors.black.withOpacity(0.3),
+        color: const Color(0xFF1A1A3E), // Dark purple-navy
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
           side: BorderSide(color: Colors.white.withOpacity(0.05)),
@@ -187,7 +188,7 @@ class KhabarIsTanApp extends StatelessWidget {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF1E293B),
+        fillColor: const Color(0xFF1A1A3E),
         hintStyle: GoogleFonts.inter(color: Colors.grey[500], fontSize: 14),
         prefixIconColor: const Color(0xFF94A3B8),
         border: OutlineInputBorder(
@@ -209,10 +210,10 @@ class KhabarIsTanApp extends StatelessWidget {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFB4941F),
-          foregroundColor: const Color(0xFF0A1128),
+          backgroundColor: const Color(0xFFE94560),
+          foregroundColor: Colors.white,
           elevation: 4,
-          shadowColor: const Color(0xFFB4941F).withOpacity(0.2),
+          shadowColor: const Color(0xFFE94560).withOpacity(0.3),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
@@ -248,12 +249,12 @@ class KhabarIsTanApp extends StatelessWidget {
           fontSize: 16,
         ),
         bodyLarge: GoogleFonts.inter(
-          color: const Color(0xFFCBD5E1),
+          color: const Color(0xFFE2E8F0),
           fontSize: 16,
           height: 1.6,
         ),
         bodyMedium: GoogleFonts.inter(
-          color: const Color(0xFF94A3B8),
+          color: const Color(0xFFCBD5E1),
           fontSize: 14,
           height: 1.5,
         ),

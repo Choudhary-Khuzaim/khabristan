@@ -11,6 +11,21 @@ class NewsService {
   // Each publisher's own RSS feed — no Google News dependency
   // ============================================
 
+  // Cache to instantly load news on tab switches or duplicate calls
+  static List<NewsModel>? _cachedGeneralNews;
+  static DateTime? _cacheTimestamp;
+  static const Duration _cacheDuration = Duration(minutes: 3);
+
+  // Fastest and most reliable feeds for quick initial load
+  static const List<String> _priorityFeeds = [
+    'BBC News',
+    'CNN',
+    'Dawn',
+    'Al Jazeera',
+    'The New York Times',
+    'Reuters'
+  ];
+
   /// Category-to-RSS mapping: 60+ worldwide major news sources
   /// All feeds are from individual publishers — PlayStore safe
   static const Map<String, List<Map<String, String>>> _categoryFeeds = {
@@ -199,15 +214,42 @@ class NewsService {
     String? query,
     int page = 1,
     int limit = 20,
+    bool forceRefresh = false,
   }) async {
     // If query is provided, use search
     if (query != null && query.isNotEmpty) {
       return await searchNews(query: query, page: page, limit: limit);
     }
 
+    // Return cached general news if valid
+    if (category.toLowerCase() == 'general' && !forceRefresh) {
+      if (_cachedGeneralNews != null && _cacheTimestamp != null) {
+        if (DateTime.now().difference(_cacheTimestamp!) < _cacheDuration) {
+          final articles = _cachedGeneralNews!;
+          final startIndex = (page - 1) * limit;
+          if (startIndex >= articles.length) return [];
+          final endIndex = (startIndex + limit).clamp(0, articles.length);
+          return articles.sublist(startIndex, endIndex);
+        }
+      }
+    }
+
     try {
-      final articles = await _fetchFromMultipleSources(category: category);
+      // For general category, use priority feeds on first load to speed up app startup
+      final isInitialLoad = category.toLowerCase() == 'general' && _cachedGeneralNews == null;
+      
+      final articles = await _fetchFromMultipleSources(
+        category: category, 
+        usePriorityFeedsOnly: isInitialLoad
+      );
+      
       _lastFetchTime = DateTime.now();
+
+      // Update cache
+      if (category.toLowerCase() == 'general') {
+        _cachedGeneralNews = articles;
+        _cacheTimestamp = DateTime.now();
+      }
 
       // Apply pagination
       final startIndex = (page - 1) * limit;
@@ -232,7 +274,14 @@ class NewsService {
   // ============================================
   Future<List<NewsModel>> getFeaturedNews({int limit = 5}) async {
     try {
-      final articles = await _fetchFromMultipleSources(category: 'general');
+      // Reuse cached data if available to prevent duplicate 28 HTTP requests
+      List<NewsModel> articles;
+      if (_cachedGeneralNews != null && _cacheTimestamp != null && 
+          DateTime.now().difference(_cacheTimestamp!) < _cacheDuration) {
+        articles = _cachedGeneralNews!;
+      } else {
+        articles = await _fetchFromMultipleSources(category: 'general', usePriorityFeedsOnly: true);
+      }
 
       // Pick top articles sorted by date (most recent first)
       return articles.take(limit).toList();
@@ -386,10 +435,15 @@ class NewsService {
   // ============================================
   Future<List<NewsModel>> _fetchFromMultipleSources({
     String category = 'general',
+    bool usePriorityFeedsOnly = false,
   }) async {
-    final feeds = _categoryFeeds[category.toLowerCase()] ?? _categoryFeeds['general']!;
+    var feeds = _categoryFeeds[category.toLowerCase()] ?? _categoryFeeds['general']!;
 
-    // Fetch from all sources in parallel
+    if (usePriorityFeedsOnly && category.toLowerCase() == 'general') {
+      feeds = feeds.where((feed) => _priorityFeeds.contains(feed['name'])).toList();
+    }
+
+    // Fetch from all selected sources in parallel
     final futures = feeds.map((feed) async {
       try {
         return await _parseRssFeed(
@@ -497,13 +551,11 @@ class NewsService {
       try {
         final response = await http
             .get(
-              Uri.parse(rssUrl),
-              headers: {
-                'User-Agent': 'KhabarIsTan/2.1 (RSS Reader)',
-                'Accept': '*/*',
-              },
+              Uri.parse(
+                'https://api.allorigins.win/raw?url=${Uri.encodeComponent(rssUrl)}',
+              ),
             )
-            .timeout(const Duration(seconds: 15));
+            .timeout(const Duration(seconds: 8)); // Reduced timeout for speed
 
         if (response.statusCode == 200 &&
             (response.body.contains('<rss') ||
@@ -522,7 +574,7 @@ class NewsService {
         final proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=${Uri.encodeComponent(rssUrl)}';
         final response = await http
             .get(Uri.parse(proxyUrl))
-            .timeout(const Duration(seconds: 15));
+            .timeout(const Duration(seconds: 8)); // Reduced timeout
 
         if (response.statusCode == 200) {
           final jsonData = json.decode(response.body);

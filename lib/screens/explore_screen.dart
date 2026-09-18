@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../services/news_service.dart';
+import '../widgets/glass_background.dart';
+import '../widgets/glass_container.dart';
 import 'source_news_screen.dart';
 
 class ExploreScreen extends StatelessWidget {
@@ -9,10 +11,12 @@ class ExploreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
+    return GlassBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: CustomScrollView(
+            slivers: [
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
               sliver: SliverToBoxAdapter(
@@ -82,6 +86,7 @@ class ExploreScreen extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }
@@ -112,54 +117,46 @@ class _SourceCard extends StatelessWidget {
         ? 'https://www.google.com/s2/favicons?domain=$domain&sz=128'
         : '';
 
-    return InkWell(
+    return GlassContainer(
       onTap: onTap,
       borderRadius: BorderRadius.circular(24),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardTheme.color,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
+      padding: EdgeInsets.zero,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
               padding: const EdgeInsets.all(12),
-              height: 56,
-              width: 56,
+              height: 64,
+              width: 64,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).colorScheme.secondary.withOpacity(0.15),
+                    Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 shape: BoxShape.circle,
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 child: logoUrl.isNotEmpty
                     ? CachedNetworkImage(
                         imageUrl: logoUrl,
                         fit: BoxFit.contain,
                         placeholder: (context, url) => Icon(
                           Icons.newspaper_rounded,
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
                         ),
                         errorWidget: (context, url, error) => Icon(
                           Icons.newspaper_rounded,
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
                         ),
                       )
                     : Icon(
                         Icons.newspaper_rounded,
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
                       ),
               ),
             ),
@@ -179,7 +176,6 @@ class _SourceCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }
