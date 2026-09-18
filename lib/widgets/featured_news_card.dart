@@ -38,9 +38,26 @@ class FeaturedNewsCard extends StatelessWidget {
     return cleaned.length > 20 ? '${cleaned.substring(0, 17)}...' : cleaned;
   }
 
+  String _formatTimeAgo(String? dateString) {
+    if (dateString == null) return '';
+    try {
+      final date = DateTime.parse(dateString).toLocal();
+      final now = DateTime.now();
+      final diff = now.difference(date);
+
+      if (diff.inDays > 0) return '${diff.inDays}d ago';
+      if (diff.inHours > 0) return '${diff.inHours}h ago';
+      if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
+      return 'Just now';
+    } catch (_) {
+      return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final heroTag = '${heroPrefix}_${news.url ?? news.title}';
+    final timeAgo = _formatTimeAgo(news.publishedAt);
 
     return GlassContainer(
       margin: const EdgeInsets.only(right: 16),
@@ -58,8 +75,12 @@ class FeaturedNewsCard extends StatelessWidget {
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  child: const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                  child: Center(
+                    child: Icon(
+                      Icons.newspaper_rounded,
+                      size: 40,
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                    ),
                   ),
                 ),
                 errorWidget: (context, url, error) => Container(
@@ -69,6 +90,25 @@ class FeaturedNewsCard extends StatelessWidget {
                     size: 48,
                     color: Theme.of(context).colorScheme.primary,
                   ),
+                ),
+              ),
+            ),
+          ),
+          // Stronger gradient overlay for better text readability
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.0, 0.3, 0.6, 1.0],
+                  colors: [
+                    Colors.black26,
+                    Colors.transparent,
+                    Colors.black38,
+                    Colors.black87,
+                  ],
                 ),
               ),
             ),
@@ -89,38 +129,81 @@ class FeaturedNewsCard extends StatelessWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withOpacity(0.2),
-                        Colors.black.withOpacity(0.7),
+                        Colors.black.withOpacity(0.15),
+                        Colors.black.withOpacity(0.65),
                       ],
                     ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFE94560), Color(0xFFFF8A65)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                      // Source badge + time
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFE94560), Color(0xFFFF8A65)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFE94560).withOpacity(0.3),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              _cleanSource(news.source),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
                           ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          _cleanSource(news.source),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 0.5,
+                          if (timeAgo.isNotEmpty) ...[
+                            const SizedBox(width: 10),
+                            Icon(
+                              Icons.access_time_rounded,
+                              size: 12,
+                              color: Colors.white.withOpacity(0.7),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              timeAgo,
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                          const Spacer(),
+                          // Read more arrow
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.15),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 14,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                       const SizedBox(height: 10),
                       Text(

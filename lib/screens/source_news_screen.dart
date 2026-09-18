@@ -30,7 +30,44 @@ class _SourceNewsScreenState extends State<SourceNewsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadNews();
+    _loadNewsWithCache();
+  }
+
+  /// Cache-first: show cached data instantly, then refresh in background
+  Future<void> _loadNewsWithCache() async {
+    // Try to show cached data instantly
+    final cached = _newsService.getCachedNewsBySource(
+      widget.sourceUrl,
+      widget.sourceName,
+    );
+
+    if (cached != null && cached.isNotEmpty) {
+      setState(() {
+        _newsList = cached;
+        _isLoading = false;
+      });
+      // Refresh in background
+      _silentRefresh();
+    } else {
+      // No cache — must fetch with loading indicator
+      await _loadNews();
+    }
+  }
+
+  Future<void> _silentRefresh() async {
+    try {
+      final news = await _newsService.getNewsBySource(
+        widget.sourceUrl,
+        widget.sourceName,
+      );
+      if (mounted && news.isNotEmpty) {
+        setState(() {
+          _newsList = news;
+        });
+      }
+    } catch (_) {
+      // Silently ignore — we already have cached data showing
+    }
   }
 
   Future<void> _loadNews() async {
@@ -75,7 +112,7 @@ class _SourceNewsScreenState extends State<SourceNewsScreen> {
 
   String _getDomain(String url) {
     try {
-      return Uri.parse(url).host;
+      return Uri.parse(url).host.replaceAll('www.', '');
     } catch (_) {
       return '';
     }
@@ -85,7 +122,7 @@ class _SourceNewsScreenState extends State<SourceNewsScreen> {
   Widget build(BuildContext context) {
     final domain = _getDomain(widget.sourceUrl);
     final logoUrl = domain.isNotEmpty
-        ? 'https://www.google.com/s2/favicons?domain=$domain&sz=128'
+        ? 'https://logo.clearbit.com/$domain'
         : '';
 
     return GlassBackground(

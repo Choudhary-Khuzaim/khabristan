@@ -104,18 +104,27 @@ class _SourceCard extends StatelessWidget {
 
   String _getDomain(String url) {
     try {
-      return Uri.parse(url).host;
+      return Uri.parse(url).host.replaceAll('www.', '');
     } catch (_) {
       return '';
     }
   }
 
+  /// Get the best logo URL using multiple favicon/logo APIs
+  /// Clearbit is highest quality, with Google favicons and icon.horse as fallbacks
+  List<String> _getLogoUrls(String domain) {
+    if (domain.isEmpty) return [];
+    return [
+      'https://logo.clearbit.com/$domain',                          // Best quality
+      'https://www.google.com/s2/favicons?domain=$domain&sz=128',   // Google fallback
+      'https://icon.horse/icon/$domain',                             // Secondary fallback
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final domain = _getDomain(url);
-    final logoUrl = domain.isNotEmpty
-        ? 'https://www.google.com/s2/favicons?domain=$domain&sz=128'
-        : '';
+    final logoUrls = _getLogoUrls(domain);
 
     return GlassContainer(
       onTap: onTap,
@@ -141,19 +150,8 @@ class _SourceCard extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: logoUrl.isNotEmpty
-                    ? CachedNetworkImage(
-                        imageUrl: logoUrl,
-                        fit: BoxFit.contain,
-                        placeholder: (context, url) => Icon(
-                          Icons.newspaper_rounded,
-                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
-                        ),
-                        errorWidget: (context, url, error) => Icon(
-                          Icons.newspaper_rounded,
-                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
-                        ),
-                      )
+                child: logoUrls.isNotEmpty
+                    ? _LogoWithFallback(logoUrls: logoUrls)
                     : Icon(
                         Icons.newspaper_rounded,
                         color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
@@ -176,6 +174,54 @@ class _SourceCard extends StatelessWidget {
             ),
           ],
         ),
+    );
+  }
+}
+
+/// Tries multiple logo URLs in order, falling back to next on error
+class _LogoWithFallback extends StatefulWidget {
+  final List<String> logoUrls;
+
+  const _LogoWithFallback({required this.logoUrls});
+
+  @override
+  State<_LogoWithFallback> createState() => _LogoWithFallbackState();
+}
+
+class _LogoWithFallbackState extends State<_LogoWithFallback> {
+  int _currentUrlIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    if (_currentUrlIndex >= widget.logoUrls.length) {
+      // All URLs failed — show fallback icon
+      return Icon(
+        Icons.newspaper_rounded,
+        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+      );
+    }
+
+    return CachedNetworkImage(
+      imageUrl: widget.logoUrls[_currentUrlIndex],
+      fit: BoxFit.contain,
+      placeholder: (context, url) => Icon(
+        Icons.newspaper_rounded,
+        color: Theme.of(context).colorScheme.secondary.withOpacity(0.15),
+      ),
+      errorWidget: (context, url, error) {
+        // Try next URL in the fallback chain
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() {
+              _currentUrlIndex++;
+            });
+          }
+        });
+        return Icon(
+          Icons.newspaper_rounded,
+          color: Theme.of(context).colorScheme.secondary.withOpacity(0.15),
+        );
+      },
     );
   }
 }

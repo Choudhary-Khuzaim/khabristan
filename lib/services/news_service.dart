@@ -14,7 +14,15 @@ class NewsService {
   // Cache to instantly load news on tab switches or duplicate calls
   static List<NewsModel>? _cachedGeneralNews;
   static DateTime? _cacheTimestamp;
-  static const Duration _cacheDuration = Duration(minutes: 3);
+  static const Duration _cacheDuration = Duration(minutes: 10);
+
+  // Per-source cache for instant loading when tapping a source in Explore
+  static final Map<String, List<NewsModel>> _sourceCache = {};
+  static final Map<String, DateTime> _sourceCacheTimestamps = {};
+
+  // Per-category cache for instant category switching
+  static final Map<String, List<NewsModel>> _categoryCache = {};
+  static final Map<String, DateTime> _categoryCacheTimestamps = {};
 
   // Fastest and most reliable feeds for quick initial load
   static const List<String> _priorityFeeds = [
@@ -178,11 +186,50 @@ class NewsService {
         final dateB = DateTime.tryParse(b.publishedAt ?? '') ?? DateTime(2000);
         return dateB.compareTo(dateA);
       });
+
+      // Cache per-source results
+      final cacheKey = '${sourceName}_$sourceUrl';
+      _sourceCache[cacheKey] = articles;
+      _sourceCacheTimestamps[cacheKey] = DateTime.now();
       
       return articles;
     } catch (e) {
+      // Return cached data if available on error
+      final cacheKey = '${sourceName}_$sourceUrl';
+      if (_sourceCache.containsKey(cacheKey)) {
+        return _sourceCache[cacheKey]!;
+      }
       throw Exception('Error fetching news for $sourceName: $e');
     }
+  }
+
+  /// Returns cached news for a source instantly, or null if no cache exists.
+  /// Use this for instant UI display, then call getNewsBySource for fresh data.
+  List<NewsModel>? getCachedNewsBySource(String sourceUrl, String sourceName) {
+    final cacheKey = '${sourceName}_$sourceUrl';
+    final timestamp = _sourceCacheTimestamps[cacheKey];
+    if (_sourceCache.containsKey(cacheKey) && timestamp != null) {
+      // Return cache even if stale — caller will refresh in background
+      return _sourceCache[cacheKey];
+    }
+    return null;
+  }
+
+  /// Returns cached general news instantly, or null if no cache.
+  List<NewsModel>? getCachedGeneralNews() {
+    if (_cachedGeneralNews != null && _cachedGeneralNews!.isNotEmpty) {
+      return _cachedGeneralNews;
+    }
+    return null;
+  }
+
+  /// Returns cached news for a category, or null if no cache.
+  List<NewsModel>? getCachedCategoryNews(String category) {
+    final key = category.toLowerCase();
+    if (_categoryCache.containsKey(key)) {
+      return _categoryCache[key];
+    }
+    return null;
   }
 
   // Backend URL — automatically detected based on platform
@@ -245,11 +292,13 @@ class NewsService {
       
       _lastFetchTime = DateTime.now();
 
-      // Update cache
+      // Update caches
       if (category.toLowerCase() == 'general') {
         _cachedGeneralNews = articles;
         _cacheTimestamp = DateTime.now();
       }
+      _categoryCache[category.toLowerCase()] = articles;
+      _categoryCacheTimestamps[category.toLowerCase()] = DateTime.now();
 
       // Apply pagination
       final startIndex = (page - 1) * limit;
@@ -534,7 +583,7 @@ class NewsService {
               'Connection': 'keep-alive',
             },
           )
-          .timeout(const Duration(seconds: 15));
+          .timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200 &&
           (response.body.contains('<rss') ||
@@ -555,7 +604,7 @@ class NewsService {
                 'https://api.allorigins.win/raw?url=${Uri.encodeComponent(rssUrl)}',
               ),
             )
-            .timeout(const Duration(seconds: 8)); // Reduced timeout for speed
+            .timeout(const Duration(seconds: 5));
 
         if (response.statusCode == 200 &&
             (response.body.contains('<rss') ||
@@ -574,7 +623,7 @@ class NewsService {
         final proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=${Uri.encodeComponent(rssUrl)}';
         final response = await http
             .get(Uri.parse(proxyUrl))
-            .timeout(const Duration(seconds: 8)); // Reduced timeout
+            .timeout(const Duration(seconds: 5));
 
         if (response.statusCode == 200) {
           final jsonData = json.decode(response.body);

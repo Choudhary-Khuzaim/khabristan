@@ -71,10 +71,60 @@ class NewsModel {
       }
     }
 
-    // Clean HTML tags from description
-    final cleanDescription = (rssItem['description'] ?? '')
-        .replaceAll(RegExp(r'<[^>]+>'), '')
-        .trim();
+    // Thoroughly clean HTML/code artifacts from description
+    String rawDesc = rssItem['description'] ?? '';
+    
+    // 1. Remove CDATA wrappers
+    rawDesc = rawDesc.replaceAll(RegExp(r'<!\[CDATA\[', caseSensitive: false), '');
+    rawDesc = rawDesc.replaceAll(RegExp(r'\]\]>', caseSensitive: false), '');
+    
+    // 2. Remove script and style blocks (content + tags)
+    rawDesc = rawDesc.replaceAll(RegExp(r'<script[^>]*>[\s\S]*?</script>', caseSensitive: false), '');
+    rawDesc = rawDesc.replaceAll(RegExp(r'<style[^>]*>[\s\S]*?</style>', caseSensitive: false), '');
+    
+    // 3. Remove HTML comments
+    rawDesc = rawDesc.replaceAll(RegExp(r'<!--[\s\S]*?-->'), '');
+    
+    // 4. Remove all HTML tags
+    rawDesc = rawDesc.replaceAll(RegExp(r'<[^>]+>'), '');
+    
+    // 5. Decode common HTML entities
+    rawDesc = rawDesc
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#39;', "'")
+        .replaceAll('&#x27;', "'")
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&mdash;', '—')
+        .replaceAll('&ndash;', '–')
+        .replaceAll('&hellip;', '…');
+    
+    // 6. Remove JavaScript/code patterns that survived
+    rawDesc = rawDesc.replaceAll(RegExp(r'if\s*\([^)]*\)\s*\{[^}]*\}', caseSensitive: false), '');
+    rawDesc = rawDesc.replaceAll(RegExp(r'else\s*\{[^}]*\}', caseSensitive: false), '');
+    rawDesc = rawDesc.replaceAll(RegExp(r'function\s*\([^)]*\)\s*\{[^}]*\}', caseSensitive: false), '');
+    rawDesc = rawDesc.replaceAll(RegExp(r'var\s+\w+\s*=\s*[^;]+;'), '');
+    rawDesc = rawDesc.replaceAll(RegExp(r'document\.\w+'), '');
+    rawDesc = rawDesc.replaceAll(RegExp(r'window\.\w+'), '');
+    rawDesc = rawDesc.replaceAll(RegExp(r'\{[^}]{0,50}\}'), '');
+    
+    // 7. Collapse excessive whitespace
+    rawDesc = rawDesc.replaceAll(RegExp(r'\s+'), ' ').trim();
+    
+    // 8. Validate: if it still looks like code, discard
+    final looksLikeCode = rawDesc.contains('function') ||
+        rawDesc.contains('var ') ||
+        rawDesc.contains('===') ||
+        rawDesc.contains('!==') ||
+        (rawDesc.contains('if(') || rawDesc.contains('if (')) && rawDesc.contains('{') ||
+        rawDesc.startsWith('//') ||
+        rawDesc.startsWith('/*');
+    
+    final cleanDescription = (!looksLikeCode && rawDesc.length >= 10)
+        ? rawDesc
+        : '';
 
     // Parse published date
     String? publishedAt;
