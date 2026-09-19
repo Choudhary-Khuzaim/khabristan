@@ -46,7 +46,6 @@ dependencies:
   flutter_tts: ^4.2.3
   animations: ^2.0.1
   xml: ^6.5.0
-  google_mobile_ads: ^5.2.0
 
 dev_dependencies:
   flutter_test:

@@ -4,9 +4,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 
 import 'package:share_plus/share_plus.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../services/bookmarks_service.dart';
-import '../services/ad_service.dart';
 import '../models/news_model.dart';
 import '../widgets/glass_background.dart';
 import '../widgets/glass_container.dart';
@@ -27,42 +25,20 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   late FlutterTts _flutterTts;
   bool _isPlaying = false;
 
-  // AdMob Banner
-  BannerAd? _bannerAd;
-  bool _isBannerAdLoaded = false;
+
 
   @override
   void initState() {
     super.initState();
     _initTts();
-    _loadBannerAd();
   }
 
   @override
   void dispose() {
     _flutterTts.stop();
-    _bannerAd?.dispose();
     super.dispose();
   }
 
-  void _loadBannerAd() {
-    final adUnitId = AdService.bannerAdUnitId;
-    if (adUnitId.isEmpty) return;
-
-    _bannerAd = AdService().createBannerAd(
-      onAdLoaded: (ad) {
-        if (mounted) {
-          setState(() => _isBannerAdLoaded = true);
-        }
-      },
-      onAdFailedToLoad: (ad, error) {
-        debugPrint('Banner ad failed to load: ${error.message}');
-        ad.dispose();
-        _bannerAd = null;
-      },
-    );
-    _bannerAd!.load();
-  }
 
   void _initTts() {
     _flutterTts = FlutterTts();
@@ -132,19 +108,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
 
     return GlassBackground(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
-        // Banner Ad at bottom
-        bottomNavigationBar: _isBannerAdLoaded && _bannerAd != null
-            ? Container(
-                color: Theme.of(context).scaffoldBackgroundColor == Colors.transparent
-                    ? Theme.of(context).colorScheme.surface
-                    : Theme.of(context).scaffoldBackgroundColor,
-                width: double.infinity,
-                height: _bannerAd!.size.height.toDouble(),
-                alignment: Alignment.center,
-                child: AdWidget(ad: _bannerAd!),
-              )
-            : null,
         body: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [

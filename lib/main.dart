@@ -5,7 +5,7 @@ import 'screens/welcome_screen.dart';
 import 'services/theme_service.dart';
 import 'services/preferences_service.dart';
 import 'services/bookmarks_service.dart';
-import 'services/ad_service.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +17,7 @@ void main() async {
   await ThemeService().init();
   await PreferencesService().init();
   await BookmarksService().init();
-  await AdService().init();
+
   runApp(const KhabarIsTanApp());
 }
 
