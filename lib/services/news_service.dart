@@ -601,7 +601,7 @@ class NewsService {
         final response = await http
             .get(
               Uri.parse(
-                'https://api.allorigins.win/raw?url=${Uri.encodeComponent(rssUrl)}',
+                'https://corsproxy.io/?url=${Uri.encodeComponent(rssUrl)}',
               ),
             )
             .timeout(const Duration(seconds: 5));
