@@ -6,8 +6,30 @@ import '../widgets/glass_background.dart';
 import '../widgets/glass_container.dart';
 import 'source_news_screen.dart';
 
-class ExploreScreen extends StatelessWidget {
+class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
+
+  @override
+  State<ExploreScreen> createState() => _ExploreScreenState();
+}
+
+class _ExploreScreenState extends State<ExploreScreen> {
+  late final List<Map<String, String>> _sources;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSources();
+  }
+
+  void _loadSources() {
+    // Pre-compute sources list once to avoid repeated computation on every build
+    _sources = NewsService().getAllSources();
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,49 +61,57 @@ class ExploreScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              sliver: AnimationLimiter(
-                child: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 1.1,
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final source = NewsService().getAllSources()[index];
-                      return AnimationConfiguration.staggeredGrid(
-                        position: index,
-                        duration: const Duration(milliseconds: 375),
-                        columnCount: 2,
-                        child: ScaleAnimation(
-                          child: FadeInAnimation(
-                            child: _SourceCard(
-                              name: source['name']!,
-                              url: source['url']!,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SourceNewsScreen(
-                                      sourceName: source['name']!,
-                                      sourceUrl: source['url']!,
+            if (_isLoading)
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                sliver: AnimationLimiter(
+                  child: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                      childAspectRatio: 1.1,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final source = _sources[index];
+                        return AnimationConfiguration.staggeredGrid(
+                          position: index,
+                          duration: const Duration(milliseconds: 375),
+                          columnCount: 2,
+                          child: ScaleAnimation(
+                            child: FadeInAnimation(
+                              child: _SourceCard(
+                                name: source['name']!,
+                                url: source['url']!,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => SourceNewsScreen(
+                                        sourceName: source['name']!,
+                                        sourceUrl: source['url']!,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
+                                  );
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                    childCount: NewsService().getAllSources().length,
+                        );
+                      },
+                      childCount: _sources.length,
+                    ),
                   ),
                 ),
               ),
-            ),
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),

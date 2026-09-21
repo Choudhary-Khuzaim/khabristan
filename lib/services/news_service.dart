@@ -24,6 +24,17 @@ class NewsService {
   static final Map<String, List<NewsModel>> _categoryCache = {};
   static final Map<String, DateTime> _categoryCacheTimestamps = {};
 
+  // rss2json proxy rate-limit cooldown
+  static DateTime? _rss2JsonCooldownUntil;
+  static bool _isRss2JsonCoolingDown() {
+    if (_rss2JsonCooldownUntil == null) return false;
+    if (DateTime.now().isAfter(_rss2JsonCooldownUntil!)) {
+      _rss2JsonCooldownUntil = null;
+      return false;
+    }
+    return true;
+  }
+
   // Fastest and most reliable feeds for quick initial load
   static const List<String> _priorityFeeds = [
     'BBC News',
@@ -617,8 +628,8 @@ class NewsService {
       }
     }
 
-    // Approach 3: Try via rss2json proxy
-    if (xmlString == null) {
+    // Approach 3: Try via rss2json proxy (skip if rate-limited recently)
+    if (xmlString == null && !_isRss2JsonCoolingDown()) {
       try {
         final proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=${Uri.encodeComponent(rssUrl)}';
         final response = await http
@@ -630,11 +641,16 @@ class NewsService {
           if (jsonData['status'] == 'ok' && jsonData['items'] != null) {
             return _parseRss2JsonResponse(jsonData, category: category, sourceName: sourceName);
           }
+        } else if (response.statusCode == 429) {
+          // Rate limited — enter cooldown to stop further requests
+          _rss2JsonCooldownUntil = DateTime.now().add(const Duration(minutes: 30));
+          debugPrint('rss2json rate limited — cooling down for 30 minutes');
         }
       } catch (e) {
         lastError = e is Exception ? e : Exception(e.toString());
       }
     }
+
 
     if (xmlString == null) {
       throw lastError ?? Exception('Failed to fetch RSS feed: $rssUrl');
