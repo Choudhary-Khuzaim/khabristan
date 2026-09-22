@@ -85,7 +85,9 @@ class NewsCard extends StatelessWidget {
                 width: double.infinity,
                 child: Hero(
                   tag: '${heroPrefix ?? 'news_card'}_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
-                  child: ClipRRect(
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: ClipRRect(
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(24),
                     ),
@@ -227,6 +229,7 @@ class NewsCard extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ),
                   ),
                 ),
               ),

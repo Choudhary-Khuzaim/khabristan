@@ -157,7 +157,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                 stretchModes: const [StretchMode.zoomBackground],
                 background: Hero(
                   tag: widget.heroTag,
-                  child: Stack(
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Stack(
                     fit: StackFit.expand,
                     children: [
                       CachedNetworkImage(
@@ -239,6 +241,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                         ),
                       ),
                     ],
+                  ),
                   ),
                 ),
               ),
