@@ -60,7 +60,7 @@ class BookmarksService extends ChangeNotifier {
     );
   }
 
-  void toggleBookmark(NewsModel news) {
+  Future<void> toggleBookmark(NewsModel news) async {
     if (isBookmarked(news)) {
       _bookmarks.removeWhere(
         (item) => item.title == news.title && item.url == news.url,
@@ -68,7 +68,7 @@ class BookmarksService extends ChangeNotifier {
     } else {
       _bookmarks.add(news);
     }
-    _saveBookmarks();
     notifyListeners();
+    await _saveBookmarks();
   }
 }

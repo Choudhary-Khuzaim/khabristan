@@ -82,6 +82,13 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     }
   }
 
+  String _estimateReadTime() {
+    final allText = '${widget.news.title ?? ''} ${widget.news.description ?? ''} ${widget.news.content ?? ''}';
+    final wordCount = allText.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length;
+    final minutes = (wordCount / 200).ceil().clamp(1, 30);
+    return '$minutes min read';
+  }
+
   void _openUrl(BuildContext context, String? url) {
     if (url != null && url.isNotEmpty) {
       Navigator.push(
@@ -257,7 +264,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                           _formatDate(widget.news.publishedAt),
                         ),
                         const Spacer(),
-                        _buildMetaItem(Icons.timer_outlined, '4 min read'),
+                        _buildMetaItem(Icons.timer_outlined, _estimateReadTime()),
                       ],
                     ),
                     const SizedBox(height: 32),
@@ -291,9 +298,13 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
 
                     const SizedBox(height: 32),
 
-                    // Article Content (Mocking body content for better UX)
+                    // Article Content
                     Text(
-                      'KhabarIsTan brings you the most exclusive and real-time coverage. Our reporters are on the ground ensuring that every detail of this story is verified and delivered with the precision you deserve.\n\nPremium news isn\'t just about information; it\'s about context and clarity. Stay tuned as we provide more updates on this developing story throughout the day.',
+                      (widget.news.content != null && widget.news.content!.isNotEmpty && widget.news.content != widget.news.description)
+                          ? widget.news.content!
+                          : (widget.news.description != null && widget.news.description!.isNotEmpty)
+                              ? '${widget.news.description!}\n\nTap "Continue to Source" below to read the full article from the original publisher.'
+                              : 'Full article content is available at the original source. Tap "Continue to Source" below to read the complete story.',
                       style: theme.textTheme.bodyLarge?.copyWith(
                         height: 1.8,
                         color: theme.colorScheme.onSurface.withOpacity(0.7),
