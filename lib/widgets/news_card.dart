@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/news_model.dart';
 import '../services/bookmarks_service.dart';
+import '../utils/date_helper.dart';
+import '../utils/source_helper.dart';
 import 'glass_container.dart';
 
 class NewsCard extends StatelessWidget {
@@ -17,47 +19,9 @@ class NewsCard extends StatelessWidget {
     this.heroPrefix,
   });
 
-  String _cleanSource(String? source) {
-    if (source == null || source.isEmpty) return 'News';
-    String cleaned = source;
-    if (cleaned.contains('@')) {
-      if (cleaned.contains('(') && cleaned.contains(')')) {
-        final start = cleaned.indexOf('(') + 1;
-        final end = cleaned.lastIndexOf(')');
-        if (end > start) {
-          cleaned = cleaned.substring(start, end);
-        } else {
-          cleaned = cleaned.split('@').first;
-        }
-      } else {
-        cleaned = cleaned.split('@').first;
-      }
-    }
-    if (cleaned.isNotEmpty) {
-      cleaned = cleaned[0].toUpperCase() + cleaned.substring(1);
-    }
-    return cleaned.length > 20 ? '${cleaned.substring(0, 17)}...' : cleaned;
-  }
 
   String _formatDate(String? dateString) {
-    if (dateString == null) return 'Unknown date';
-    try {
-      final date = DateTime.parse(dateString).toLocal();
-      final now = DateTime.now();
-      final difference = now.difference(date);
-
-      if (difference.inDays > 0) {
-        return '${difference.inDays}d ago';
-      } else if (difference.inHours > 0) {
-        return '${difference.inHours}h ago';
-      } else if (difference.inMinutes > 0) {
-        return '${difference.inMinutes}m ago';
-      } else {
-        return 'Just now';
-      }
-    } catch (e) {
-      return 'Unknown date';
-    }
+    return DateHelper.timeAgo(dateString);
   }
 
   @override
@@ -157,7 +121,7 @@ class NewsCard extends StatelessWidget {
                               ],
                             ),
                             child: Text(
-                              _cleanSource(news.source),
+                              SourceHelper.cleanSource(news.source),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
@@ -218,7 +182,7 @@ class NewsCard extends StatelessWidget {
                               _ActionButton(
                                 icon: Icons.share_outlined,
                                 onTap: () {
-                                  if (news.url != null) {
+                                  if (news.url != null && news.url!.isNotEmpty) {
                                     Share.share(
                                         'Check out this news: ${news.title}\n${news.url}');
                                   }

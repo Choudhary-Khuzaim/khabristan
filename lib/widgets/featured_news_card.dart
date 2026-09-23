@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/news_model.dart';
+import '../utils/date_helper.dart';
+import '../utils/source_helper.dart';
 import 'glass_container.dart';
 
 class FeaturedNewsCard extends StatelessWidget {
@@ -16,48 +18,11 @@ class FeaturedNewsCard extends StatelessWidget {
     this.heroPrefix = 'featured',
   });
 
-  String _cleanSource(String? source) {
-    if (source == null || source.isEmpty) return 'News';
-    String cleaned = source;
-    if (cleaned.contains('@')) {
-      if (cleaned.contains('(') && cleaned.contains(')')) {
-        final start = cleaned.indexOf('(') + 1;
-        final end = cleaned.lastIndexOf(')');
-        if (end > start) {
-          cleaned = cleaned.substring(start, end);
-        } else {
-          cleaned = cleaned.split('@').first;
-        }
-      } else {
-        cleaned = cleaned.split('@').first;
-      }
-    }
-    if (cleaned.isNotEmpty) {
-      cleaned = cleaned[0].toUpperCase() + cleaned.substring(1);
-    }
-    return cleaned.length > 20 ? '${cleaned.substring(0, 17)}...' : cleaned;
-  }
-
-  String _formatTimeAgo(String? dateString) {
-    if (dateString == null) return '';
-    try {
-      final date = DateTime.parse(dateString).toLocal();
-      final now = DateTime.now();
-      final diff = now.difference(date);
-
-      if (diff.inDays > 0) return '${diff.inDays}d ago';
-      if (diff.inHours > 0) return '${diff.inHours}h ago';
-      if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-      return 'Just now';
-    } catch (_) {
-      return '';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final heroTag = '${heroPrefix}_${news.url ?? news.title}';
-    final timeAgo = _formatTimeAgo(news.publishedAt);
+    final timeAgo = DateHelper.timeAgo(news.publishedAt);
 
     return GlassContainer(
       margin: const EdgeInsets.only(right: 16),
@@ -161,7 +126,7 @@ class FeaturedNewsCard extends StatelessWidget {
                               ],
                             ),
                             child: Text(
-                              _cleanSource(news.source),
+                              SourceHelper.cleanSource(news.source),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(

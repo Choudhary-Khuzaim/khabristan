@@ -6,6 +6,9 @@ import 'package:xml/xml.dart' as xml;
 import '../models/news_model.dart';
 
 class NewsService {
+  static final NewsService _instance = NewsService._internal();
+  factory NewsService() => _instance;
+  NewsService._internal();
   // ============================================
   // Multi-Source RSS Feeds (PlayStore Safe)
   // Each publisher's own RSS feed — no Google News dependency
@@ -546,7 +549,7 @@ class NewsService {
   // PRIVATE: Deduplicate articles by title similarity
   // ============================================
   List<NewsModel> _deduplicateArticles(List<NewsModel> articles) {
-    final seen = <String>{};
+    final seen = <String, bool>{};
     final unique = <NewsModel>[];
 
     for (final article in articles) {
@@ -556,12 +559,14 @@ class NewsService {
           .replaceAll(RegExp(r'[^a-z0-9]'), '')
           .trim();
 
-      // Skip if we've already seen a very similar title
+      // Skip articles with very short or empty titles
       if (titleKey.length < 5) continue;
-      final shortKey = titleKey.substring(0, (titleKey.length * 0.7).round().clamp(5, 60));
 
-      if (!seen.any((s) => s.contains(shortKey) || shortKey.contains(s))) {
-        seen.add(shortKey);
+      // Use a reasonable-length prefix as the dedup key (O(1) HashMap lookup)
+      final dedupKey = titleKey.substring(0, titleKey.length.clamp(5, 60));
+
+      if (!seen.containsKey(dedupKey)) {
+        seen[dedupKey] = true;
         unique.add(article);
       }
     }

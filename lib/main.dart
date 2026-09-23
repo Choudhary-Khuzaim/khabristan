@@ -10,13 +10,15 @@ import 'services/bookmarks_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Set preferred orientations
-  SystemChrome.setPreferredOrientations([
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  await ThemeService().init();
-  await PreferencesService().init();
-  await BookmarksService().init();
+  await Future.wait([
+    ThemeService().init(),
+    PreferencesService().init(),
+    BookmarksService().init(),
+  ]);
 
   runApp(const KhabarIsTanApp());
 }

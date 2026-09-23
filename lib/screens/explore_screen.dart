@@ -220,10 +220,11 @@ class _LogoWithFallback extends StatefulWidget {
 
 class _LogoWithFallbackState extends State<_LogoWithFallback> {
   int _currentUrlIndex = 0;
+  bool _hasFailed = false;
 
   @override
   Widget build(BuildContext context) {
-    if (_currentUrlIndex >= widget.logoUrls.length) {
+    if (_hasFailed || _currentUrlIndex >= widget.logoUrls.length) {
       // All URLs failed — show fallback icon
       return Icon(
         Icons.newspaper_rounded,
@@ -242,8 +243,12 @@ class _LogoWithFallbackState extends State<_LogoWithFallback> {
         // Try next URL in the fallback chain
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
+            final nextIndex = _currentUrlIndex + 1;
             setState(() {
-              _currentUrlIndex++;
+              _currentUrlIndex = nextIndex;
+              if (nextIndex >= widget.logoUrls.length) {
+                _hasFailed = true;
+              }
             });
           }
         });

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../utils/date_helper.dart';
 
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../models/news_model.dart';
@@ -37,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
   int _featuredPageIndex = 0;
+  late PageController _featuredPageController;
 
   DateTime? _lastUpdated;
   Timer? _autoRefreshTimer;
@@ -71,6 +73,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _pulseAnimation = Tween<double>(begin: 0.4, end: 1.0).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
+
+    _featuredPageController = PageController(viewportFraction: 0.88);
 
     _loadNewsWithCache();
 
@@ -152,6 +156,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _scrollController.dispose();
     _autoRefreshTimer?.cancel();
     _pulseController.dispose();
+    _featuredPageController.dispose();
     super.dispose();
   }
 
@@ -230,14 +235,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   String _getTimeAgo(DateTime? dateTime) {
-    if (dateTime == null) return '';
-    final now = DateTime.now();
-    final diff = now.difference(dateTime);
-
-    if (diff.inSeconds < 60) return 'Just now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    return '${diff.inDays}d ago';
+    return DateHelper.timeAgoFromDateTime(dateTime);
   }
 
   String _getGreeting() {
@@ -641,7 +639,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           child: SizedBox(
                             height: 220,
                             child: PageView.builder(
-                              controller: PageController(viewportFraction: 0.88),
+                              controller: _featuredPageController,
                               padEnds: false,
                               itemCount: _featuredNewsList.length,
                               onPageChanged: (index) {
@@ -650,11 +648,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 });
                               },
                               itemBuilder: (context, index) {
+                                final featured = _featuredNewsList[index];
+                                final tag = 'home_featured_${featured.url ?? featured.title}';
                                 return FeaturedNewsCard(
-                                  news: _featuredNewsList[index],
+                                  news: featured,
                                   heroPrefix: 'home_featured',
-                                  onTap: () =>
-                                      _navigateToDetail(_featuredNewsList[index], 'home_featured_${_featuredNewsList[index].url ?? _featuredNewsList[index].title}'),
+                                  onTap: () => _navigateToDetail(featured, tag),
                                 );
                               },
                             ),
@@ -789,7 +788,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         ),
                                         // Time ago
                                         Text(
-                                          _getTimeAgo(DateTime.tryParse(news.publishedAt ?? '')),
+                                          DateHelper.timeAgo(news.publishedAt),
                                           style: TextStyle(
                                             fontSize: 10,
                                             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),

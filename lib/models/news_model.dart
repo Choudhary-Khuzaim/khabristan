@@ -190,7 +190,7 @@ class NewsModel {
       'description': description,
       'content': content,
       'url': url,
-      'urlToImage': urlToImage ?? displayImageUrl,
+      'urlToImage': urlToImage,
       'publishedAt': publishedAt,
       'author': author,
       'source': source,

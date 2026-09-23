@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../models/news_model.dart';
+import '../widgets/glass_background.dart';
 import '../widgets/news_card.dart';
 import 'news_detail_screen.dart';
 
@@ -28,7 +29,9 @@ class AllNewsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GlassBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
           title,
@@ -92,6 +95,7 @@ class AllNewsScreen extends StatelessWidget {
                 },
               ),
             ),
+    ),
     );
   }
 }

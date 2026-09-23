@@ -42,6 +42,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
 
   void _initTts() {
     _flutterTts = FlutterTts();
+    _flutterTts.setLanguage('en-US');
+    _flutterTts.setSpeechRate(0.5);
+    _flutterTts.setVolume(1.0);
 
     _flutterTts.setStartHandler(() {
       if (mounted) setState(() => _isPlaying = true);
@@ -315,16 +318,14 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 48),
-
-                    // Author & TTS Card
+                    const SizedBox(height: 48),                      // Author & TTS Card
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: theme.cardTheme.color,
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: Colors.grey.withOpacity(0.05),
+                          color: theme.colorScheme.onSurface.withOpacity(0.05),
                         ),
                       ),
                       child: Row(
@@ -342,18 +343,18 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'REPORTED BY',
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.grey,
+                                    color: theme.colorScheme.onSurface.withOpacity(0.5),
                                     letterSpacing: 1,
                                   ),
                                 ),
                                 Text(
                                   widget.news.author ?? 'Editorial Desk',
-                                  style: const TextStyle(
+                                  style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 15,
                                   ),
@@ -370,20 +371,13 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
 
                     // Action Button
                     if (widget.news.url != null)
-                      ElevatedButton(
-                        onPressed: () => _openUrl(context, widget.news.url),
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 64),
-                          backgroundColor: Colors.transparent, // Uses gradient now
-                          foregroundColor: Colors.white,
-                          elevation: 10,
-                          shadowColor: theme.colorScheme.secondary.withOpacity(0.4),
-                          padding: EdgeInsets.zero, // Important for Ink decoration
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                        ),
-                        child: Ink(
+                      InkWell(
+                        onTap: () => _openUrl(context, widget.news.url),
+                        borderRadius: BorderRadius.circular(24),
+                        child: Container(
+                          height: 64,
+                          width: double.infinity,
+                          alignment: Alignment.center,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [Color(0xFFE94560), Color(0xFFFF8A65)],
@@ -391,24 +385,28 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                               end: Alignment.centerRight,
                             ),
                             borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: theme.colorScheme.secondary.withOpacity(0.4),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          child: Container(
-                            alignment: Alignment.center,
-                            constraints: const BoxConstraints(minHeight: 64),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'CONTINUE TO SOURCE',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 16,
-                                  ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'CONTINUE TO SOURCE',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 16,
                                 ),
-                                SizedBox(width: 12),
-                                Icon(Icons.open_in_new_rounded, size: 20),
-                              ],
-                            ),
+                              ),
+                              SizedBox(width: 12),
+                              Icon(Icons.open_in_new_rounded, size: 20, color: Colors.white),
+                            ],
                           ),
                         ),
                       ),
@@ -459,16 +457,17 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
 
 
   Widget _buildMetaItem(IconData icon, String text) {
+    final theme = Theme.of(context);
     return Row(
       children: [
-        Icon(icon, size: 14, color: Theme.of(context).colorScheme.primary),
+        Icon(icon, size: 14, color: theme.colorScheme.primary),
         const SizedBox(width: 6),
         Text(
           text,
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w700,
-            color: Colors.grey.shade600,
+            color: theme.colorScheme.onSurface.withOpacity(0.6),
           ),
         ),
       ],

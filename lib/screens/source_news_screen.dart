@@ -172,25 +172,33 @@ class _SourceNewsScreenState extends State<SourceNewsScreen> {
                 itemBuilder: (context, index) => const NewsCardShimmer(),
               )
             : _newsList.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.article_outlined,
-                          size: 64,
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No news found for ${widget.sourceName}',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.outline,
-                            fontSize: 16,
+                ? ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.article_outlined,
+                                size: 64,
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No news found for ${widget.sourceName}',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.outline,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   )
                 : AnimationLimiter(
                     child: ListView.builder(

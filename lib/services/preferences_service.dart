@@ -168,5 +168,9 @@ class PreferencesService {
     await p.remove(_keyBio);
     await p.remove(_keyPhone);
     await p.remove(_keyLocation);
+    await p.remove(_keyTheme);
+    await p.remove(_keyNotifications);
+    await p.remove(_keyRegion);
+    await p.remove(_keyMyNews);
   }
 }
