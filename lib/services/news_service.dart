@@ -504,6 +504,11 @@ class NewsService {
 
     if (usePriorityFeedsOnly && category.toLowerCase() == 'general') {
       feeds = feeds.where((feed) => _priorityFeeds.contains(feed['name'])).toList();
+    } else if (feeds.length > 8) {
+      // Optimize: Take a random subset of feeds to prevent long wait times and excessive bandwidth
+      final feedsList = List<Map<String, String>>.from(feeds);
+      feedsList.shuffle();
+      feeds = feedsList.take(8).toList();
     }
 
     // Fetch from all selected sources in parallel
@@ -599,7 +604,7 @@ class NewsService {
               'Connection': 'keep-alive',
             },
           )
-          .timeout(const Duration(seconds: 8));
+          .timeout(const Duration(seconds: 4));
 
       if (response.statusCode == 200 &&
           (response.body.contains('<rss') ||
@@ -620,7 +625,7 @@ class NewsService {
                 'https://corsproxy.io/?url=${Uri.encodeComponent(rssUrl)}',
               ),
             )
-            .timeout(const Duration(seconds: 5));
+            .timeout(const Duration(seconds: 3));
 
         if (response.statusCode == 200 &&
             (response.body.contains('<rss') ||
@@ -639,7 +644,7 @@ class NewsService {
         final proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=${Uri.encodeComponent(rssUrl)}';
         final response = await http
             .get(Uri.parse(proxyUrl))
-            .timeout(const Duration(seconds: 5));
+            .timeout(const Duration(seconds: 3));
 
         if (response.statusCode == 200) {
           final jsonData = json.decode(response.body);

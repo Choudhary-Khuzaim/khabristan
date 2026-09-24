@@ -119,22 +119,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     try {
-      final results = await Future.wait([
-        _newsService.getTopHeadlines(category: _selectedCategory, forceRefresh: true),
-        if (_selectedCategory == 'general')
-          _newsService.getFeaturedNews(limit: 5)
-        else
-          Future.value(<NewsModel>[]),
-      ]);
-
-      final news = results[0];
-      final featured = results.length > 1 ? results[1] : <NewsModel>[];
+      final news = await _newsService.getTopHeadlines(
+        category: _selectedCategory, 
+        forceRefresh: true
+      );
 
       if (mounted) {
         setState(() {
           _newsList = news;
           _filteredNewsList = news;
-          _featuredNewsList = featured.isNotEmpty ? featured : news.take(5).toList();
+          _featuredNewsList = news.take(5).toList();
           _trendingNewsList = news.take(8).toList();
           _lastUpdated = DateTime.now();
           _isRefreshing = false;
@@ -166,22 +160,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     try {
-      // Fetch category news and featured news in parallel
-      final results = await Future.wait([
-        _newsService.getTopHeadlines(category: _selectedCategory),
-        if (_selectedCategory == 'general')
-          _newsService.getFeaturedNews(limit: 5)
-        else
-          Future.value(<NewsModel>[]),
-      ]);
-
-      final news = results[0];
-      final featured = results.length > 1 ? results[1] : <NewsModel>[];
+      final news = await _newsService.getTopHeadlines(
+        category: _selectedCategory
+      );
 
       setState(() {
         _newsList = news;
         _filteredNewsList = news;
-        _featuredNewsList = featured.isNotEmpty ? featured : news.take(5).toList();
+        _featuredNewsList = news.take(5).toList();
         _trendingNewsList = news.take(8).toList();
         _lastUpdated = DateTime.now();
         _isLoading = false;
