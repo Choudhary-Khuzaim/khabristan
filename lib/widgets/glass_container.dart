@@ -34,12 +34,11 @@ class GlassContainer extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultColor = color ?? (isDark ? Colors.white : Colors.white);
     final borderRad = borderRadius ?? BorderRadius.circular(24);
-    
+
     // In dark mode we use white with low opacity, in light mode white with higher opacity
     final fillOpacity = isDark ? opacity : (opacity * 3).clamp(0.0, 0.8);
-    final borderColor = isDark 
-        ? Colors.white.withOpacity(0.1) 
-        : Colors.white.withOpacity(0.5);
+    final borderColor =
+        isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.5);
 
     Widget container = Container(
       width: width,
@@ -48,10 +47,11 @@ class GlassContainer extends StatelessWidget {
       decoration: BoxDecoration(
         color: defaultColor.withOpacity(fillOpacity),
         borderRadius: borderRad,
-        border: customBorder ?? Border.all(
-          color: borderColor,
-          width: 1.0,
-        ),
+        border: customBorder ??
+            Border.all(
+              color: borderColor,
+              width: 1.0,
+            ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -77,7 +77,8 @@ class GlassContainer extends StatelessWidget {
         borderRadius: borderRad,
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: container, // we remove the margin from inside container to avoid clipping issues, wait padding is added outside
+          child:
+              container, // we remove the margin from inside container to avoid clipping issues, wait padding is added outside
         ),
       ),
     );

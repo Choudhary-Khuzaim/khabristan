@@ -45,9 +45,8 @@ class BookmarksService extends ChangeNotifier {
   Future<void> _saveBookmarks() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final List<String> jsonList = _bookmarks
-          .map((news) => jsonEncode(news.toJson()))
-          .toList();
+      final List<String> jsonList =
+          _bookmarks.map((news) => jsonEncode(news.toJson())).toList();
       await prefs.setStringList(_keyBookmarks, jsonList);
     } catch (e) {
       debugPrint('Error saving bookmarks: $e');

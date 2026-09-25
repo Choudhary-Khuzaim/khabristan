@@ -19,7 +19,6 @@ class NewsCard extends StatelessWidget {
     this.heroPrefix,
   });
 
-
   String _formatDate(String? dateString) {
     return DateHelper.timeAgo(dateString);
   }
@@ -48,152 +47,168 @@ class NewsCard extends StatelessWidget {
                 height: 180,
                 width: double.infinity,
                 child: Hero(
-                  tag: '${heroPrefix ?? 'news_card'}_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
+                  tag:
+                      '${heroPrefix ?? 'news_card'}_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
                   child: Material(
                     type: MaterialType.transparency,
                     child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(24),
-                    ),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        CachedNetworkImage(
-                          imageUrl: news.displayImageUrl,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                            child: Center(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(24),
+                      ),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          CachedNetworkImage(
+                            imageUrl: news.displayImageUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
+                              child: Center(
+                                child: Icon(
+                                  Icons.newspaper_rounded,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withOpacity(0.3),
+                                  size: 36,
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
                               child: Icon(
                                 Icons.newspaper_rounded,
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                color: Theme.of(context).colorScheme.primary,
                                 size: 36,
                               ),
                             ),
                           ),
-                          errorWidget: (context, url, error) => Container(
-                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                            child: Icon(
-                              Icons.newspaper_rounded,
-                              color: Theme.of(context).colorScheme.primary,
-                              size: 36,
+                          // Bottom gradient fade for readability
+                          Positioned.fill(
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  stops: const [0.0, 0.5, 1.0],
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.transparent,
+                                    isDark
+                                        ? Colors.black.withOpacity(0.5)
+                                        : Colors.white.withOpacity(0.4),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        // Bottom gradient fade for readability
-                        Positioned.fill(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                stops: const [0.0, 0.5, 1.0],
-                                colors: [
-                                  Colors.transparent,
-                                  Colors.transparent,
-                                  isDark
-                                      ? Colors.black.withOpacity(0.5)
-                                      : Colors.white.withOpacity(0.4),
+                          // Source badge — top left
+                          Positioned(
+                            top: 12,
+                            left: 12,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFFE94560),
+                                    Color(0xFFFF8A65)
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFE94560)
+                                        .withOpacity(0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Text(
+                                SourceHelper.cleanSource(news.source),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.5,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                          // Time badge — top right
+                          Positioned(
+                            top: 12,
+                            right: 12,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.45),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.access_time_rounded,
+                                    size: 11,
+                                    color: Colors.white.withOpacity(0.8),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    _formatDate(news.publishedAt),
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.9),
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                           ),
-                        ),
-                        // Source badge — top left
-                        Positioned(
-                          top: 12,
-                          left: 12,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFFE94560), Color(0xFFFF8A65)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFFE94560).withOpacity(0.3),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Text(
-                              SourceHelper.cleanSource(news.source),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0.5,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        // Time badge — top right
-                        Positioned(
-                          top: 12,
-                          right: 12,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.45),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                          // Bookmark — bottom right of image
+                          Positioned(
+                            bottom: 10,
+                            right: 12,
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  Icons.access_time_rounded,
-                                  size: 11,
-                                  color: Colors.white.withOpacity(0.8),
+                                _ActionButton(
+                                  icon: isBookmarked
+                                      ? Icons.bookmark_rounded
+                                      : Icons.bookmark_border_rounded,
+                                  isActive: isBookmarked,
+                                  onTap: () =>
+                                      bookmarksService.toggleBookmark(news),
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  _formatDate(news.publishedAt),
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.9),
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                                const SizedBox(width: 6),
+                                _ActionButton(
+                                  icon: Icons.share_outlined,
+                                  onTap: () {
+                                    if (news.url != null &&
+                                        news.url!.isNotEmpty) {
+                                      Share.share(
+                                          'Check out this news: ${news.title}\n${news.url}');
+                                    }
+                                  },
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                        // Bookmark — bottom right of image
-                        Positioned(
-                          bottom: 10,
-                          right: 12,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _ActionButton(
-                                icon: isBookmarked
-                                    ? Icons.bookmark_rounded
-                                    : Icons.bookmark_border_rounded,
-                                isActive: isBookmarked,
-                                onTap: () => bookmarksService.toggleBookmark(news),
-                              ),
-                              const SizedBox(width: 6),
-                              _ActionButton(
-                                icon: Icons.share_outlined,
-                                onTap: () {
-                                  if (news.url != null && news.url!.isNotEmpty) {
-                                    Share.share(
-                                        'Check out this news: ${news.title}\n${news.url}');
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
                   ),
                 ),
               ),
@@ -271,8 +286,7 @@ class NewsCard extends StatelessWidget {
                         ),
                         const Spacer(),
                         // Category pill
-                        if (news.category != null &&
-                            news.category != 'general')
+                        if (news.category != null && news.category != 'general')
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 3),

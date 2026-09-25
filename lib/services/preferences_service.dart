@@ -40,17 +40,28 @@ class PreferencesService {
 
   String getRegionName(String code) {
     switch (code) {
-      case 'us': return 'United States';
-      case 'gb': return 'United Kingdom';
-      case 'pk': return 'Pakistan';
-      case 'in': return 'India';
-      case 'ca': return 'Canada';
-      case 'au': return 'Australia';
-      case 'ae': return 'UAE';
-      case 'sa': return 'Saudi Arabia';
-      case 'sg': return 'Singapore';
-      case 'za': return 'South Africa';
-      default: return 'United States';
+      case 'us':
+        return 'United States';
+      case 'gb':
+        return 'United Kingdom';
+      case 'pk':
+        return 'Pakistan';
+      case 'in':
+        return 'India';
+      case 'ca':
+        return 'Canada';
+      case 'au':
+        return 'Australia';
+      case 'ae':
+        return 'UAE';
+      case 'sa':
+        return 'Saudi Arabia';
+      case 'sg':
+        return 'Singapore';
+      case 'za':
+        return 'South Africa';
+      default:
+        return 'United States';
     }
   }
 
@@ -144,9 +155,8 @@ class PreferencesService {
   Future<void> deleteMyNews(NewsModel newsToDelete) async {
     final p = await prefs;
     final List<String> currentList = p.getStringList(_keyMyNews) ?? [];
-    List<NewsModel> models = currentList
-        .map((str) => NewsModel.fromJson(jsonDecode(str)))
-        .toList();
+    List<NewsModel> models =
+        currentList.map((str) => NewsModel.fromJson(jsonDecode(str))).toList();
 
     models.removeWhere(
       (item) =>
@@ -154,9 +164,8 @@ class PreferencesService {
           item.publishedAt == newsToDelete.publishedAt,
     );
 
-    final List<String> updatedList = models
-        .map((item) => jsonEncode(item.toJson()))
-        .toList();
+    final List<String> updatedList =
+        models.map((item) => jsonEncode(item.toJson())).toList();
 
     await p.setStringList(_keyMyNews, updatedList);
   }

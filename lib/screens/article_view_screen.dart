@@ -100,7 +100,8 @@ class _ArticleViewScreenState extends State<ArticleViewScreen> {
           IconButton(
             icon: const Icon(Icons.share_rounded),
             onPressed: () {
-              Share.share('${widget.title}\n\nRead more at: ${widget.articleUrl}');
+              Share.share(
+                  '${widget.title}\n\nRead more at: ${widget.articleUrl}');
             },
           ),
         ],
@@ -167,4 +168,3 @@ class _ArticleViewScreenState extends State<ArticleViewScreen> {
     );
   }
 }
-

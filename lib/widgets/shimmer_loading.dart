@@ -38,7 +38,8 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultBaseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
-    final defaultHighlightColor = isDark ? Colors.grey[700]! : Colors.grey[100]!;
+    final defaultHighlightColor =
+        isDark ? Colors.grey[700]! : Colors.grey[100]!;
 
     return AnimatedBuilder(
       animation: _controller,
@@ -97,8 +98,10 @@ class NewsCardShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.white.withOpacity(0.05) : Colors.grey[200]!;
-    final highlightColor = isDark ? Colors.white.withOpacity(0.1) : Colors.grey[50]!;
+    final baseColor =
+        isDark ? Colors.white.withOpacity(0.05) : Colors.grey[200]!;
+    final highlightColor =
+        isDark ? Colors.white.withOpacity(0.1) : Colors.grey[50]!;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -106,7 +109,9 @@ class NewsCardShimmer extends StatelessWidget {
       color: theme.cardTheme.color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
-        side: isDark ? BorderSide(color: Colors.white.withOpacity(0.05)) : BorderSide.none,
+        side: isDark
+            ? BorderSide(color: Colors.white.withOpacity(0.05))
+            : BorderSide.none,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

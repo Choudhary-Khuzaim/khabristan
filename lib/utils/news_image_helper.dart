@@ -67,7 +67,7 @@ class NewsImageHelper {
 
     final catKey = category.toLowerCase().trim();
     final images = _categoryImages[catKey] ?? _categoryImages['general']!;
-    
+
     // Deterministic selection using title hashcode so the same article gets the same image consistently
     final seed = (title ?? 'khabaristan_news').hashCode.abs();
     return images[seed % images.length];

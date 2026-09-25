@@ -21,7 +21,8 @@ class AllNewsScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => NewsDetailScreen(
           news: news,
-          heroTag: 'all_news_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
+          heroTag:
+              'all_news_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
         ),
       ),
     );
@@ -32,70 +33,71 @@ class AllNewsScreen extends StatelessWidget {
     return GlassBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            shape: BoxShape.circle,
+        appBar: AppBar(
+          title: Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
-            iconSize: 18,
-            onPressed: () => Navigator.pop(context),
+          leading: Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              iconSize: 18,
+              onPressed: () => Navigator.pop(context),
+            ),
           ),
         ),
-      ),
-      body: newsList.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.article_outlined,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No news available',
-                    style: TextStyle(
+        body: newsList.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.article_outlined,
+                      size: 64,
                       color: Theme.of(context).colorScheme.outline,
-                      fontSize: 16,
                     ),
-                  ),
-                ],
-              ),
-            )
-          : AnimationLimiter(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                itemCount: newsList.length,
-                itemBuilder: (context, index) {
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    duration: const Duration(milliseconds: 375),
-                    child: SlideAnimation(
-                      verticalOffset: 50.0,
-                      child: FadeInAnimation(
-                        child: NewsCard(
-                          news: newsList[index],
-                          heroPrefix: 'all_news',
-                          onTap: () => _navigateToDetail(context, newsList[index]),
-                        ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No news available',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.outline,
+                        fontSize: 16,
                       ),
                     ),
-                  );
-                },
+                  ],
+                ),
+              )
+            : AnimationLimiter(
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  itemCount: newsList.length,
+                  itemBuilder: (context, index) {
+                    return AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 375),
+                      child: SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: NewsCard(
+                            news: newsList[index],
+                            heroPrefix: 'all_news',
+                            onTap: () =>
+                                _navigateToDetail(context, newsList[index]),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-    ),
+      ),
     );
   }
 }

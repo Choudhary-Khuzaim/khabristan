@@ -6,7 +6,6 @@ import 'services/theme_service.dart';
 import 'services/preferences_service.dart';
 import 'services/bookmarks_service.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Set preferred orientations
@@ -58,7 +57,8 @@ class KhabarIsTanApp extends StatelessWidget {
         error: const Color(0xFFEF4444),
         brightness: Brightness.light,
       ),
-      scaffoldBackgroundColor: Colors.transparent, // Required for GlassBackground
+      scaffoldBackgroundColor:
+          Colors.transparent, // Required for GlassBackground
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -163,11 +163,13 @@ class KhabarIsTanApp extends StatelessWidget {
         secondary: const Color(0xFFFAFAFA),
         tertiary: const Color(0xFF16213E),
         surface: const Color(0xFF16213E), // Deep Navy Surface
-        onSurface: Colors.white, // FIX: Ensure text on surface is white in dark mode
+        onSurface:
+            Colors.white, // FIX: Ensure text on surface is white in dark mode
         error: const Color(0xFFF87171),
         brightness: Brightness.dark,
       ),
-      scaffoldBackgroundColor: Colors.transparent, // Required for GlassBackground
+      scaffoldBackgroundColor:
+          Colors.transparent, // Required for GlassBackground
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,

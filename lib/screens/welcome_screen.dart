@@ -39,7 +39,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     _controller.forward();
 
     // Navigate based on setup status after 2.5 seconds (cinematic delay)
-    Future.delayed(const Duration(milliseconds: 2500), () => _checkStatusAndNavigate());
+    Future.delayed(
+        const Duration(milliseconds: 2500), () => _checkStatusAndNavigate());
   }
 
   Future<void> _checkStatusAndNavigate() async {
@@ -48,7 +49,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const HomeScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },

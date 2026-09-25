@@ -121,111 +121,113 @@ class _SourceNewsScreenState extends State<SourceNewsScreen> {
   @override
   Widget build(BuildContext context) {
     final domain = _getDomain(widget.sourceUrl);
-    final logoUrl = domain.isNotEmpty
-        ? 'https://logo.clearbit.com/$domain'
-        : '';
+    final logoUrl =
+        domain.isNotEmpty ? 'https://logo.clearbit.com/$domain' : '';
 
     return GlassBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (logoUrl.isNotEmpty) ...[
-              Container(
-                height: 28,
-                width: 28,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(6),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                    )
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: CachedNetworkImage(
-                    imageUrl: logoUrl,
-                    fit: BoxFit.contain,
-                    errorWidget: (context, url, error) => const SizedBox.shrink(),
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (logoUrl.isNotEmpty) ...[
+                Container(
+                  height: 28,
+                  width: 28,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(6),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                      )
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: CachedNetworkImage(
+                      imageUrl: logoUrl,
+                      fit: BoxFit.contain,
+                      errorWidget: (context, url, error) =>
+                          const SizedBox.shrink(),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
+                const SizedBox(width: 12),
+              ],
+              Text(widget.sourceName),
             ],
-            Text(widget.sourceName),
-          ],
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: RefreshIndicator(
-        onRefresh: _loadNews,
-        color: Theme.of(context).colorScheme.primary,
-        child: _isLoading
-            ? ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                itemCount: 5,
-                itemBuilder: (context, index) => const NewsCardShimmer(),
-              )
-            : _newsList.isEmpty
-                ? ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.6,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.article_outlined,
-                                size: 64,
-                                color: Theme.of(context).colorScheme.outline,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'No news found for ${widget.sourceName}',
-                                style: TextStyle(
+        body: RefreshIndicator(
+          onRefresh: _loadNews,
+          color: Theme.of(context).colorScheme.primary,
+          child: _isLoading
+              ? ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  itemCount: 5,
+                  itemBuilder: (context, index) => const NewsCardShimmer(),
+                )
+              : _newsList.isEmpty
+                  ? ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.6,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.article_outlined,
+                                  size: 64,
                                   color: Theme.of(context).colorScheme.outline,
-                                  fontSize: 16,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 16),
+                                Text(
+                                  'No news found for ${widget.sourceName}',
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.outline,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  )
-                : AnimationLimiter(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      itemCount: _newsList.length,
-                      itemBuilder: (context, index) {
-                        final news = _newsList[index];
-                        return AnimationConfiguration.staggeredList(
-                          position: index,
-                          duration: const Duration(milliseconds: 375),
-                          child: SlideAnimation(
-                            verticalOffset: 50.0,
-                            child: FadeInAnimation(
-                              child: NewsCard(
-                                news: news,
-                                heroPrefix: 'source_news_${widget.sourceName}',
-                                onTap: () => _navigateToDetail(
-                                  news,
-                                  'source_news_${widget.sourceName}_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
+                      ],
+                    )
+                  : AnimationLimiter(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: _newsList.length,
+                        itemBuilder: (context, index) {
+                          final news = _newsList[index];
+                          return AnimationConfiguration.staggeredList(
+                            position: index,
+                            duration: const Duration(milliseconds: 375),
+                            child: SlideAnimation(
+                              verticalOffset: 50.0,
+                              child: FadeInAnimation(
+                                child: NewsCard(
+                                  news: news,
+                                  heroPrefix:
+                                      'source_news_${widget.sourceName}',
+                                  onTap: () => _navigateToDetail(
+                                    news,
+                                    'source_news_${widget.sourceName}_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
-                  ),
         ),
       ),
     );

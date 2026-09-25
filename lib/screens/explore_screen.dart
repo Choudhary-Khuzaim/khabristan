@@ -39,84 +39,88 @@ class _ExploreScreenState extends State<ExploreScreen> {
         body: SafeArea(
           child: CustomScrollView(
             slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Explore Sources',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -1,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Discover news from your favorite channels',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            if (_isLoading)
-              const SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              )
-            else
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                sliver: AnimationLimiter(
-                  child: SliverGrid(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                      childAspectRatio: 1.1,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final source = _sources[index];
-                        return AnimationConfiguration.staggeredGrid(
-                          position: index,
-                          duration: const Duration(milliseconds: 375),
-                          columnCount: 2,
-                          child: ScaleAnimation(
-                            child: FadeInAnimation(
-                              child: _SourceCard(
-                                name: source['name']!,
-                                url: source['url']!,
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => SourceNewsScreen(
-                                        sourceName: source['name']!,
-                                        sourceUrl: source['url']!,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Explore Sources',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: -1,
                             ),
-                          ),
-                        );
-                      },
-                      childCount: _sources.length,
-                    ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Discover news from your favorite channels',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
                   ),
                 ),
               ),
-            const SliverToBoxAdapter(child: SizedBox(height: 100)),
-          ],
+              if (_isLoading)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: AnimationLimiter(
+                    child: SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        childAspectRatio: 1.1,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final source = _sources[index];
+                          return AnimationConfiguration.staggeredGrid(
+                            position: index,
+                            duration: const Duration(milliseconds: 375),
+                            columnCount: 2,
+                            child: ScaleAnimation(
+                              child: FadeInAnimation(
+                                child: _SourceCard(
+                                  name: source['name']!,
+                                  url: source['url']!,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SourceNewsScreen(
+                                          sourceName: source['name']!,
+                                          sourceUrl: source['url']!,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        childCount: _sources.length,
+                      ),
+                    ),
+                  ),
+                ),
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }
@@ -145,9 +149,9 @@ class _SourceCard extends StatelessWidget {
   List<String> _getLogoUrls(String domain) {
     if (domain.isEmpty) return [];
     return [
-      'https://logo.clearbit.com/$domain',                          // Best quality
-      'https://www.google.com/s2/favicons?domain=$domain&sz=128',   // Google fallback
-      'https://icon.horse/icon/$domain',                             // Secondary fallback
+      'https://logo.clearbit.com/$domain', // Best quality
+      'https://www.google.com/s2/favicons?domain=$domain&sz=128', // Google fallback
+      'https://icon.horse/icon/$domain', // Secondary fallback
     ];
   }
 
@@ -164,46 +168,49 @@ class _SourceCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-              padding: const EdgeInsets.all(12),
-              height: 64,
-              width: 64,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.secondary.withOpacity(0.15),
-                    Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                shape: BoxShape.circle,
+            padding: const EdgeInsets.all(12),
+            height: 64,
+            width: 64,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.secondary.withOpacity(0.15),
+                  Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: logoUrls.isNotEmpty
-                    ? _LogoWithFallback(logoUrls: logoUrls)
-                    : Icon(
-                        Icons.newspaper_rounded,
-                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
-                      ),
-              ),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                name,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: logoUrls.isNotEmpty
+                  ? _LogoWithFallback(logoUrls: logoUrls)
+                  : Icon(
+                      Icons.newspaper_rounded,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .secondary
+                          .withOpacity(0.3),
                     ),
-              ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              name,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

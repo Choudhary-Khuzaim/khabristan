@@ -8,16 +8,16 @@ class GlassBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // In light mode, we use very soft pastels. In dark mode, deep vibrant colors.
     final bgColor = isDark ? const Color(0xFF0F0F1A) : const Color(0xFFFAFAFA);
-    
-    final blob1Color = isDark 
-        ? Theme.of(context).colorScheme.primary.withOpacity(0.15) 
+
+    final blob1Color = isDark
+        ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
         : Theme.of(context).colorScheme.primary.withOpacity(0.08);
-        
-    final blob2Color = isDark 
-        ? Theme.of(context).colorScheme.secondary.withOpacity(0.15) 
+
+    final blob2Color = isDark
+        ? Theme.of(context).colorScheme.secondary.withOpacity(0.15)
         : Theme.of(context).colorScheme.secondary.withOpacity(0.08);
 
     return Stack(
@@ -28,7 +28,7 @@ class GlassBackground extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
         ),
-        
+
         // Blob 1 (Top Right)
         Positioned(
           top: -100,
@@ -49,7 +49,7 @@ class GlassBackground extends StatelessWidget {
             ),
           ),
         ),
-        
+
         // Blob 2 (Bottom Left)
         Positioned(
           bottom: -50,

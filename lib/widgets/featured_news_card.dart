@@ -18,7 +18,6 @@ class FeaturedNewsCard extends StatelessWidget {
     this.heroPrefix = 'featured',
   });
 
-
   @override
   Widget build(BuildContext context) {
     final heroTag = '${heroPrefix}_${news.url ?? news.title}';
@@ -44,7 +43,10 @@ class FeaturedNewsCard extends StatelessWidget {
                     child: Icon(
                       Icons.newspaper_rounded,
                       size: 40,
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withOpacity(0.3),
                     ),
                   ),
                 ),
@@ -119,7 +121,8 @@ class FeaturedNewsCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFFE94560).withOpacity(0.3),
+                                  color:
+                                      const Color(0xFFE94560).withOpacity(0.3),
                                   blurRadius: 6,
                                   offset: const Offset(0, 2),
                                 ),

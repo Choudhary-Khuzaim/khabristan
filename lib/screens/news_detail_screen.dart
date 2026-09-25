@@ -14,8 +14,8 @@ class NewsDetailScreen extends StatefulWidget {
   final NewsModel news;
   final String heroTag;
 
-  const NewsDetailScreen({super.key, required this.news, required this.heroTag});
-
+  const NewsDetailScreen(
+      {super.key, required this.news, required this.heroTag});
 
   @override
   State<NewsDetailScreen> createState() => _NewsDetailScreenState();
@@ -24,8 +24,6 @@ class NewsDetailScreen extends StatefulWidget {
 class _NewsDetailScreenState extends State<NewsDetailScreen> {
   late FlutterTts _flutterTts;
   bool _isPlaying = false;
-
-
 
   @override
   void initState() {
@@ -38,7 +36,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     _flutterTts.stop();
     super.dispose();
   }
-
 
   void _initTts() {
     _flutterTts = FlutterTts();
@@ -86,8 +83,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   }
 
   String _estimateReadTime() {
-    final allText = '${widget.news.title ?? ''} ${widget.news.description ?? ''} ${widget.news.content ?? ''}';
-    final wordCount = allText.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length;
+    final allText =
+        '${widget.news.title ?? ''} ${widget.news.description ?? ''} ${widget.news.content ?? ''}';
+    final wordCount =
+        allText.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length;
     final minutes = (wordCount / 200).ceil().clamp(1, 30);
     return '$minutes min read';
   }
@@ -152,7 +151,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                 ),
               ),
               actions: [
-                _buildAppBarAction(icon: Icons.share_rounded, onTap: _shareNews),
+                _buildAppBarAction(
+                    icon: Icons.share_rounded, onTap: _shareNews),
                 _buildBookmarkAction(),
                 const SizedBox(width: 12),
               ],
@@ -163,88 +163,92 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                   child: Material(
                     type: MaterialType.transparency,
                     child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      CachedNetworkImage(
-                        imageUrl: widget.news.displayImageUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          child: const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                      fit: StackFit.expand,
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: widget.news.displayImageUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            child: const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            child: Icon(
+                              Icons.newspaper_rounded,
+                              color: theme.colorScheme.primary,
+                              size: 40,
+                            ),
                           ),
                         ),
-                        errorWidget: (context, url, error) => Container(
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          child: Icon(
-                            Icons.newspaper_rounded,
-                            color: theme.colorScheme.primary,
-                            size: 40,
+                        // Luxury Gradient Overlay
+                        const DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black45,
+                                Colors.transparent,
+                                Colors.black87,
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      // Luxury Gradient Overlay
-                      const DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black45,
-                              Colors.transparent,
-                              Colors.black87,
+                        // Title Overlay when expanded
+                        Positioned(
+                          bottom: 40,
+                          left: 24,
+                          right: 24,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFFE94560),
+                                      Color(0xFFFF8A65)
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  widget.news.source?.toUpperCase() ??
+                                      'LOCAL NEWS',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                widget.news.title ?? '',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.2,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ],
                           ),
                         ),
-                      ),
-                      // Title Overlay when expanded
-                      Positioned(
-                        bottom: 40,
-                        left: 24,
-                        right: 24,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFFE94560), Color(0xFFFF8A65)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                widget.news.source?.toUpperCase() ?? 'LOCAL NEWS',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.5,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              widget.news.title ?? '',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w900,
-                                height: 1.2,
-                              ),
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -260,165 +264,175 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                     top: Radius.circular(36),
                   ),
                   child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Metadata Row
-                    Row(
-                      children: [
-                        _buildMetaItem(
-                          Icons.calendar_today_rounded,
-                          _formatDate(widget.news.publishedAt),
-                        ),
-                        const Spacer(),
-                        _buildMetaItem(Icons.timer_outlined, _estimateReadTime()),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Intro Text with Luxury Accent
-                    IntrinsicHeight(
-                      child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Metadata Row
+                      Row(
                         children: [
-                          Container(
-                            width: 4,
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.secondary,
-                              borderRadius: BorderRadius.circular(2),
-                            ),
+                          _buildMetaItem(
+                            Icons.calendar_today_rounded,
+                            _formatDate(widget.news.publishedAt),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              widget.news.description ??
-                                  'No description available for this article.',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: theme.colorScheme.onSurface,
-                                height: 1.5,
-                              ),
-                            ),
-                          ),
+                          const Spacer(),
+                          _buildMetaItem(
+                              Icons.timer_outlined, _estimateReadTime()),
                         ],
                       ),
-                    ),
+                      const SizedBox(height: 32),
 
-                    const SizedBox(height: 32),
-
-                    // Article Content
-                    Text(
-                      (widget.news.content != null && widget.news.content!.isNotEmpty && widget.news.content != widget.news.description)
-                          ? widget.news.content!
-                          : (widget.news.description != null && widget.news.description!.isNotEmpty)
-                              ? '${widget.news.description!}\n\nTap "Continue to Source" below to read the full article from the original publisher.'
-                              : 'Full article content is available at the original source. Tap "Continue to Source" below to read the complete story.',
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        height: 1.8,
-                        color: theme.colorScheme.onSurface.withOpacity(0.7),
-                        fontSize: 16,
-                      ),
-                    ),
-
-                    const SizedBox(height: 48),                      // Author & TTS Card
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: theme.cardTheme.color,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: theme.colorScheme.onSurface.withOpacity(0.05),
+                      // Intro Text with Luxury Accent
+                      IntrinsicHeight(
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 4,
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.secondary,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                widget.news.description ??
+                                    'No description available for this article.',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: theme.colorScheme.onSurface,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 24,
-                            backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                            child: Icon(
-                              Icons.person_rounded,
-                              color: theme.colorScheme.primary,
-                            ),
+
+                      const SizedBox(height: 32),
+
+                      // Article Content
+                      Text(
+                        (widget.news.content != null &&
+                                widget.news.content!.isNotEmpty &&
+                                widget.news.content != widget.news.description)
+                            ? widget.news.content!
+                            : (widget.news.description != null &&
+                                    widget.news.description!.isNotEmpty)
+                                ? '${widget.news.description!}\n\nTap "Continue to Source" below to read the full article from the original publisher.'
+                                : 'Full article content is available at the original source. Tap "Continue to Source" below to read the complete story.',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          height: 1.8,
+                          color: theme.colorScheme.onSurface.withOpacity(0.7),
+                          fontSize: 16,
+                        ),
+                      ),
+
+                      const SizedBox(height: 48), // Author & TTS Card
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: theme.cardTheme.color,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color:
+                                theme.colorScheme.onSurface.withOpacity(0.05),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'REPORTED BY',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.onSurface.withOpacity(0.5),
-                                    letterSpacing: 1,
+                        ),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 24,
+                              backgroundColor:
+                                  theme.colorScheme.primary.withOpacity(0.1),
+                              child: Icon(
+                                Icons.person_rounded,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'REPORTED BY',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.colorScheme.onSurface
+                                          .withOpacity(0.5),
+                                      letterSpacing: 1,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  widget.news.author ?? 'Editorial Desk',
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 15,
+                                  Text(
+                                    widget.news.author ?? 'Editorial Desk',
+                                    style:
+                                        theme.textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 15,
+                                    ),
                                   ),
+                                ],
+                              ),
+                            ),
+                            _buildTTSButton(),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 48),
+
+                      // Action Button
+                      if (widget.news.url != null)
+                        InkWell(
+                          onTap: () => _openUrl(context, widget.news.url),
+                          borderRadius: BorderRadius.circular(24),
+                          child: Container(
+                            height: 64,
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFE94560), Color(0xFFFF8A65)],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: theme.colorScheme.secondary
+                                      .withOpacity(0.4),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
                                 ),
                               ],
                             ),
-                          ),
-                          _buildTTSButton(),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 48),
-
-                    // Action Button
-                    if (widget.news.url != null)
-                      InkWell(
-                        onTap: () => _openUrl(context, widget.news.url),
-                        borderRadius: BorderRadius.circular(24),
-                        child: Container(
-                          height: 64,
-                          width: double.infinity,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFE94560), Color(0xFFFF8A65)],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
-                            borderRadius: BorderRadius.circular(24),
-                            boxShadow: [
-                              BoxShadow(
-                                color: theme.colorScheme.secondary.withOpacity(0.4),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'CONTINUE TO SOURCE',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 16,
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'CONTINUE TO SOURCE',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 12),
-                              Icon(Icons.open_in_new_rounded, size: 20, color: Colors.white),
-                            ],
+                                SizedBox(width: 12),
+                                Icon(Icons.open_in_new_rounded,
+                                    size: 20, color: Colors.white),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
   }
 
   Widget _buildAppBarAction({
@@ -428,7 +442,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   }) {
     final theme = Theme.of(context);
     final iconColor = color ?? theme.colorScheme.onSurface;
-    
+
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: UnconstrainedBox(
@@ -454,7 +468,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
       ),
     );
   }
-
 
   Widget _buildMetaItem(IconData icon, String text) {
     final theme = Theme.of(context);
@@ -514,13 +527,13 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     );
   }
 
-  Widget _buildBookmarkActionWithDynamicColor(BookmarksService bookmarksService) {
+  Widget _buildBookmarkActionWithDynamicColor(
+      BookmarksService bookmarksService) {
     final isBookmarked = bookmarksService.isBookmarked(widget.news);
     final theme = Theme.of(context);
     return _buildAppBarAction(
-      icon: isBookmarked
-          ? Icons.bookmark_rounded
-          : Icons.bookmark_border_rounded,
+      icon:
+          isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
       color: isBookmarked ? Colors.amber : theme.colorScheme.onSurface,
       onTap: () => bookmarksService.toggleBookmark(widget.news),
     );

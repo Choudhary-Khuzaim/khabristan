@@ -60,12 +60,14 @@ class NewsModel {
   }
 
   /// Parse from RSS feed item data
-  factory NewsModel.fromRss(Map<String, String> rssItem, {String category = 'general'}) {
+  factory NewsModel.fromRss(Map<String, String> rssItem,
+      {String category = 'general'}) {
     // Extract image from description HTML if present or media tags
     String? imageUrl = rssItem['imageUrl'];
     if (imageUrl == null || imageUrl.isEmpty) {
       final description = rssItem['description'] ?? '';
-      final imgMatch = RegExp(r'<img[^>]+src="([^">]+)"', caseSensitive: false).firstMatch(description);
+      final imgMatch = RegExp(r'<img[^>]+src="([^">]+)"', caseSensitive: false)
+          .firstMatch(description);
       if (imgMatch != null) {
         imageUrl = imgMatch.group(1);
       }
@@ -73,21 +75,24 @@ class NewsModel {
 
     // Thoroughly clean HTML/code artifacts from description
     String rawDesc = rssItem['description'] ?? '';
-    
+
     // 1. Remove CDATA wrappers
-    rawDesc = rawDesc.replaceAll(RegExp(r'<!\[CDATA\[', caseSensitive: false), '');
+    rawDesc =
+        rawDesc.replaceAll(RegExp(r'<!\[CDATA\[', caseSensitive: false), '');
     rawDesc = rawDesc.replaceAll(RegExp(r'\]\]>', caseSensitive: false), '');
-    
+
     // 2. Remove script and style blocks (content + tags)
-    rawDesc = rawDesc.replaceAll(RegExp(r'<script[^>]*>[\s\S]*?</script>', caseSensitive: false), '');
-    rawDesc = rawDesc.replaceAll(RegExp(r'<style[^>]*>[\s\S]*?</style>', caseSensitive: false), '');
-    
+    rawDesc = rawDesc.replaceAll(
+        RegExp(r'<script[^>]*>[\s\S]*?</script>', caseSensitive: false), '');
+    rawDesc = rawDesc.replaceAll(
+        RegExp(r'<style[^>]*>[\s\S]*?</style>', caseSensitive: false), '');
+
     // 3. Remove HTML comments
     rawDesc = rawDesc.replaceAll(RegExp(r'<!--[\s\S]*?-->'), '');
-    
+
     // 4. Remove all HTML tags
     rawDesc = rawDesc.replaceAll(RegExp(r'<[^>]+>'), '');
-    
+
     // 5. Decode common HTML entities
     rawDesc = rawDesc
         .replaceAll('&amp;', '&')
@@ -100,31 +105,34 @@ class NewsModel {
         .replaceAll('&mdash;', '—')
         .replaceAll('&ndash;', '–')
         .replaceAll('&hellip;', '…');
-    
+
     // 6. Remove JavaScript/code patterns that survived
-    rawDesc = rawDesc.replaceAll(RegExp(r'if\s*\([^)]*\)\s*\{[^}]*\}', caseSensitive: false), '');
-    rawDesc = rawDesc.replaceAll(RegExp(r'else\s*\{[^}]*\}', caseSensitive: false), '');
-    rawDesc = rawDesc.replaceAll(RegExp(r'function\s*\([^)]*\)\s*\{[^}]*\}', caseSensitive: false), '');
+    rawDesc = rawDesc.replaceAll(
+        RegExp(r'if\s*\([^)]*\)\s*\{[^}]*\}', caseSensitive: false), '');
+    rawDesc = rawDesc.replaceAll(
+        RegExp(r'else\s*\{[^}]*\}', caseSensitive: false), '');
+    rawDesc = rawDesc.replaceAll(
+        RegExp(r'function\s*\([^)]*\)\s*\{[^}]*\}', caseSensitive: false), '');
     rawDesc = rawDesc.replaceAll(RegExp(r'var\s+\w+\s*=\s*[^;]+;'), '');
     rawDesc = rawDesc.replaceAll(RegExp(r'document\.\w+'), '');
     rawDesc = rawDesc.replaceAll(RegExp(r'window\.\w+'), '');
     rawDesc = rawDesc.replaceAll(RegExp(r'\{[^}]{0,50}\}'), '');
-    
+
     // 7. Collapse excessive whitespace
     rawDesc = rawDesc.replaceAll(RegExp(r'\s+'), ' ').trim();
-    
+
     // 8. Validate: if it still looks like code, discard
     final looksLikeCode = rawDesc.contains('function') ||
         rawDesc.contains('var ') ||
         rawDesc.contains('===') ||
         rawDesc.contains('!==') ||
-        (rawDesc.contains('if(') || rawDesc.contains('if (')) && rawDesc.contains('{') ||
+        (rawDesc.contains('if(') || rawDesc.contains('if (')) &&
+            rawDesc.contains('{') ||
         rawDesc.startsWith('//') ||
         rawDesc.startsWith('/*');
-    
-    final cleanDescription = (!looksLikeCode && rawDesc.length >= 10)
-        ? rawDesc
-        : '';
+
+    final cleanDescription =
+        (!looksLikeCode && rawDesc.length >= 10) ? rawDesc : '';
 
     // Parse published date
     String? publishedAt;
@@ -166,9 +174,18 @@ class NewsModel {
     try {
       // RFC 2822 date format used in RSS
       final months = {
-        'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
-        'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
-        'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12',
+        'Jan': '01',
+        'Feb': '02',
+        'Mar': '03',
+        'Apr': '04',
+        'May': '05',
+        'Jun': '06',
+        'Jul': '07',
+        'Aug': '08',
+        'Sep': '09',
+        'Oct': '10',
+        'Nov': '11',
+        'Dec': '12',
       };
 
       // "Sat, 14 Sep 2026 10:30:00 GMT"

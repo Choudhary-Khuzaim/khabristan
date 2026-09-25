@@ -18,7 +18,6 @@ import 'all_news_screen.dart';
 import 'legal_screen.dart';
 import '../services/theme_service.dart';
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -55,10 +54,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     {'key': 'sports', 'label': 'Sports', 'icon': Icons.sports_soccer_rounded},
     {'key': 'science', 'label': 'Science', 'icon': Icons.science_rounded},
     {'key': 'health', 'label': 'Health', 'icon': Icons.favorite_rounded},
-    {'key': 'entertainment', 'label': 'Entertainment', 'icon': Icons.movie_rounded},
+    {
+      'key': 'entertainment',
+      'label': 'Entertainment',
+      'icon': Icons.movie_rounded
+    },
   ];
-
-
 
   @override
   void initState() {
@@ -93,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   /// Cache-first: show cached data instantly, then refresh in background
   Future<void> _loadNewsWithCache() async {
     final cached = _newsService.getCachedGeneralNews();
-    
+
     if (cached != null && cached.isNotEmpty) {
       setState(() {
         _newsList = cached;
@@ -120,9 +121,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     try {
       final news = await _newsService.getTopHeadlines(
-        category: _selectedCategory, 
-        forceRefresh: true
-      );
+          category: _selectedCategory, forceRefresh: true);
 
       if (mounted) {
         setState(() {
@@ -143,8 +142,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-
-
   @override
   void dispose() {
     _scrollController.dispose();
@@ -160,9 +157,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     try {
-      final news = await _newsService.getTopHeadlines(
-        category: _selectedCategory
-      );
+      final news =
+          await _newsService.getTopHeadlines(category: _selectedCategory);
 
       setState(() {
         _newsList = news;
@@ -190,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _onCategoryChanged(String category) {
     if (_selectedCategory == category) return;
-    
+
     setState(() {
       _selectedCategory = category;
     });
@@ -212,11 +208,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-
   void _navigateToDetail(NewsModel news, String heroTag) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NewsDetailScreen(news: news, heroTag: heroTag)),
+      MaterialPageRoute(
+          builder: (context) => NewsDetailScreen(news: news, heroTag: heroTag)),
     );
   }
 
@@ -262,7 +258,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     decoration: BoxDecoration(
                                       gradient: const LinearGradient(
                                         colors: [
-                                          Color(0xFFE94560), // Vibrant coral-red
+                                          Color(
+                                              0xFFE94560), // Vibrant coral-red
                                           Color(0xFFFF8A65), // Orange accent
                                         ],
                                         begin: Alignment.topLeft,
@@ -271,7 +268,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withOpacity(0.3),
                                           blurRadius: 8,
                                           offset: const Offset(0, 3),
                                         ),
@@ -286,20 +286,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   const SizedBox(width: 12),
                                   Text(
                                     'Khabaristan',
-                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: -0.5,
-                                      color: Theme.of(context).colorScheme.onSurface,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: -0.5,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
+                                        ),
                                   ),
                                 ],
                               ),
-                              
+
                               // Settings Capsule
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 4, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surface
+                                      .withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
                                     color: Colors.white.withOpacity(0.2),
@@ -316,36 +325,51 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   children: [
                                     // Dark Mode Toggle
                                     AnimatedBuilder(
-                                      animation: ThemeService(),
-                                      builder: (context, _) {
-                                        final isDark = ThemeService().isDarkMode;
-                                        return InkWell(
-                                          onTap: () {
-                                            ThemeService().toggleTheme(!isDark);
-                                          },
-                                          borderRadius: BorderRadius.circular(16),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(6),
-                                            decoration: BoxDecoration(
-                                              color: isDark ? Theme.of(context).colorScheme.primary.withOpacity(0.1) : Colors.transparent,
-                                              shape: BoxShape.circle,
+                                        animation: ThemeService(),
+                                        builder: (context, _) {
+                                          final isDark =
+                                              ThemeService().isDarkMode;
+                                          return InkWell(
+                                            onTap: () {
+                                              ThemeService()
+                                                  .toggleTheme(!isDark);
+                                            },
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            child: Container(
+                                              padding: const EdgeInsets.all(6),
+                                              decoration: BoxDecoration(
+                                                color: isDark
+                                                    ? Theme.of(context)
+                                                        .colorScheme
+                                                        .primary
+                                                        .withOpacity(0.1)
+                                                    : Colors.transparent,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Icon(
+                                                Icons.dark_mode_rounded,
+                                                size: 18,
+                                                color: isDark
+                                                    ? Theme.of(context)
+                                                        .colorScheme
+                                                        .primary
+                                                    : Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                              ),
                                             ),
-                                            child: Icon(
-                                              Icons.dark_mode_rounded,
-                                              size: 18,
-                                              color: isDark ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    ),
+                                          );
+                                        }),
                                     const SizedBox(width: 4),
                                     // Legal Screen Button
                                     InkWell(
                                       onTap: () {
                                         Navigator.push(
                                           context,
-                                          MaterialPageRoute(builder: (context) => const LegalScreen()),
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const LegalScreen()),
                                         );
                                       },
                                       borderRadius: BorderRadius.circular(16),
@@ -358,7 +382,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         child: Icon(
                                           Icons.shield_rounded,
                                           size: 18,
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
                                         ),
                                       ),
                                     ),
@@ -383,16 +409,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   children: [
                                     Text(
                                       _getGreeting(),
-                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
                                       'Stay informed, stay ahead',
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withOpacity(0.5),
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -488,13 +523,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           height: 50,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
                             itemCount: _categories.length,
                             itemBuilder: (context, index) {
                               final cat = _categories[index];
-                              final isSelected = _selectedCategory == cat['key'];
+                              final isSelected =
+                                  _selectedCategory == cat['key'];
                               return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 250),
                                   curve: Curves.easeOutCubic,
@@ -502,23 +540,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     onTap: () => _onCategoryChanged(cat['key']),
                                     borderRadius: BorderRadius.circular(20),
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 14, vertical: 8),
                                       decoration: BoxDecoration(
                                         gradient: isSelected
                                             ? const LinearGradient(
-                                                colors: [Color(0xFFE94560), Color(0xFFFF8A65)],
+                                                colors: [
+                                                  Color(0xFFE94560),
+                                                  Color(0xFFFF8A65)
+                                                ],
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.bottomRight,
                                               )
                                             : null,
                                         color: isSelected
                                             ? null
-                                            : Theme.of(context).colorScheme.onSurface.withOpacity(0.06),
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withOpacity(0.06),
                                         borderRadius: BorderRadius.circular(20),
                                         border: isSelected
                                             ? null
                                             : Border.all(
-                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08),
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface
+                                                    .withOpacity(0.08),
                                               ),
                                       ),
                                       child: Row(
@@ -529,17 +577,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             size: 15,
                                             color: isSelected
                                                 ? Colors.white
-                                                : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                                : Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface
+                                                    .withOpacity(0.6),
                                           ),
                                           const SizedBox(width: 6),
                                           Text(
                                             cat['label'],
                                             style: TextStyle(
                                               fontSize: 12,
-                                              fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                                              fontWeight: isSelected
+                                                  ? FontWeight.w800
+                                                  : FontWeight.w600,
                                               color: isSelected
                                                   ? Colors.white
-                                                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                                  : Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurface
+                                                      .withOpacity(0.7),
                                               letterSpacing: 0.2,
                                             ),
                                           ),
@@ -569,7 +625,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   children: [
                                     Text(
                                       'Top Stories',
-                                      style: Theme.of(context).textTheme.titleLarge,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge,
                                     ),
                                     const SizedBox(width: 8),
                                     Container(
@@ -613,7 +671,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   child: Text(
                                     'View All',
                                     style: TextStyle(
-                                      color: Theme.of(context).colorScheme.secondary,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
                                     ),
                                   ),
                                 ),
@@ -635,7 +695,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               },
                               itemBuilder: (context, index) {
                                 final featured = _featuredNewsList[index];
-                                final tag = 'home_featured_${featured.url ?? featured.title}';
+                                final tag =
+                                    'home_featured_${featured.url ?? featured.title}';
                                 return FeaturedNewsCard(
                                   news: featured,
                                   heroPrefix: 'home_featured',
@@ -649,26 +710,34 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         SliverToBoxAdapter(
                           child: Center(
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 10, bottom: 4),
+                              padding:
+                                  const EdgeInsets.only(top: 10, bottom: 4),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: List.generate(
                                   _featuredNewsList.length,
                                   (index) => AnimatedContainer(
                                     duration: const Duration(milliseconds: 300),
-                                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 3),
                                     width: _featuredPageIndex == index ? 20 : 6,
                                     height: 6,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(3),
                                       gradient: _featuredPageIndex == index
                                           ? const LinearGradient(
-                                              colors: [Color(0xFFE94560), Color(0xFFFF8A65)],
+                                              colors: [
+                                                Color(0xFFE94560),
+                                                Color(0xFFFF8A65)
+                                              ],
                                             )
                                           : null,
                                       color: _featuredPageIndex == index
                                           ? null
-                                          : Theme.of(context).colorScheme.onSurface.withOpacity(0.15),
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                              .withOpacity(0.15),
                                     ),
                                   ),
                                 ),
@@ -693,9 +762,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 const SizedBox(width: 6),
                                 Text(
                                   'Trending Now',
-                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontSize: 18,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
+                                      ?.copyWith(
+                                        fontSize: 18,
+                                      ),
                                 ),
                               ],
                             ),
@@ -706,12 +778,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             height: 130,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
                               itemCount: _trendingNewsList.length.clamp(0, 8),
                               itemBuilder: (context, index) {
                                 final news = _trendingNewsList[index];
                                 return GlassContainer(
-                                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 4),
                                   padding: const EdgeInsets.all(12),
                                   borderRadius: BorderRadius.circular(16),
                                   onTap: () => _navigateToDetail(
@@ -721,18 +795,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   child: SizedBox(
                                     width: 200,
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         // Source + index badge
                                         Row(
                                           children: [
                                             Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 2),
                                               decoration: BoxDecoration(
                                                 gradient: const LinearGradient(
-                                                  colors: [Color(0xFFE94560), Color(0xFFFF8A65)],
+                                                  colors: [
+                                                    Color(0xFFE94560),
+                                                    Color(0xFFFF8A65)
+                                                  ],
                                                 ),
-                                                borderRadius: BorderRadius.circular(4),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                               ),
                                               child: Text(
                                                 '#${index + 1}',
@@ -750,7 +832,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 style: TextStyle(
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.w700,
-                                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurface
+                                                      .withOpacity(0.5),
                                                 ),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
@@ -763,11 +848,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         Expanded(
                                           child: Text(
                                             news.title ?? '',
-                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w700,
-                                              height: 1.3,
-                                            ),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium
+                                                ?.copyWith(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w700,
+                                                  height: 1.3,
+                                                ),
                                             maxLines: 3,
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -777,7 +865,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           DateHelper.timeAgo(news.publishedAt),
                                           style: TextStyle(
                                             fontSize: 10,
-                                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withOpacity(0.4),
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -790,7 +881,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ),
                         ),
                       ],
-
 
                       // Recent News Header
                       SliverToBoxAdapter(
@@ -821,7 +911,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                     ),
                                   ),
                                 ),
@@ -867,7 +958,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 Text(
                                   'No news found',
                                   style: TextStyle(
-                                    color: Theme.of(context).colorScheme.outline,
+                                    color:
+                                        Theme.of(context).colorScheme.outline,
                                     fontSize: 16,
                                   ),
                                 ),
@@ -877,7 +969,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         )
                       else
                         SliverList(
-                          delegate: SliverChildBuilderDelegate((context, index) {
+                          delegate:
+                              SliverChildBuilderDelegate((context, index) {
                             return AnimationConfiguration.staggeredList(
                               position: index,
                               duration: const Duration(milliseconds: 375),
@@ -887,8 +980,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   child: NewsCard(
                                     news: _filteredNewsList[index],
                                     heroPrefix: 'home_list',
-                                    onTap: () =>
-                                        _navigateToDetail(_filteredNewsList[index], 'home_list_${_filteredNewsList[index].url ?? _filteredNewsList[index].title}_${_filteredNewsList[index].publishedAt ?? 'now'}'),
+                                    onTap: () => _navigateToDetail(
+                                        _filteredNewsList[index],
+                                        'home_list_${_filteredNewsList[index].url ?? _filteredNewsList[index].title}_${_filteredNewsList[index].publishedAt ?? 'now'}'),
                                   ),
                                 ),
                               ),
@@ -972,7 +1066,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         curve: Curves.easeOutQuint,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? primaryColor.withOpacity(0.15) : Colors.transparent,
+          color:
+              isSelected ? primaryColor.withOpacity(0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -980,7 +1075,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           children: [
             Icon(
               isSelected ? selectedIcon : unselectedIcon,
-              color: isSelected ? primaryColor : Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),
+              color: isSelected
+                  ? primaryColor
+                  : Theme.of(context)
+                      .colorScheme
+                      .onSurfaceVariant
+                      .withOpacity(0.7),
               size: 24,
             ),
             if (isSelected) ...[
