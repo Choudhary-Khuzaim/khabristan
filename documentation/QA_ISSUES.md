@@ -7,8 +7,8 @@ This document lists all bugs, UI glitches, and functional issues identified duri
 ## 📌 Issue Summary Status
 
 - 🔴 **Open / Critical:** 0
-- 🟡 **In Progress / Medium:** 3
-- 🟢 **Resolved:** 4
+- 🟡 **In Progress / Medium:** 1
+- 🟢 **Resolved:** 6
 
 ---
 
@@ -63,17 +63,17 @@ This document lists all bugs, UI glitches, and functional issues identified duri
 
 ### ISS-005: Duplicated `_cleanSource()` Method
 - **Severity:** 🟢 Low
-- **Status:** 🟡 Open
+- **Status:** 🟢 Resolved (2026-09-26)
 - **Date Reported:** 2026-09-22
 - **Module:** `lib/widgets/news_card.dart` (Line ~20) & `lib/widgets/featured_news_card.dart` (Line ~19)
 - **Description:** The `_cleanSource(String? source)` utility method is copy-pasted identically in both `NewsCard` and `FeaturedNewsCard` widgets. This violates DRY (Don't Repeat Yourself) principle and increases maintenance burden.
-- **Recommendation:** Extract to a shared utility file (e.g., `lib/utils/string_helpers.dart`).
+- **Resolution:** Replaced local methods with `SourceHelper.cleanSource(news.source)` from `lib/utils/source_helper.dart`.
 
 ---
 
 ### ISS-006: Font Scale Clipping on Small Screen Devices
 - **Severity:** 🟢 Low
-- **Status:** 🟡 Open
+- **Status:** 🟢 Resolved (2026-09-26)
 - **Date Reported:** 2026-09-22
 - **Module:** `lib/widgets/featured_news_card.dart`
 - **Description:** Headline text in featured card overflows slightly when system font scale is set to maximum (>1.3x).
@@ -83,6 +83,7 @@ This document lists all bugs, UI glitches, and functional issues identified duri
   3. Check featured news title text bounds.
 - **Expected Result:** Text auto-scales down or truncates gracefully with `maxLines: 2` and `TextOverflow.ellipsis`.
 - **Actual Result:** Minor overflow padding issue at the bottom of card.
+- **Resolution:** Wrapped the bottom text container in `FeaturedNewsCard` with `MediaQuery.withClampedTextScaling(maxScaleFactor: 1.2)` and added `mainAxisSize: MainAxisSize.min` to the Column to prevent layout overflow when system font size is set to maximum.
 
 ---
 
