@@ -194,6 +194,7 @@ class FeaturedNewsCard extends StatelessWidget {
               ),
             ),
           ),
+          ),
         ],
       ),
     );
