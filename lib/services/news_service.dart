@@ -77,8 +77,8 @@ class NewsService {
             'https://www.reutersagency.com/feed/?taxonomy=best-sectors&post_type=best'
       },
       {'name': 'The Guardian', 'url': 'https://www.theguardian.com/world/rss'},
-      {'name': 'CNN', 'url': 'http://rss.cnn.com/rss/edition.rss'},
-      {'name': 'CNN World', 'url': 'http://rss.cnn.com/rss/edition_world.rss'},
+      {'name': 'CNN', 'url': 'https://rss.cnn.com/rss/edition.rss'},
+      {'name': 'CNN World', 'url': 'https://rss.cnn.com/rss/edition_world.rss'},
       {'name': 'NPR', 'url': 'https://feeds.npr.org/1001/rss.xml'},
       {'name': 'ABC News', 'url': 'https://abcnews.go.com/abcnews/topstories'},
       {'name': 'CBS News', 'url': 'https://www.cbsnews.com/latest/rss/main'},
@@ -168,7 +168,7 @@ class NewsService {
       },
       {
         'name': 'CNN Business',
-        'url': 'http://rss.cnn.com/rss/money_news_international.rss'
+        'url': 'https://rss.cnn.com/rss/money_news_international.rss'
       },
       {
         'name': 'Sky News Business',
@@ -204,7 +204,7 @@ class NewsService {
       {'name': 'Billboard', 'url': 'https://www.billboard.com/feed/'},
       {
         'name': 'CNN Entertainment',
-        'url': 'http://rss.cnn.com/rss/edition_entertainment.rss'
+        'url': 'https://rss.cnn.com/rss/edition_entertainment.rss'
       },
       {
         'name': 'E! Online',
@@ -241,7 +241,7 @@ class NewsService {
       {'name': 'NPR Health', 'url': 'https://feeds.npr.org/103537970/rss.xml'},
       {
         'name': 'CNN Health',
-        'url': 'http://rss.cnn.com/rss/edition_connecttheworld.rss'
+        'url': 'https://rss.cnn.com/rss/edition_connecttheworld.rss'
       },
       {
         'name': 'WHO News',
@@ -289,7 +289,7 @@ class NewsService {
       },
       {'name': 'Sky Sports', 'url': 'https://www.skysports.com/rss/12040'},
       {'name': 'CBS Sports', 'url': 'https://www.cbssports.com/rss/headlines/'},
-      {'name': 'CNN Sport', 'url': 'http://rss.cnn.com/rss/edition_sport.rss'},
+      {'name': 'CNN Sport', 'url': 'https://rss.cnn.com/rss/edition_sport.rss'},
       {
         'name': 'Bleacher Report',
         'url': 'https://bleacherreport.com/articles/feed'
@@ -327,7 +327,7 @@ class NewsService {
       {'name': 'Mashable', 'url': 'https://mashable.com/feeds/rss/all'},
       {
         'name': 'CNN Tech',
-        'url': 'http://rss.cnn.com/rss/edition_technology.rss'
+        'url': 'https://rss.cnn.com/rss/edition_technology.rss'
       },
       {
         'name': 'Sky News Tech',
@@ -496,7 +496,7 @@ class NewsService {
         _lastFetchTime = DateTime.now();
         return result;
       } catch (_) {
-        throw Exception('Error fetching news: $e');
+        throw Exception('Unable to load news. Please check your internet connection and try again.');
       }
     }
   }
@@ -533,7 +533,7 @@ class NewsService {
           }
         }
       } catch (_) {}
-      throw Exception('Error fetching featured news: $e');
+      throw Exception('Unable to load featured news. Please try again.');
     }
   }
 
@@ -549,7 +549,7 @@ class NewsService {
       // Already sorted by date from _fetchFromMultipleSources
       return generalArticles.take(limit).toList();
     } catch (e) {
-      throw Exception('Error fetching trending news: $e');
+      throw Exception('Unable to load trending news. Please try again.');
     }
   }
 
@@ -618,7 +618,7 @@ class NewsService {
           }
         }
       } catch (_) {}
-      throw Exception('Error searching news: $e');
+      throw Exception('Unable to search news. Please check your connection and try again.');
     }
   }
 
@@ -793,8 +793,8 @@ class NewsService {
       lastError = e is Exception ? e : Exception(e.toString());
     }
 
-    // Approach 2: Try with a simpler User-Agent
-    if (xmlString == null) {
+    // Approach 2: Try CORS proxy — only useful on web, skip on mobile
+    if (xmlString == null && kIsWeb) {
       try {
         final response = await http
             .get(

@@ -68,11 +68,15 @@ class _ArticleViewScreenState extends State<ArticleViewScreen> {
               }
             },
             onWebResourceError: (WebResourceError error) {
-              if (mounted) {
-                setState(() {
-                  _hasError = true;
-                  _isLoading = false;
-                });
+              // Only treat main frame errors as page failures
+              // Sub-resource errors (images, scripts, etc.) are normal
+              if (error.isForMainFrame ?? false) {
+                if (mounted) {
+                  setState(() {
+                    _hasError = true;
+                    _isLoading = false;
+                  });
+                }
               }
             },
           ),

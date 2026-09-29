@@ -15,14 +15,14 @@ class AllNewsScreen extends StatelessWidget {
     required this.newsList,
   });
 
-  void _navigateToDetail(BuildContext context, NewsModel news) {
+  void _navigateToDetail(BuildContext context, NewsModel news, int index) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => NewsDetailScreen(
           news: news,
           heroTag:
-              'all_news_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
+              'all_news_${index}_${news.url ?? news.title}',
         ),
       ),
     );
@@ -89,7 +89,7 @@ class AllNewsScreen extends StatelessWidget {
                             news: newsList[index],
                             heroPrefix: 'all_news',
                             onTap: () =>
-                                _navigateToDetail(context, newsList[index]),
+                                _navigateToDetail(context, newsList[index], index),
                           ),
                         ),
                       ),

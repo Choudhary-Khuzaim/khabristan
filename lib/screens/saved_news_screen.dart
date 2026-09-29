@@ -147,7 +147,7 @@ class _SavedNewsScreenState extends State<SavedNewsScreen>
                                       builder: (context) => NewsDetailScreen(
                                         news: news,
                                         heroTag:
-                                            'saved_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
+                                            'saved_${index}_${news.url ?? news.title}',
                                       ),
                                     ),
                                   );

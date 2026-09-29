@@ -146,10 +146,16 @@ class PreferencesService {
   Future<List<NewsModel>> getMyNews() async {
     final p = await prefs;
     final List<String> jsonList = p.getStringList(_keyMyNews) ?? [];
-    return jsonList.map((String jsonStr) {
-      final Map<String, dynamic> map = jsonDecode(jsonStr);
-      return NewsModel.fromJson(map);
-    }).toList();
+    final List<NewsModel> result = [];
+    for (final jsonStr in jsonList) {
+      try {
+        final Map<String, dynamic> map = jsonDecode(jsonStr);
+        result.add(NewsModel.fromJson(map));
+      } catch (_) {
+        // Skip corrupted entries silently
+      }
+    }
+    return result;
   }
 
   Future<void> deleteMyNews(NewsModel newsToDelete) async {

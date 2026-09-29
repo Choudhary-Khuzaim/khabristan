@@ -160,22 +160,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       final news =
           await _newsService.getTopHeadlines(category: _selectedCategory);
 
-      setState(() {
-        _newsList = news;
-        _filteredNewsList = news;
-        _featuredNewsList = news.take(5).toList();
-        _trendingNewsList = news.take(8).toList();
-        _lastUpdated = DateTime.now();
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _newsList = news;
+          _filteredNewsList = news;
+          _featuredNewsList = news.take(5).toList();
+          _trendingNewsList = news.take(8).toList();
+          _lastUpdated = DateTime.now();
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error loading news: ${e.toString()}'),
+            content: Text(_cleanErrorMessage(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
             behavior: SnackBarBehavior.floating,
           ),
@@ -206,6 +210,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     } else {
       _loadNews();
     }
+  }
+
+  String _cleanErrorMessage(String error) {
+    // Strip 'Exception: ' prefix and technical details
+    String msg = error.replaceAll(RegExp(r'^Exception:\s*'), '');
+    if (msg.contains('SocketException') || msg.contains('HandshakeException') || msg.contains('ClientException')) {
+      return 'No internet connection. Please check your network and try again.';
+    }
+    if (msg.contains('TimeoutException') || msg.contains('timed out')) {
+      return 'Connection timed out. Please try again.';
+    }
+    if (msg.length > 100) {
+      return 'Something went wrong. Please try again.';
+    }
+    return msg;
   }
 
   void _navigateToDetail(NewsModel news, String heroTag) {
@@ -696,7 +715,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               itemBuilder: (context, index) {
                                 final featured = _featuredNewsList[index];
                                 final tag =
-                                    'home_featured_${featured.url ?? featured.title}';
+                                    'home_featured_${index}_${featured.url ?? featured.title}';
                                 return FeaturedNewsCard(
                                   news: featured,
                                   heroPrefix: 'home_featured',
@@ -790,7 +809,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   borderRadius: BorderRadius.circular(16),
                                   onTap: () => _navigateToDetail(
                                     news,
-                                    'trending_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
+                                    'trending_${index}_${news.url ?? news.title}',
                                   ),
                                   child: SizedBox(
                                     width: 200,
@@ -982,7 +1001,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     heroPrefix: 'home_list',
                                     onTap: () => _navigateToDetail(
                                         _filteredNewsList[index],
-                                        'home_list_${_filteredNewsList[index].url ?? _filteredNewsList[index].title}_${_filteredNewsList[index].publishedAt ?? 'now'}'),
+                                        'home_list_${index}_${_filteredNewsList[index].url ?? _filteredNewsList[index].title}'),
                                   ),
                                 ),
                               ),

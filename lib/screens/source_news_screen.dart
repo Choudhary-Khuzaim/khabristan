@@ -93,7 +93,7 @@ class _SourceNewsScreenState extends State<SourceNewsScreen> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error loading news: ${e.toString()}'),
+            content: const Text('Unable to load news. Please try again.'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -219,7 +219,7 @@ class _SourceNewsScreenState extends State<SourceNewsScreen> {
                                       'source_news_${widget.sourceName}',
                                   onTap: () => _navigateToDetail(
                                     news,
-                                    'source_news_${widget.sourceName}_${news.url ?? news.title}_${news.publishedAt ?? 'now'}',
+                                    'source_news_${widget.sourceName}_${index}_${news.url ?? news.title}',
                                   ),
                                 ),
                               ),
