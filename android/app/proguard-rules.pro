@@ -21,3 +21,6 @@
 -keepclasseswithmembernames class * {
     native <methods>;
 }
+
+# Google Play Core — not used but referenced by Flutter engine
+-dontwarn com.google.android.play.core.**
