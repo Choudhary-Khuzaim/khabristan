@@ -143,7 +143,8 @@ class NewsModel {
           _parseRssDate(pubDate),
         ).toIso8601String();
       } catch (_) {
-        publishedAt = DateTime.now().toIso8601String();
+        // Leave publishedAt as null — better to show no time than wrong time
+        publishedAt = null;
       }
     }
 

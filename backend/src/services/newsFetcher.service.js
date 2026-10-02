@@ -1,9 +1,13 @@
 const https = require('https');
 const http = require('http');
+const crypto = require('crypto');
 const News = require('../models/News.model');
 const User = require('../models/User.model');
 
-const NEWS_API_KEY = process.env.NEWS_API_KEY || '7011d13788754be985396556f8490a2a';
+const NEWS_API_KEY = process.env.NEWS_API_KEY;
+if (!NEWS_API_KEY) {
+  console.warn('⚠️  NEWS_API_KEY not set in environment variables. NewsAPI fallback will not work.');
+}
 const BASE_URL = 'https://newsapi.org/v2';
 
 // ============================================
@@ -190,7 +194,7 @@ async function fetchAllDailyNews() {
         name: 'KhabarIsTan NewsBot',
         email: 'newsbot@khabaristan.com',
         username: 'newsbot',
-        password: 'newsbot_system_2024_secure',
+        password: crypto.randomBytes(32).toString('hex'),
         role: 'admin',
         isVerified: true,
         bio: 'Automated news aggregation bot',

@@ -55,14 +55,20 @@ class BookmarksService extends ChangeNotifier {
 
   bool isBookmarked(NewsModel news) {
     return _bookmarks.any(
-      (item) => item.title == news.title && item.url == news.url,
+      (item) =>
+          item.title == news.title &&
+          item.url == news.url &&
+          item.publishedAt == news.publishedAt,
     );
   }
 
   Future<void> toggleBookmark(NewsModel news) async {
     if (isBookmarked(news)) {
       _bookmarks.removeWhere(
-        (item) => item.title == news.title && item.url == news.url,
+        (item) =>
+            item.title == news.title &&
+            item.url == news.url &&
+            item.publishedAt == news.publishedAt,
       );
     } else {
       _bookmarks.add(news);

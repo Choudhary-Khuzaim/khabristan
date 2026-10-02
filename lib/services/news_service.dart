@@ -415,8 +415,16 @@ class NewsService {
     return null;
   }
 
-  // Backend URL — automatically detected based on platform
+  // TODO: Replace with your actual production backend URL when deploying
+  static const String _productionBackendUrl = 'https://api.khabaristan.com/api/v1';
+
+  // Backend URL — automatically detected based on platform and build mode
   static String get _backendUrl {
+    // In release mode, use the production URL
+    if (kReleaseMode) {
+      return _productionBackendUrl;
+    }
+    // In debug mode, use local development server
     if (kIsWeb) {
       return 'http://localhost:5000/api/v1';
     }
@@ -781,7 +789,7 @@ class NewsService {
           'Accept-Language': 'en-US,en;q=0.9',
           'Connection': 'keep-alive',
         },
-      ).timeout(const Duration(seconds: 2));
+      ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200 &&
           (response.body.contains('<rss') ||
@@ -802,7 +810,7 @@ class NewsService {
                 'https://corsproxy.io/?url=${Uri.encodeComponent(rssUrl)}',
               ),
             )
-            .timeout(const Duration(seconds: 1));
+            .timeout(const Duration(seconds: 5));
 
         if (response.statusCode == 200 &&
             (response.body.contains('<rss') ||
@@ -822,7 +830,7 @@ class NewsService {
             'https://api.rss2json.com/v1/api.json?rss_url=${Uri.encodeComponent(rssUrl)}';
         final response = await http
             .get(Uri.parse(proxyUrl))
-            .timeout(const Duration(seconds: 1));
+            .timeout(const Duration(seconds: 5));
 
         if (response.statusCode == 200) {
           final jsonData = json.decode(response.body);

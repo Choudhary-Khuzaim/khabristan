@@ -161,8 +161,14 @@ class PreferencesService {
   Future<void> deleteMyNews(NewsModel newsToDelete) async {
     final p = await prefs;
     final List<String> currentList = p.getStringList(_keyMyNews) ?? [];
-    List<NewsModel> models =
-        currentList.map((str) => NewsModel.fromJson(jsonDecode(str))).toList();
+    List<NewsModel> models = [];
+    for (final str in currentList) {
+      try {
+        models.add(NewsModel.fromJson(jsonDecode(str)));
+      } catch (_) {
+        // Skip corrupted entries
+      }
+    }
 
     models.removeWhere(
       (item) =>

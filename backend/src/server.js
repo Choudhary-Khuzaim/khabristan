@@ -18,6 +18,16 @@ const externalNewsRoutes = require('./routes/externalNews.routes');
 // Error handler middleware
 const { errorHandler, notFound } = require('./middleware/error.middleware');
 
+// Rate limiting for auth endpoints
+const rateLimit = require('express-rate-limit');
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 15, // max 15 requests per windowMs
+  message: { success: false, message: 'Too many requests, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 const app = express();
 
 // ============================================
@@ -72,7 +82,7 @@ app.get('/api/v1', (req, res) => {
   });
 });
 
-app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/auth', authLimiter, authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/news', newsRoutes);
 app.use('/api/v1/bookmarks', bookmarkRoutes);

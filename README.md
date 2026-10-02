@@ -20,7 +20,7 @@
 
 ---
 
-## 📸 App Showcase
+## App Showcase
 
 <p align="center">
   <img src="assets/readme/screenshots.png" alt="KhabarIsTan App Screenshots" width="100%">
@@ -28,7 +28,7 @@
 
 ---
 
-## ✨ Premium Features
+## Premium Features
 
 <p align="center">
   <img src="assets/readme/features.png" alt="KhabarIsTan Features" width="100%">
@@ -36,21 +36,21 @@
 
 | Feature | Description |
 |---------|-------------|
-| 💎 **Glassmorphic UI** | Frosted glass containers, smooth blur effects (`BackdropFilter`), elegant gradients, and modern typography via Google Fonts (Outfit & Inter) |
-| 🌍 **60+ News Sources** | Aggregates RSS feeds directly from publishers — BBC, CNN, NYT, Al Jazeera, Dawn, The Guardian, Reuters, TechCrunch, ESPN, and 50+ more |
-| 🎙️ **AI Voice Reporting** | Integrated Text-to-Speech (`flutter_tts`) lets users listen to articles hands-free with play/pause controls |
-| 🔖 **Smart Bookmarking** | Save articles locally via `shared_preferences` for quick offline access in the "Saved Stories" section |
-| 🌗 **Adaptive Theming** | Real-time Light/Dark mode switching — automatically respects system preferences or user overrides |
-| 🌐 **In-App Browser** | Read full articles without leaving the app via integrated `webview_flutter` with progress indicator |
-| 🚀 **Cinematic Animations** | Staggered list animations, shimmer loading skeletons, page transitions, and a pulsating LIVE indicator |
-| 📂 **7 Categories** | General, Business, Technology, Sports, Science, Health, Entertainment — each with dedicated curated feeds |
-| 🔄 **Smart Caching** | Cache-first architecture: shows cached data instantly, refreshes in background for seamless UX |
-| 📤 **Share Anywhere** | Share articles via any platform using `share_plus` integration |
-| 🛡️ **Privacy & Legal** | Built-in Terms & Conditions and Privacy Policy screens |
+| **Glassmorphic UI** | Frosted glass containers, smooth blur effects (`BackdropFilter`), elegant gradients, and modern typography via Google Fonts (Outfit & Inter) |
+| **60+ News Sources** | Aggregates RSS feeds directly from publishers — BBC, CNN, NYT, Al Jazeera, Dawn, The Guardian, Reuters, TechCrunch, ESPN, and 50+ more |
+| **AI Voice Reporting** | Integrated Text-to-Speech (`flutter_tts`) lets users listen to articles hands-free with play/pause controls |
+| **Smart Bookmarking** | Save articles locally via `shared_preferences` for quick offline access in the "Saved Stories" section |
+| **Adaptive Theming** | Real-time Light/Dark mode switching — automatically respects system preferences or user overrides |
+| **In-App Browser** | Read full articles without leaving the app via integrated `webview_flutter` with progress indicator |
+| **Cinematic Animations** | Staggered list animations, shimmer loading skeletons, page transitions, and a pulsating LIVE indicator |
+| **7 Categories** | General, Business, Technology, Sports, Science, Health, Entertainment — each with dedicated curated feeds |
+| **Smart Caching** | Cache-first architecture: shows cached data instantly, refreshes in background for seamless UX |
+| **Share Anywhere** | Share articles via any platform using `share_plus` integration |
+| **Privacy & Legal** | Built-in Terms & Conditions and Privacy Policy screens |
 
 ---
 
-## 📱 Screens & Navigation
+## Screens & Navigation
 
 | # | Screen | File | Description |
 |---|--------|------|-------------|
@@ -66,7 +66,7 @@
 
 ---
 
-## 🏗️ Architecture & Folder Structure
+## Folder Structure
 
 ```text
 lib/
@@ -102,7 +102,7 @@ lib/
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Category | Technology | Purpose |
 |----------|-----------|---------|
@@ -123,40 +123,40 @@ lib/
 
 ---
 
-## 📡 News Sources (60+)
+## News Sources (60+)
 
 Khabaristan aggregates news from **individual publisher RSS feeds** — no API keys required, fully PlayStore-safe:
 
 <details>
-<summary><b>🌍 International (18 sources)</b></summary>
+<summary><b>International (18 sources)</b></summary>
 
 BBC News • BBC World • CNN • CNN World • The New York Times • NYT World • Al Jazeera • Reuters • The Guardian • NPR • ABC News • CBS News • NBC News • Fox News • Sky News • The Independent • USA Today • Washington Post
 
 </details>
 
 <details>
-<summary><b>🇵🇰 Pakistan (4 sources)</b></summary>
+<summary><b>Pakistan (4 sources)</b></summary>
 
 Dawn • Geo News • The News International • Express Tribune
 
 </details>
 
 <details>
-<summary><b>🇮🇳 South Asia (3 sources)</b></summary>
+<summary><b>South Asia (3 sources)</b></summary>
 
 NDTV • Times of India • The Hindu
 
 </details>
 
 <details>
-<summary><b>🇪🇺 European / Global (4 sources)</b></summary>
+<summary><b>European / Global (4 sources)</b></summary>
 
 DW News • France 24 • The Telegraph • Irish Times
 
 </details>
 
 <details>
-<summary><b>💼 Business (13 sources)</b></summary>
+<summary><b>Business (13 sources)</b></summary>
 
 BBC Business • NYT Business • CNBC • MarketWatch • Forbes • Business Insider • CNN Business • Sky News Business • DW Business • Dawn Business • NPR Business • The Guardian Business • Washington Post Business
 
@@ -170,28 +170,28 @@ BBC Technology • NYT Technology • TechCrunch • The Verge • Ars Technica 
 </details>
 
 <details>
-<summary><b>🏥 Health (8 sources)</b></summary>
+<summary><b>Health (8 sources)</b></summary>
 
 BBC Health • NYT Health • WebMD • Medical News Today • NPR Health • CNN Health • WHO News • The Guardian Health
 
 </details>
 
 <details>
-<summary><b>🔬 Science (11 sources)</b></summary>
+<summary><b>Science (11 sources)</b></summary>
 
 BBC Science • NYT Science • Space.com • Live Science • NPR Science • Nature • Scientific American • New Scientist • Phys.org • DW Science • The Guardian Science
 
 </details>
 
 <details>
-<summary><b>⚽ Sports (10 sources)</b></summary>
+<summary><b>Sports (10 sources)</b></summary>
 
 BBC Sport • ESPN • NYT Sports • Sky Sports • CBS Sports • CNN Sport • Bleacher Report • Dawn Sports • Fox Sports • The Guardian Sport
 
 </details>
 
 <details>
-<summary><b>🎬 Entertainment (11 sources)</b></summary>
+<summary><b>Entertainment (11 sources)</b></summary>
 
 BBC Entertainment • NYT Arts • Variety • Hollywood Reporter • Deadline • Rolling Stone • Billboard • CNN Entertainment • E! Online • Dawn Entertainment • The Guardian Culture
 
@@ -199,7 +199,7 @@ BBC Entertainment • NYT Arts • Variety • Hollywood Reporter • Deadline �
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -237,7 +237,7 @@ flutter build ios --release
 
 ---
 
-## 📦 Play Store Readiness
+## Play Store Readiness
 
 | Requirement | Status |
 |-------------|--------|
@@ -254,11 +254,9 @@ flutter build ios --release
 | ✅ Flutter Analyze | Zero issues ✨ |
 | ⚠️ Release Signing | Configure your own keystore before publishing (see [Flutter docs](https://docs.flutter.dev/deployment/android#signing-the-app)) |
 
-> **Note:** Before uploading to Play Store, you need to replace the debug signing configuration in `android/app/build.gradle.kts` with your own release keystore. Follow the [official Flutter deployment guide](https://docs.flutter.dev/deployment/android).
-
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Whether it's a bug report, new feature, or UI enhancement:
 
@@ -270,7 +268,7 @@ Contributions are welcome! Whether it's a bug report, new feature, or UI enhance
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
