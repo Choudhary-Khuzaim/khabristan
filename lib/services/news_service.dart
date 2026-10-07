@@ -415,8 +415,8 @@ class NewsService {
     return null;
   }
 
-  // TODO: Replace with your actual production backend URL when deploying
-  static const String _productionBackendUrl = 'https://api.khabaristan.com/api/v1';
+  static const String _productionBackendUrl =
+      'https://api.khabaristan.com/api/v1';
 
   // Backend URL — automatically detected based on platform and build mode
   static String get _backendUrl {
@@ -504,7 +504,8 @@ class NewsService {
         _lastFetchTime = DateTime.now();
         return result;
       } catch (_) {
-        throw Exception('Unable to load news. Please check your internet connection and try again.');
+        throw Exception(
+            'Unable to load news. Please check your internet connection and try again.');
       }
     }
   }
@@ -626,7 +627,8 @@ class NewsService {
           }
         }
       } catch (_) {}
-      throw Exception('Unable to search news. Please check your connection and try again.');
+      throw Exception(
+          'Unable to search news. Please check your connection and try again.');
     }
   }
 
