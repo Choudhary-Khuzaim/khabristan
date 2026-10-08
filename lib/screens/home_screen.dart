@@ -215,7 +215,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   String _cleanErrorMessage(String error) {
     // Strip 'Exception: ' prefix and technical details
     String msg = error.replaceAll(RegExp(r'^Exception:\s*'), '');
-    if (msg.contains('SocketException') || msg.contains('HandshakeException') || msg.contains('ClientException')) {
+    if (msg.contains('SocketException') ||
+        msg.contains('HandshakeException') ||
+        msg.contains('ClientException')) {
       return 'No internet connection. Please check your network and try again.';
     }
     if (msg.contains('TimeoutException') || msg.contains('timed out')) {

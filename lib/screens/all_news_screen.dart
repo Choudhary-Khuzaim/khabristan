@@ -21,8 +21,7 @@ class AllNewsScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => NewsDetailScreen(
           news: news,
-          heroTag:
-              'all_news_${index}_${news.url ?? news.title}',
+          heroTag: 'all_news_${index}_${news.url ?? news.title}',
         ),
       ),
     );
@@ -88,8 +87,8 @@ class AllNewsScreen extends StatelessWidget {
                           child: NewsCard(
                             news: newsList[index],
                             heroPrefix: 'all_news',
-                            onTap: () =>
-                                _navigateToDetail(context, newsList[index], index),
+                            onTap: () => _navigateToDetail(
+                                context, newsList[index], index),
                           ),
                         ),
                       ),

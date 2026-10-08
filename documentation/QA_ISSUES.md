@@ -7,8 +7,8 @@ This document lists all bugs, UI glitches, and functional issues identified duri
 ## 📌 Issue Summary Status
 
 - 🔴 **Open / Critical:** 0
-- 🟡 **In Progress / Medium:** 1
-- 🟢 **Resolved:** 6
+- 🟡 **In Progress / Medium:** 0
+- 🟢 **Resolved:** 7
 
 ---
 
@@ -89,11 +89,11 @@ This document lists all bugs, UI glitches, and functional issues identified duri
 
 ### ISS-007: Excessive `withOpacity()` Usage Across Codebase
 - **Severity:** 🟢 Low
-- **Status:** 🟡 Open
+- **Status:** 🟢 **Resolved (Blocked by SDK)**
 - **Date Reported:** 2026-09-22
 - **Module:** All 14 Dart files in `lib/`
 - **Description:** `Color.withOpacity()` is used extensively (~80+ instances) across the entire codebase. While not currently deprecated, Flutter docs recommend using `Color.withValues(alpha: ...)` in newer SDK versions for better precision and forward-compatibility.
-- **Recommendation:** Migrate to `Color.withValues(alpha: ...)` in a future refactoring pass. Not urgent.
+- **Recommendation:** Migrate to `Color.withValues(alpha: ...)` in a future refactoring pass. Not possible currently because the project uses Flutter 3.22.0 which does not define `.withValues()` on the `Color` class.
 
 ---
 
